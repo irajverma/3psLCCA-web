@@ -11,7 +11,7 @@ const quotes = [
     "📖 Every project tells a story make yours count."
 ];
 
-const Homepage = () => {
+const Homepage = ({ onProjectOpen }) => {
     const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
     const [showModal, setShowModal] = useState(false);
 
@@ -75,7 +75,7 @@ const Homepage = () => {
                         </div>
 
                         <div className="d-flex justify-content-center gap-3 mb-3">
-                            <button className="btn border bg-white flex-grow-1 py-1" style={{ fontSize: '0.9rem', color: '#2c3e50', borderRadius: '4px', borderColor: '#e9ecef' }}>Open</button>
+                            <button className="btn border bg-white flex-grow-1 py-1" onClick={onProjectOpen} style={{ fontSize: '0.9rem', color: '#2c3e50', borderRadius: '4px', borderColor: '#e9ecef' }}>Open</button>
                             <button className="btn border bg-white flex-grow-1 py-1" style={{ fontSize: '0.9rem', color: '#2c3e50', borderRadius: '4px', borderColor: '#e9ecef' }}>Delete</button>
                         </div>
 
@@ -92,7 +92,7 @@ const Homepage = () => {
             </footer>
 
             {/* New Project Modal */}
-            <NewProject show={showModal} handleClose={handleCloseModal} />
+            <NewProject show={showModal} handleClose={handleCloseModal} onProjectOpen={onProjectOpen} />
         </div>
     );
 };

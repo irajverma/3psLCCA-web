@@ -1,0 +1,81 @@
+.project-sidebar {
+    width: 250px;
+    height: 100%;
+    background-color: #1e1e1e; /* Match typical dark mode PyQt window */
+    color: #e0e0e0;
+    overflow-y: auto;
+    border-right: 1px solid #333;
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    padding-top: 10px;
+    user-select: none;
+}
+
+/* Custom Webkit Scrollbar mimicking Qt */
+.project-sidebar::-webkit-scrollbar {
+    width: 8px;
+}
+.project-sidebar::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+.project-sidebar::-webkit-scrollbar-thumb {
+    background: #444;
+    border-radius: 4px;
+}
+.project-sidebar::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.tree-node-container {
+    width: 100%;
+}
+
+.tree-node {
+    display: flex;
+    align-items: center;
+    padding: 4px 0;
+    cursor: pointer;
+    position: relative;
+    color: #cccccc;
+}
+
+.tree-node:hover {
+    background-color: rgba(46, 204, 113, 0.12); /* hover tint based on _HOVER_ALPHA 30/255 */
+}
+
+/* Active State mimicking the python QPainter */
+.tree-node.active {
+    background-color: rgba(46, 204, 113, 0.22); /* sel tint based on _SEL_ALPHA 55/255 */
+    color: #ffffff;
+}
+
+.tree-node.active::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px; /* _ACCENT_W = 3 */
+    background-color: #2ecc71; /* _ACCENT */
+}
+
+.expander-icon {
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    width: 20px;
+    margin-right: 4px;
+    color: #888;
+}
+
+/* On active or hover on the row, brighten the arrow slightly */
+.tree-node:hover .expander-icon,
+.tree-node.active .expander-icon {
+    color: #aaa;
+}
+
+.node-label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

@@ -35,7 +35,7 @@ const getCustomStyles = (isInvalid) => ({
     })
 });
 
-const NewProject = ({ show, handleClose }) => {
+const NewProject = ({ show, handleClose, onProjectOpen }) => {
     const [projectName, setProjectName] = useState('');
     const [country, setCountry] = useState(null);
     const [currency, setCurrency] = useState(null);
@@ -68,6 +68,7 @@ const NewProject = ({ show, handleClose }) => {
         setValidated(false);
 
         handleClose();
+        if (onProjectOpen) onProjectOpen();
     };
 
     return (
