@@ -84,8 +84,7 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
     );
 };
 
-const Sidebar = () => {
-    const [activeNode, setActiveNode] = useState("General Information");
+const Sidebar = ({ activeNode, setActiveNode }) => {
 
     return (
         <div className="project-sidebar">
