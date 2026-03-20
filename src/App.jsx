@@ -1,28 +1,29 @@
 import React, { useState } from 'react'
 import HomePage from './gui/components/Homepage'
+import Loginpage from './gui/Login/Loginpage'
 import ProjectLayout from './gui/components/ProjectLayout'
 import ProjectInformationPlaceholder from './gui/components/ProjectInformationPlaceholder'
 import BridgeData from './gui/components/bridgedata/BridgeData'
 import './App.css'
 
-// Map sidebar node labels → content components
 const CONTENT_MAP = {
   'General Information': <ProjectInformationPlaceholder />,
   'Bridge Data': <BridgeData />,
 }
 
-const ComingSoon = ({ label }) => (
-  <div style={{ padding: '32px', color: '#888', fontSize: '0.9rem' }}>
-    <span style={{ color: '#5b9bd5', fontWeight: 600 }}>{label}</span> — coming soon.
-  </div>
-)
+
 
 function App() {
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isProjectOpen, setIsProjectOpen] = useState(false)
   const [activeNode, setActiveNode] = useState('General Information')
 
+  if (!isLoggedIn) {
+    return <Loginpage onLogin={() => setIsLoggedIn(true)} onGuestLogin={() => setIsLoggedIn(true)} />
+  }
+
   if (isProjectOpen) {
-    const content = CONTENT_MAP[activeNode] ?? <ComingSoon label={activeNode} />
+    const content = CONTENT_MAP[activeNode] || null
     return (
       <ProjectLayout activeNode={activeNode} setActiveNode={setActiveNode}>
         {content}

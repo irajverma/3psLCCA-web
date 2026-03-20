@@ -8,7 +8,7 @@ const ProjectLayout = ({ children, activeNode, setActiveNode }) => {
             <ProjectNavbar />
             <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
                 <Sidebar activeNode={activeNode} setActiveNode={setActiveNode} />
-                <div style={{ flexGrow: 1, overflowY: 'auto', backgroundColor: '#16171d' }}>
+                <div style={{ flexGrow: 1, overflowY: 'auto', backgroundColor: 'var(--app-bg-main)', transition: 'background-color 0.3s ease' }}>
                     {children}
                 </div>
             </div>

@@ -10,28 +10,35 @@ const getCustomStyles = (isInvalid) => ({
     control: (provided, state) => ({
         ...provided,
         fontSize: '0.9rem',
-        borderColor: isInvalid ? '#dc3545' : '#dee2e6',
+        borderColor: isInvalid ? '#dc3545' : 'var(--app-input-border)',
         minHeight: '38px',
+        backgroundColor: 'var(--app-input-bg)',
         boxShadow: isInvalid && state.isFocused ? '0 0 0 0.25rem rgba(220, 53, 69, 0.25)' : 'none',
         '&:hover': {
-            borderColor: isInvalid ? '#dc3545' : '#b3b3b3'
-        }
+            borderColor: isInvalid ? '#dc3545' : 'var(--app-primary-accent)'
+        },
+        transition: 'all 0.3s ease'
     }),
-    option: (provided) => ({
+    option: (provided, state) => ({
         ...provided,
         fontSize: '0.9rem',
+        backgroundColor: state.isFocused ? 'var(--app-bg-alt)' : 'transparent',
+        color: 'var(--app-text-primary)',
+        transition: 'background-color 0.1s'
     }),
     placeholder: (provided) => ({
         ...provided,
-        color: '#6c757d',
+        color: 'var(--app-text-muted)',
     }),
     singleValue: (provided) => ({
         ...provided,
-        color: '#212529',
+        color: 'var(--app-text-primary)',
     }),
     menu: (provided) => ({
         ...provided,
-        zIndex: 9999
+        zIndex: 9999,
+        backgroundColor: 'var(--app-bg-card)',
+        border: '1px solid var(--app-border-light)'
     })
 });
 
@@ -82,13 +89,13 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
             <Modal.Body className="pt-2">
                 <Form onSubmit={handleSubmit} noValidate>
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem' }}>Project Name</Form.Label>
+                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem', color: 'var(--app-text-primary)' }}>Project Name</Form.Label>
                         <Form.Control
                             type="text"
                             placeholder="e.g. Highway 5 Bridge Replacement"
                             value={projectName}
                             onChange={(e) => setProjectName(e.target.value)}
-                            style={{ fontSize: '0.9rem' }}
+                            style={{ fontSize: '0.9rem', backgroundColor: 'var(--app-input-bg)', color: 'var(--app-input-text)', borderColor: 'var(--app-input-border)', transition: 'all 0.3s ease' }}
                             autoComplete="off"
                             isInvalid={validated && !projectName}
                         />
@@ -96,14 +103,14 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                             Please enter a Project Name.
                         </Form.Control.Feedback>
                         {(!validated || projectName) && (
-                            <Form.Text className="text-muted" style={{ fontSize: '0.8rem' }}>
+                            <Form.Text style={{ fontSize: '0.8rem', color: 'var(--app-text-secondary)' }}>
                                 You can rename this later.
                             </Form.Text>
                         )}
                     </Form.Group>
 
                     <Form.Group className="mb-3">
-                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem' }}>Country</Form.Label>
+                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem', color: 'var(--app-text-primary)' }}>Country</Form.Label>
                         <Select
                             options={countryOptions}
                             value={country}
@@ -118,14 +125,14 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                                 Please select a Country.
                             </div>
                         ) : (
-                            <Form.Text className="text-muted" style={{ fontSize: '0.8rem' }}>
+                            <Form.Text style={{ fontSize: '0.8rem', color: 'var(--app-text-secondary)' }}>
                                 Cannot be changed after project creation.
                             </Form.Text>
                         )}
                     </Form.Group>
 
                     <Form.Group className="mb-4">
-                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem' }}>Currency</Form.Label>
+                        <Form.Label className="fw-bold" style={{ fontSize: '0.9rem', color: 'var(--app-text-primary)' }}>Currency</Form.Label>
                         <Select
                             options={currencyOptions}
                             value={currency}
@@ -140,17 +147,17 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                                 Please select a Currency.
                             </div>
                         ) : (
-                            <Form.Text className="text-muted" style={{ fontSize: '0.8rem' }}>
+                            <Form.Text style={{ fontSize: '0.8rem', color: 'var(--app-text-secondary)' }}>
                                 Cannot be changed after project creation.
                             </Form.Text>
                         )}
                     </Form.Group>
 
                     <div className="d-flex justify-content-end gap-2">
-                        <Button variant="outline-secondary" type="submit" style={{ fontSize: '0.9rem', padding: '0.25rem 1.5rem' }}>
+                        <Button variant="outline-primary" type="submit" style={{ fontSize: '0.9rem', padding: '0.25rem 1.5rem', borderColor: 'var(--app-primary-accent)', color: 'var(--app-primary-accent)' }}>
                             OK
                         </Button>
-                        <Button variant="outline-secondary" onClick={closeModal} style={{ fontSize: '0.9rem', padding: '0.25rem 1rem', border: 'none' }}>
+                        <Button variant="outline-secondary" onClick={closeModal} style={{ fontSize: '0.9rem', padding: '0.25rem 1rem', border: 'none', color: 'var(--app-text-secondary)' }}>
                             Cancel
                         </Button>
                     </div>

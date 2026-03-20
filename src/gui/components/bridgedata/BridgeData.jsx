@@ -61,20 +61,22 @@ const REQUIRED_KEYS = new Set([
 const styles = {
     wrapper: {
         padding: '24px',
-        color: '#e0e0e0',
+        color: 'var(--app-text-primary)',
         overflowY: 'auto',
         maxHeight: '100%',
+        transition: 'color 0.3s ease'
     },
     sectionHeader: {
         fontSize: '0.75rem',
         fontWeight: '700',
-        color: '#8b98a5',
+        color: 'var(--app-text-muted)',
         letterSpacing: '0.06em',
         textTransform: 'uppercase',
-        borderBottom: '1px solid #3a3a3a',
+        borderBottom: '1px solid var(--app-border-dark)',
         paddingBottom: '6px',
         marginTop: '24px',
         marginBottom: '16px',
+        transition: 'all 0.3s ease'
     },
     fieldGroup: {
         marginBottom: '16px',
@@ -82,27 +84,29 @@ const styles = {
     label: {
         fontSize: '0.875rem',
         fontWeight: '600',
-        color: '#ccc',
+        color: 'var(--app-text-secondary)',
         marginBottom: '4px',
         display: 'block',
+        transition: 'color 0.3s ease'
     },
     hint: {
         fontSize: '0.775rem',
-        color: '#888',
+        color: 'var(--app-text-muted)',
         marginBottom: '6px',
         lineHeight: '1.4',
+        transition: 'color 0.3s ease'
     },
     input: {
         width: '100%',
-        backgroundColor: '#2a2a2a',
-        border: '1px solid #3a3a3a',
+        backgroundColor: 'var(--app-input-bg)',
+        border: '1px solid var(--app-input-border)',
         borderRadius: '4px',
-        color: '#e0e0e0',
+        color: 'var(--app-text-primary)',
         padding: '7px 10px',
         fontSize: '0.875rem',
         outline: 'none',
         boxSizing: 'border-box',
-        transition: 'border-color 0.15s',
+        transition: 'border-color 0.15s, background-color 0.3s, color 0.3s',
     },
     inputError: {
         border: '1px solid #e74c3c',
@@ -114,16 +118,18 @@ const styles = {
     },
     unit: {
         fontSize: '0.8rem',
-        color: '#888',
+        color: 'var(--app-text-muted)',
         whiteSpace: 'nowrap',
         flexShrink: 0,
+        transition: 'color 0.3s ease'
     },
     docsLink: {
         fontSize: '0.75rem',
-        color: '#5b9bd5',
+        color: 'var(--app-primary-accent)',
         textDecoration: 'none',
         marginLeft: '4px',
         flexShrink: 0,
+        transition: 'color 0.3s ease'
     },
     btnRow: {
         display: 'flex',
@@ -136,22 +142,22 @@ const styles = {
         padding: '8px 0',
         fontSize: '0.875rem',
         borderRadius: '4px',
-        border: '1px solid #3a3a3a',
+        border: '1px solid var(--app-border-mid)',
         cursor: 'pointer',
         fontWeight: '500',
         minHeight: '35px',
-        transition: 'background 0.15s, color 0.15s',
+        transition: 'background 0.3s, color 0.3s, border-color 0.3s',
     },
     btnClear: {
-        backgroundColor: '#2a2a2a',
-        color: '#ccc',
+        backgroundColor: 'var(--app-bg-alt)',
+        color: 'var(--app-text-secondary)',
     },
     errorMsg: {
         marginTop: '12px',
         fontSize: '0.8rem',
         color: '#e74c3c',
-        backgroundColor: '#2d1a1a',
-        border: '1px solid #6b2c2c',
+        backgroundColor: 'rgba(231, 76, 60, 0.1)',
+        border: '1px solid rgba(231, 76, 60, 0.3)',
         borderRadius: '4px',
         padding: '8px 12px',
         lineHeight: '1.5',
@@ -196,8 +202,8 @@ function TextField({ id, label, hint, docSlug, required, value, onChange, hasErr
                 value={value}
                 onChange={(e) => onChange(id, e.target.value)}
                 style={{ ...styles.input, ...(hasError ? styles.inputError : {}) }}
-                onFocus={(e) => (e.target.style.borderColor = '#5b9bd5')}
-                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : '#3a3a3a')}
+                onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
+                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
             />
         </div>
     );
@@ -219,8 +225,8 @@ function SelectField({ id, label, hint, docSlug, required, options, value, onCha
                     ...(hasError ? styles.inputError : {}),
                     appearance: 'auto',
                 }}
-                onFocus={(e) => (e.target.style.borderColor = '#5b9bd5')}
-                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : '#3a3a3a')}
+                onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
+                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
             >
                 <option value="">— Select —</option>
                 {options.map((opt) => (
@@ -250,8 +256,8 @@ function NumberField({ id, label, hint, docSlug, required, min, max, step, unit,
                     value={value}
                     onChange={(e) => onChange(id, e.target.value)}
                     style={{ ...styles.input, ...(hasError ? styles.inputError : {}) }}
-                    onFocus={(e) => (e.target.style.borderColor = '#5b9bd5')}
-                    onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : '#3a3a3a')}
+                    onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
+                    onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
                 />
                 {unit && <span style={styles.unit}>{unit}</span>}
             </div>
@@ -564,12 +570,12 @@ const BridgeData = ({ controller }) => {
                     style={{ ...styles.btn, ...styles.btnClear }}
                     onClick={handleClearAll}
                     onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = '#3a3a3a';
-                        e.currentTarget.style.color = '#fff';
+                        e.currentTarget.style.backgroundColor = 'var(--app-border-light)';
+                        e.currentTarget.style.color = 'var(--app-text-primary)';
                     }}
                     onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = '#2a2a2a';
-                        e.currentTarget.style.color = '#ccc';
+                        e.currentTarget.style.backgroundColor = 'var(--app-bg-alt)';
+                        e.currentTarget.style.color = 'var(--app-text-secondary)';
                     }}
                 >
                     Clear All
