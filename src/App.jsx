@@ -2,8 +2,8 @@ import React, { useState } from 'react'
 import HomePage from './gui/components/Homepage'
 import Loginpage from './gui/Login/Loginpage'
 import ProjectLayout from './gui/components/ProjectLayout'
-import ProjectInformationPlaceholder from './gui/components/ProjectInformationPlaceholder'
-import BridgeData from './gui/components/bridgedata/BridgeData'
+import ProjectInformationPlaceholder from './gui/components/global_info/ProjectInformationPlaceholder'
+import BridgeData from './gui/components/bridge_data/BridgeData'
 import './App.css'
 
 const CONTENT_MAP = {
