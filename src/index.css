@@ -123,7 +123,7 @@ code {
   --app-border-mid: #dee2e6;
   --app-border-dark: #495057;
   --app-logo-accent: #f39c12;
-  --app-primary-accent: #73a5af;
+  --app-primary-accent: #27ae60;
   --app-btn-primary-bg: #cf0909;
   --app-btn-primary-text: #ffffff;
   --app-input-bg: #ffffff;
@@ -133,9 +133,9 @@ code {
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --app-bg-main: #121212;
-    --app-bg-card: #1e1e1e;
-    --app-bg-alt: #2c2c2c;
+    --app-bg-main: #0a0a0a;
+    --app-bg-card: #121212;
+    --app-bg-alt: #1a1a1a;
     --app-text-primary: #e0e0e0;
     --app-text-secondary: #a0aab5;
     --app-text-muted: #6c757d;
@@ -144,7 +144,7 @@ code {
     --app-border-mid: #444444;
     --app-border-dark: #555555;
     --app-logo-accent: #f39c12;
-    --app-primary-accent: #5bc0de;
+    --app-primary-accent: #2ecc71;
     --app-btn-primary-bg: #cf0909;
     --app-btn-primary-text: #ffffff;
     --app-input-bg: #2c2c2c;

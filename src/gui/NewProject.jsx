@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, Button, Form } from 'react-bootstrap';
 import Select from 'react-select';
-import { COUNTRIES, CURRENCIES } from './utils/countriesdata';
+import { COUNTRIES, CURRENCIES } from './components/utils/countriesdata';
 
 const countryOptions = COUNTRIES.map(c => ({ value: c, label: c }));
 const currencyOptions = CURRENCIES.map(c => ({ value: c, label: c }));
