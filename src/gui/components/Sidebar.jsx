@@ -8,8 +8,8 @@ const SIDEBAR_TREE = {
     "Input Parameters": {
         "Construction Work Data": [
             "Foundation",
-            "Sub Structure",
             "Super Structure",
+            "Sub Structure",
             "Miscellaneous",
         ],
         "Traffic Data": [],
@@ -42,11 +42,6 @@ const ICON_MAP = {
     "Outputs": "bar-chart",
 };
 
-// Maps parent nodes to the first child that should be auto-selected
-const FIRST_CHILD_MAP = {
-    "Input Parameters": "Construction Work Data",
-};
-
 const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => {
     const hasChildren = childrenData && (Array.isArray(childrenData) ? childrenData.length > 0 : Object.keys(childrenData).length > 0);
     const [isExpanded, setIsExpanded] = useState(true);
@@ -58,9 +53,7 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
         if (hasChildren) {
             setIsExpanded(!isExpanded);
         }
-        // If this node has a designated first child, navigate to it instead
-        const redirectTo = FIRST_CHILD_MAP[label];
-        setActiveNode(redirectTo || label);
+        setActiveNode(label);
     };
 
     const nodeColor = isActive ? 'var(--app-text-primary)' : 'var(--app-text-secondary)';
@@ -88,13 +81,13 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
                 <span className="d-inline-flex justify-content-center align-items-center me-1" style={{ width: '20px', color: expanderColor, visibility: hasChildren ? 'visible' : 'hidden' }}>
                     {isExpanded ? <FaChevronDown size={10} /> : <FaChevronRight size={10} />}
                 </span>
-                
+
                 {iconSvg && (
-                    <span 
-                        className="d-inline-flex justify-content-center align-items-center me-2" 
+                    <span
+                        className="d-inline-flex justify-content-center align-items-center me-2"
                         style={{ width: '18px', height: '18px', fill: 'currentColor' }}
-                        dangerouslySetInnerHTML={{ 
-                            __html: `<svg viewBox="0 0 24 24" width="100%" height="100%">${iconSvg}</svg>` 
+                        dangerouslySetInnerHTML={{
+                            __html: `<svg viewBox="0 0 24 24" width="100%" height="100%">${iconSvg}</svg>`
                         }}
                     />
                 )}
@@ -183,7 +176,7 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                 userSelect: isResizing ? 'none' : 'auto',
                 transition: isResizing ? 'none' : 'width 0.3s ease'
             }}>
-            <style>{`
+                <style>{`
                 .sidebar-scrollbar::-webkit-scrollbar { width: 8px; }
                 .sidebar-scrollbar::-webkit-scrollbar-track { background: var(--app-bg-card); }
                 .sidebar-scrollbar::-webkit-scrollbar-thumb { background: var(--app-border-mid); border-radius: 4px; }
@@ -213,20 +206,20 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                 }
             `}</style>
 
-            <div className="w-100">
-                {Object.entries(SIDEBAR_TREE).map(([key, val]) => (
-                    <TreeNode
-                        key={key}
-                        label={key}
-                        childrenData={val}
-                        depth={0}
-                        activeNode={activeNode}
-                        setActiveNode={setActiveNode}
-                    />
-                ))}
-            </div>
+                <div className="w-100">
+                    {Object.entries(SIDEBAR_TREE).map(([key, val]) => (
+                        <TreeNode
+                            key={key}
+                            label={key}
+                            childrenData={val}
+                            depth={0}
+                            activeNode={activeNode}
+                            setActiveNode={setActiveNode}
+                        />
+                    ))}
+                </div>
             </div> {/* End of inner container */}
-            
+
             {/* Draggable Resizer Line */}
             <div
                 onMouseDown={handleMouseDown}

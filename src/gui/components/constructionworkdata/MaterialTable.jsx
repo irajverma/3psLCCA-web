@@ -37,7 +37,7 @@ export default function MaterialTable({ section, onRowChange, onRowDelete, onAdd
                             </tr>
                         ) : (
                             section.rows.map((row) => (
-                                <tr key={row.id} style={{ borderBottom: '1px solid var(--app-border-light)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor='var(--app-bg-alt)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor='transparent'}>
+                                <tr key={row.id} style={{ borderBottom: '1px solid var(--app-border-light)' }} onMouseEnter={(e) => e.currentTarget.style.backgroundColor = 'var(--app-bg-alt)'} onMouseLeave={(e) => e.currentTarget.style.backgroundColor = 'transparent'}>
                                     <td className="text-start" style={{ borderRight: '1px solid var(--app-border-light)' }}>
                                         <input
                                             className="form-control form-control-sm border-0 rounded-1"
@@ -123,13 +123,13 @@ export default function MaterialTable({ section, onRowChange, onRowDelete, onAdd
                 Add Material to {section.name}
             </button>
             {isAddModalOpen && (
-                <MaterialAddModal 
-                    sectionName={section.name} 
-                    onClose={() => setIsAddModalOpen(false)} 
+                <MaterialAddModal
+                    sectionName={section.name}
+                    onClose={() => setIsAddModalOpen(false)}
                     onAdd={(newRowData) => {
                         onAddRow(section.id, newRowData);
                         setIsAddModalOpen(false);
-                    }} 
+                    }}
                 />
             )}
         </fieldset>

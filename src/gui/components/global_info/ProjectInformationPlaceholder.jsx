@@ -412,10 +412,10 @@ const ProjectInformationPlaceholder = ({ controller }) => {
             <div className="d-flex gap-2 mt-4 mb-3">
                 <button
                     className="btn w-100"
-                    style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)' }}
+                    style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: 'var(--app-radius-sm)', transition: 'all 0.2sease' }}
                     onClick={handleClearAll}
-                    onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--app-border-light)'; e.target.style.color = 'var(--app-text-primary)'; }}
-                    onMouseLeave={(e) => { e.target.style.backgroundColor = 'var(--app-bg-alt)'; e.target.style.color = 'var(--app-text-secondary)'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-border-light)'; e.currentTarget.style.color = 'var(--app-text-primary)'; e.currentTarget.style.borderColor = 'var(--app-border-dark)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-bg-alt)'; e.currentTarget.style.color = 'var(--app-text-secondary)'; e.currentTarget.style.borderColor = 'var(--app-border-mid)'; }}
                 >
                     Clear All
                 </button>

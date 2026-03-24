@@ -6,10 +6,10 @@ import SuperStructure from './superstructure/SuperStructure';
 import Miscellaneous from './miscellaneous/Miscellaneous';
 
 const TABS = [
-    { key: 'Foundation',    label: 'Foundation',     component: Foundation },
-    { key: 'SubStructure',  label: 'Sub Structure',  component: SubStructure },
-    { key: 'SuperStructure',label: 'Super Structure', component: SuperStructure },
-    { key: 'Miscellaneous', label: 'Miscellaneous',  component: Miscellaneous },
+    { key: 'Foundation', label: 'Foundation', component: Foundation },
+    { key: 'SubStructure', label: 'Sub Structure', component: SubStructure },
+    { key: 'SuperStructure', label: 'Super Structure', component: SuperStructure },
+    { key: 'Miscellaneous', label: 'Miscellaneous', component: Miscellaneous },
 ];
 
 const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation' }) => {
