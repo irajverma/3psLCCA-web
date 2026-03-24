@@ -9,24 +9,22 @@ import TrafficData from './gui/components/trafficdata/TrafficData'
 import ConstructionWorkData from './gui/components/constructionworkdata/ConstructionWorkData'
 import './App.css'
 
-const CONTENT_MAP = {
-  'General Information': <ProjectInformationPlaceholder />,
-  'Bridge Data': <BridgeData />,
-  'Financial Data': <FinancialData />,
-  'Traffic Data': <TrafficData />,
-  'Construction Work Data': <ConstructionWorkData />,
-  'Foundation':    <ConstructionWorkData />,
-  'Sub Structure': <ConstructionWorkData initialTab="SubStructure" />,
-  'Super Structure': <ConstructionWorkData initialTab="SuperStructure" />,
-  'Miscellaneous': <ConstructionWorkData initialTab="Miscellaneous" />,
-}
-
-
-
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isProjectOpen, setIsProjectOpen] = useState(false)
   const [activeNode, setActiveNode] = useState('General Information')
+
+  const CONTENT_MAP = {
+    'General Information': <ProjectInformationPlaceholder />,
+    'Bridge Data': <BridgeData />,
+    'Financial Data': <FinancialData />,
+    'Traffic Data': <TrafficData />,
+    'Construction Work Data': <ConstructionWorkData setActiveNode={setActiveNode} />,
+    'Foundation':    <ConstructionWorkData setActiveNode={setActiveNode} />,
+    'Sub Structure': <ConstructionWorkData initialTab="SubStructure" setActiveNode={setActiveNode} />,
+    'Super Structure': <ConstructionWorkData initialTab="SuperStructure" setActiveNode={setActiveNode} />,
+    'Miscellaneous': <ConstructionWorkData initialTab="Miscellaneous" setActiveNode={setActiveNode} />,
+  }
 
   if (!isLoggedIn) {
     return <Loginpage onLogin={() => setIsLoggedIn(true)} onGuestLogin={() => setIsLoggedIn(true)} />

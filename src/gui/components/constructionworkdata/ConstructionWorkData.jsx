@@ -12,7 +12,7 @@ const TABS = [
     { key: 'Miscellaneous', label: 'Miscellaneous', component: Miscellaneous },
 ];
 
-const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation' }) => {
+const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation', setActiveNode }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
 
     useEffect(() => {
@@ -76,7 +76,12 @@ const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', ini
                                 whiteSpace: 'nowrap',
                                 backgroundColor: 'transparent'
                             }}
-                            onClick={() => setActiveTab(tab.key)}
+                            onClick={() => {
+                                setActiveTab(tab.key);
+                                if (setActiveNode) {
+                                    setActiveNode(tab.label);
+                                }
+                            }}
                             onMouseEnter={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-primary)'; }}
                             onMouseLeave={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-secondary)'; }}
                         >
