@@ -6,7 +6,7 @@ const ProjectInformationPlaceholder = () => {
             <h5 className="mb-4 fw-bold pb-2" style={{ borderBottom: '1px solid var(--app-border-dark)', fontSize: '1rem', color: 'var(--app-text-primary)', transition: 'all 0.3s' }}>
                 Project Information
             </h5>
-            
+
             <div className="mb-4">
                 <label className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                     Project Name *

@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
+import './BridgeData.css';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -56,130 +57,29 @@ const REQUIRED_KEYS = new Set([
     'service_life',
 ]);
 
-// ── Styles ────────────────────────────────────────────────────────────────────
-
-const styles = {
-    wrapper: {
-        padding: '24px',
-        color: 'var(--app-text-primary)',
-        overflowY: 'auto',
-        maxHeight: '100%',
-        transition: 'color 0.3s ease'
-    },
-    sectionHeader: {
-        fontSize: '0.75rem',
-        fontWeight: '700',
-        color: 'var(--app-text-muted)',
-        letterSpacing: '0.06em',
-        textTransform: 'uppercase',
-        borderBottom: '1px solid var(--app-border-dark)',
-        paddingBottom: '6px',
-        marginTop: '24px',
-        marginBottom: '16px',
-        transition: 'all 0.3s ease'
-    },
-    fieldGroup: {
-        marginBottom: '16px',
-    },
-    label: {
-        fontSize: '0.875rem',
-        fontWeight: '600',
-        color: 'var(--app-text-secondary)',
-        marginBottom: '4px',
-        display: 'block',
-        transition: 'color 0.3s ease'
-    },
-    hint: {
-        fontSize: '0.775rem',
-        color: 'var(--app-text-muted)',
-        marginBottom: '6px',
-        lineHeight: '1.4',
-        transition: 'color 0.3s ease'
-    },
-    input: {
-        width: '100%',
-        backgroundColor: 'var(--app-input-bg)',
-        border: '1px solid var(--app-input-border)',
-        borderRadius: '4px',
-        color: 'var(--app-text-primary)',
-        padding: '7px 10px',
-        fontSize: '0.875rem',
-        outline: 'none',
-        boxSizing: 'border-box',
-        transition: 'border-color 0.15s, background-color 0.3s, color 0.3s',
-    },
-    inputError: {
-        border: '1px solid #e74c3c',
-    },
-    inputRow: {
-        display: 'flex',
-        alignItems: 'center',
-        gap: '8px',
-    },
-    unit: {
-        fontSize: '0.8rem',
-        color: 'var(--app-text-muted)',
-        whiteSpace: 'nowrap',
-        flexShrink: 0,
-        transition: 'color 0.3s ease'
-    },
-    docsLink: {
-        fontSize: '0.75rem',
-        color: 'var(--app-primary-accent)',
-        textDecoration: 'none',
-        marginLeft: '4px',
-        flexShrink: 0,
-        transition: 'color 0.3s ease'
-    },
-    btnRow: {
-        display: 'flex',
-        gap: '10px',
-        marginTop: '24px',
-        marginBottom: '10px',
-    },
-    btn: {
-        flex: 1,
-        padding: '8px 0',
-        fontSize: '0.875rem',
-        borderRadius: '4px',
-        border: '1px solid var(--app-border-mid)',
-        cursor: 'pointer',
-        fontWeight: '500',
-        minHeight: '35px',
-        transition: 'background 0.3s, color 0.3s, border-color 0.3s',
-    },
-    btnClear: {
-        backgroundColor: 'var(--app-bg-alt)',
-        color: 'var(--app-text-secondary)',
-    },
-    errorMsg: {
-        marginTop: '12px',
-        fontSize: '0.8rem',
-        color: '#e74c3c',
-        backgroundColor: 'rgba(231, 76, 60, 0.1)',
-        border: '1px solid rgba(231, 76, 60, 0.3)',
-        borderRadius: '4px',
-        padding: '8px 12px',
-        lineHeight: '1.5',
-    },
-};
+// ── Styles are in BridgeData.css ─────────────────────────────────────────────
 
 // ── Sub-components ────────────────────────────────────────────────────────────
 
 function SectionHeader({ title }) {
-    return <div style={styles.sectionHeader}>{title}</div>;
+    return (
+        <h5 className="mb-4 fw-bold pb-2 mt-4" style={{ borderBottom: '1px solid var(--app-border-dark)', fontSize: '1rem', color: 'var(--app-text-primary)', transition: 'all 0.3s' }}>
+            {title}
+        </h5>
+    );
 }
 
 function FieldHint({ text, docSlug }) {
     return (
-        <div style={styles.hint}>
+        <div style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginBottom: '8px' }}>
             {text}
             {docSlug && (
                 <a
                     href={`${BASE_DOCS_URL}${docSlug}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    style={styles.docsLink}
+                    className="text-decoration-none ms-1"
+                    style={{ color: 'var(--app-primary-accent)', fontSize: '0.75rem' }}
                     title="View documentation"
                 >
                     ⓘ
@@ -191,9 +91,9 @@ function FieldHint({ text, docSlug }) {
 
 function TextField({ id, label, hint, docSlug, required, value, onChange, hasError }) {
     return (
-        <div style={styles.fieldGroup}>
-            <label htmlFor={id} style={styles.label}>
-                {label}{required && <span style={{ color: '#e74c3c' }}> *</span>}
+        <div className="mb-4">
+            <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
+                {label}{required && <span className="text-danger"> *</span>}
             </label>
             <FieldHint text={hint} docSlug={docSlug} />
             <input
@@ -201,52 +101,94 @@ function TextField({ id, label, hint, docSlug, required, value, onChange, hasErr
                 type="text"
                 value={value}
                 onChange={(e) => onChange(id, e.target.value)}
-                style={{ ...styles.input, ...(hasError ? styles.inputError : {}) }}
-                onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
-                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
+                className={`form-control ${hasError ? 'is-invalid' : ''}`}
             />
         </div>
     );
 }
 
 function SelectField({ id, label, hint, docSlug, required, options, value, onChange, hasError }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    // Close when clicking outside
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    const select = (opt) => {
+        onChange(id, opt);
+        setOpen(false);
+    };
+
     return (
-        <div style={styles.fieldGroup}>
-            <label htmlFor={id} style={styles.label}>
-                {label}{required && <span style={{ color: '#e74c3c' }}> *</span>}
+        <div className="mb-4">
+            <label className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
+                {label}{required && <span className="text-danger"> *</span>}
             </label>
             <FieldHint text={hint} docSlug={docSlug} />
-            <select
-                id={id}
-                value={value}
-                onChange={(e) => onChange(id, e.target.value)}
-                style={{
-                    ...styles.input,
-                    ...(hasError ? styles.inputError : {}),
-                    appearance: 'auto',
-                }}
-                onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
-                onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
-            >
-                <option value="">— Select —</option>
-                {options.map((opt) => (
-                    <option key={opt} value={opt}>
-                        {opt}
-                    </option>
-                ))}
-            </select>
+            <div className="position-relative" ref={ref}>
+                <button
+                    type="button"
+                    id={id}
+                    className={`form-control d-flex align-items-center justify-content-between text-start ${hasError ? 'is-invalid' : ''}`}
+                    onClick={() => setOpen((o) => !o)}
+                    aria-haspopup="listbox"
+                    aria-expanded={open}
+                >
+                    <span className={value ? '' : 'text-muted fst-italic'}>
+                        {value || '— Select —'}
+                    </span>
+                    <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
+                </button>
+                {open && (
+                    <ul className="dropdown-menu show w-100 p-1 shadow-sm" role="listbox" style={{ maxHeight: '250px', overflowY: 'auto', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
+                        <li
+                            className="dropdown-item text-muted fst-italic"
+                            style={{ cursor: 'pointer', fontSize: '0.875rem' }}
+                            onClick={() => select('')}
+                        >
+                            — Select —
+                        </li>
+                        {options.map((opt) => (
+                            <li
+                                key={opt}
+                                role="option"
+                                aria-selected={value === opt}
+                                className={`dropdown-item ${value === opt ? 'active fw-bold' : ''}`}
+                                style={{
+                                    cursor: 'pointer',
+                                    fontSize: '0.875rem',
+                                    backgroundColor: value === opt ? 'var(--app-accent-bg, rgba(115, 165, 175, 0.15))' : 'transparent',
+                                    color: value === opt ? 'var(--app-primary-accent)' : 'var(--app-text-primary)'
+                                }}
+                                onClick={() => select(opt)}
+                                onMouseEnter={(e) => { if (value !== opt) e.target.style.backgroundColor = 'var(--app-bg-alt)'; }}
+                                onMouseLeave={(e) => { if (value !== opt) e.target.style.backgroundColor = 'transparent'; }}
+                            >
+                                {opt}
+                            </li>
+                        ))}
+                    </ul>
+                )}
+            </div>
         </div>
     );
 }
 
 function NumberField({ id, label, hint, docSlug, required, min, max, step, unit, value, onChange, hasError }) {
     return (
-        <div style={styles.fieldGroup}>
-            <label htmlFor={id} style={styles.label}>
-                {label}{required && <span style={{ color: '#e74c3c' }}> *</span>}
+        <div className="mb-4">
+            <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
+                {label}{required && <span className="text-danger"> *</span>}
             </label>
             <FieldHint text={hint} docSlug={docSlug} />
-            <div style={styles.inputRow}>
+            <div className={`input-group ${hasError ? 'is-invalid' : ''}`}>
                 <input
                     id={id}
                     type="number"
@@ -255,11 +197,13 @@ function NumberField({ id, label, hint, docSlug, required, min, max, step, unit,
                     step={step || 1}
                     value={value}
                     onChange={(e) => onChange(id, e.target.value)}
-                    style={{ ...styles.input, ...(hasError ? styles.inputError : {}) }}
-                    onFocus={(e) => (e.target.style.borderColor = 'var(--app-primary-accent)')}
-                    onBlur={(e) => (e.target.style.borderColor = hasError ? '#e74c3c' : 'var(--app-input-border)')}
+                    className={`form-control ${hasError ? 'is-invalid' : ''}`}
                 />
-                {unit && <span style={styles.unit}>{unit}</span>}
+                {unit && (
+                    <span className="input-group-text border-start-0" style={{ fontSize: '0.8rem', backgroundColor: 'var(--app-input-bg)', borderColor: 'var(--app-input-border)' }}>
+                        {unit}
+                    </span>
+                )}
             </div>
         </div>
     );
@@ -325,7 +269,7 @@ const BridgeData = ({ controller }) => {
     // ── Render ───────────────────────────────────────────────────────────────────
 
     return (
-        <div style={styles.wrapper}>
+        <div style={{ padding: '24px', color: 'var(--app-text-primary)' }}>
             {/* ── Bridge Identification ───────────────────────────────────────── */}
             <SectionHeader title="Bridge Identification" />
 
@@ -565,18 +509,13 @@ const BridgeData = ({ controller }) => {
             />
 
             {/* ── Buttons ─────────────────────────────────────────────────────── */}
-            <div style={styles.btnRow}>
+            <div className="d-flex gap-2 mt-4 mb-3">
                 <button
-                    style={{ ...styles.btn, ...styles.btnClear }}
+                    className="btn w-100"
+                    style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)' }}
                     onClick={handleClearAll}
-                    onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--app-border-light)';
-                        e.currentTarget.style.color = 'var(--app-text-primary)';
-                    }}
-                    onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'var(--app-bg-alt)';
-                        e.currentTarget.style.color = 'var(--app-text-secondary)';
-                    }}
+                    onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--app-border-light)'; e.target.style.color = 'var(--app-text-primary)'; }}
+                    onMouseLeave={(e) => { e.target.style.backgroundColor = 'var(--app-bg-alt)'; e.target.style.color = 'var(--app-text-secondary)'; }}
                 >
                     Clear All
                 </button>
@@ -584,7 +523,7 @@ const BridgeData = ({ controller }) => {
 
             {/* Validation message */}
             {validationMsg && (
-                <div style={styles.errorMsg}>
+                <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">
                     ⚠ {validationMsg}
                 </div>
             )}
