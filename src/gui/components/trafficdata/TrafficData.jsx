@@ -200,7 +200,7 @@ function RichTextEditor({ value, onChange }) {
                                     key={btn.label}
                                     type="button"
                                     title={btn.title}
-                                    className="btn btn-sm btn-light border-0 px-2 py-1 text-muted td-rte-btn"
+                                    className="btn btn-sm border-0 px-2 py-1 td-rte-btn"
                                     style={{ ...btn.style, fontSize: '0.8rem', backgroundColor: 'transparent' }}
                                     onMouseDown={(e) => { e.preventDefault(); btn.action(); }}
                                 >

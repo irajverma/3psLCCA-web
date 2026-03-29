@@ -50,10 +50,18 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
 
     const handleToggle = (e) => {
         e.stopPropagation();
+
+        let targetNode = label;
         if (hasChildren) {
-            setIsExpanded(!isExpanded);
+            setIsExpanded(true);
+            if (Array.isArray(childrenData) && childrenData.length > 0) {
+                targetNode = childrenData[0];
+            } else if (childrenData && typeof childrenData === 'object' && Object.keys(childrenData).length > 0) {
+                targetNode = Object.keys(childrenData)[0];
+            }
         }
-        setActiveNode(label);
+
+        setActiveNode(targetNode);
     };
 
     const nodeColor = isActive ? 'var(--app-text-primary)' : 'var(--app-text-secondary)';
@@ -81,13 +89,13 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
                 <span className="d-inline-flex justify-content-center align-items-center me-1" style={{ width: '20px', color: expanderColor, visibility: hasChildren ? 'visible' : 'hidden' }}>
                     {isExpanded ? <FaChevronDown size={10} /> : <FaChevronRight size={10} />}
                 </span>
-                
+
                 {iconSvg && (
-                    <span 
-                        className="d-inline-flex justify-content-center align-items-center me-2" 
+                    <span
+                        className="d-inline-flex justify-content-center align-items-center me-2"
                         style={{ width: '18px', height: '18px', fill: 'currentColor' }}
-                        dangerouslySetInnerHTML={{ 
-                            __html: `<svg viewBox="0 0 24 24" width="100%" height="100%">${iconSvg}</svg>` 
+                        dangerouslySetInnerHTML={{
+                            __html: `<svg viewBox="0 0 24 24" width="100%" height="100%">${iconSvg}</svg>`
                         }}
                     />
                 )}
@@ -176,7 +184,7 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                 userSelect: isResizing ? 'none' : 'auto',
                 transition: isResizing ? 'none' : 'width 0.3s ease'
             }}>
-            <style>{`
+                <style>{`
                 .sidebar-scrollbar::-webkit-scrollbar { width: 8px; }
                 .sidebar-scrollbar::-webkit-scrollbar-track { background: var(--app-bg-card); }
                 .sidebar-scrollbar::-webkit-scrollbar-thumb { background: var(--app-border-mid); border-radius: 4px; }
@@ -206,20 +214,20 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                 }
             `}</style>
 
-            <div className="w-100">
-                {Object.entries(SIDEBAR_TREE).map(([key, val]) => (
-                    <TreeNode
-                        key={key}
-                        label={key}
-                        childrenData={val}
-                        depth={0}
-                        activeNode={activeNode}
-                        setActiveNode={setActiveNode}
-                    />
-                ))}
-            </div>
+                <div className="w-100">
+                    {Object.entries(SIDEBAR_TREE).map(([key, val]) => (
+                        <TreeNode
+                            key={key}
+                            label={key}
+                            childrenData={val}
+                            depth={0}
+                            activeNode={activeNode}
+                            setActiveNode={setActiveNode}
+                        />
+                    ))}
+                </div>
             </div> {/* End of inner container */}
-            
+
             {/* Draggable Resizer Line */}
             <div
                 onMouseDown={handleMouseDown}

@@ -6,13 +6,13 @@ import SuperStructure from './superstructure/SuperStructure';
 import Miscellaneous from './miscellaneous/Miscellaneous';
 
 const TABS = [
-    { key: 'Foundation',    label: 'Foundation',     component: Foundation },
-    { key: 'SubStructure',  label: 'Sub Structure',  component: SubStructure },
-    { key: 'SuperStructure',label: 'Super Structure', component: SuperStructure },
-    { key: 'Miscellaneous', label: 'Miscellaneous',  component: Miscellaneous },
+    { key: 'Foundation', label: 'Foundation', component: Foundation },
+    { key: 'SuperStructure', label: 'Super Structure', component: SuperStructure },
+    { key: 'SubStructure', label: 'Sub Structure', component: SubStructure },
+    { key: 'Miscellaneous', label: 'Miscellaneous', component: Miscellaneous },
 ];
 
-const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation' }) => {
+const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation', setActiveNode }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
 
     useEffect(() => {
@@ -76,7 +76,12 @@ const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', ini
                                 whiteSpace: 'nowrap',
                                 backgroundColor: 'transparent'
                             }}
-                            onClick={() => setActiveTab(tab.key)}
+                            onClick={() => {
+                                setActiveTab(tab.key);
+                                if (setActiveNode) {
+                                    setActiveNode(tab.label);
+                                }
+                            }}
                             onMouseEnter={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-primary)'; }}
                             onMouseLeave={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-secondary)'; }}
                         >

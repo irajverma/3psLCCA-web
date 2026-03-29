@@ -38,6 +38,11 @@
     box-shadow: 0 0 0 0.2rem var(--app-accent-bg, rgba(115, 165, 175, 0.25));
 }
 
+.td-rte-btn {
+    color: var(--app-text-primary) !important;
+    transition: background-color 0.15s, color 0.15s;
+}
+
 .td-rte-btn:hover {
     background-color: var(--app-border-light) !important;
     color: var(--app-text-primary) !important;
