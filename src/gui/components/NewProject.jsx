@@ -10,18 +10,18 @@ const unitOptions = [
     { value: 'Imperial (US)', label: 'Imperial (US)' }
 ];
 
-const customSelectStyles = {
+const getCustomSelectStyles = (isDark, brandColor) => ({
     control: (provided, state) => ({
         ...provided,
         fontSize: '0.9rem',
-        backgroundColor: '#36393f',
-        borderColor: state.isFocused ? '#9ACD32' : '#202225',
-        color: '#fff',
+        backgroundColor: isDark ? '#36393f' : '#ffffff',
+        borderColor: state.isFocused ? brandColor : (isDark ? '#202225' : '#ced4da'),
+        color: isDark ? '#fff' : '#333',
         minHeight: '36px',
         height: '36px',
-        boxShadow: state.isFocused ? '0 0 0 1px #9ACD32' : 'none',
+        boxShadow: state.isFocused ? `0 0 0 1px ${brandColor}` : 'none',
         '&:hover': {
-            borderColor: state.isFocused ? '#9ACD32' : '#4f545c'
+            borderColor: state.isFocused ? brandColor : (isDark ? '#4f545c' : '#adb5bd')
         }
     }),
     valueContainer: (provided) => ({
@@ -31,29 +31,30 @@ const customSelectStyles = {
     }),
     input: (provided) => ({
         ...provided,
-        color: '#fff',
+        color: isDark ? '#fff' : '#333',
         margin: '0px',
         padding: '0px'
     }),
     singleValue: (provided) => ({
         ...provided,
-        color: '#b9bbbe'
+        color: isDark ? '#b9bbbe' : '#495057'
     }),
     placeholder: (provided) => ({
         ...provided,
-        color: '#72767d'
+        color: isDark ? '#72767d' : '#868e96'
     }),
     menu: (provided) => ({
         ...provided,
-        backgroundColor: '#2f3136',
-        border: '1px solid #202225',
+        backgroundColor: isDark ? '#2f3136' : '#ffffff',
+        border: isDark ? '1px solid #202225' : '1px solid #e9ecef',
+        boxShadow: isDark ? '0 4px 6px rgba(0,0,0,0.3)' : '0 4px 6px rgba(0,0,0,0.1)',
         zIndex: 9999
     }),
     option: (provided, state) => ({
         ...provided,
         fontSize: '0.9rem',
-        backgroundColor: state.isFocused ? '#4f545c' : 'transparent',
-        color: '#fff',
+        backgroundColor: state.isFocused ? (isDark ? '#4f545c' : '#f1f3f5') : 'transparent',
+        color: isDark ? '#fff' : '#333',
         cursor: 'pointer',
         padding: '6px 12px'
     }),
@@ -62,24 +63,38 @@ const customSelectStyles = {
     }),
     dropdownIndicator: (provided) => ({
         ...provided,
-        color: '#b9bbbe',
+        color: isDark ? '#b9bbbe' : '#adb5bd',
         padding: '6px',
         '&:hover': {
-            color: '#fff'
+            color: isDark ? '#fff' : '#495057'
         }
     }),
     indicatorsContainer: (provided) => ({
         ...provided,
         height: '36px'
     })
-};
+});
 
-const NewProject = ({ show, handleClose, onProjectOpen }) => {
+const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkMode = false, theme = {} }) => {
     const [projectName, setProjectName] = useState('');
     const [country, setCountry] = useState(null);
     const [currency, setCurrency] = useState(null);
     const [unitSystem, setUnitSystem] = useState({ value: 'Metric (SI)', label: 'Metric (SI)' });
     const [validated, setValidated] = useState(false);
+
+    const brandColor = theme?.activeIconColor || '#8bc34a';
+
+    const colors = {
+        modalBg: isDarkMode ? '#2f3136' : '#ffffff',
+        text: isDarkMode ? '#fff' : '#333',
+        textMuted: isDarkMode ? '#b9bbbe' : '#6c757d',
+        inputBg: isDarkMode ? '#36393f' : '#ffffff',
+        inputBorder: isDarkMode ? '#202225' : '#ced4da',
+        headerIconBg: isDarkMode ? '#8ea9a2' : brandColor,
+        cancelBtnBg: isDarkMode ? '#4f545c' : '#e9ecef',
+        cancelBtnColor: isDarkMode ? '#fff' : '#495057',
+        cancelBtnBorder: isDarkMode ? '#4f545c' : '#ced4da',
+    };
 
     const closeModal = () => {
         setValidated(false);
@@ -94,12 +109,12 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
             return;
         }
 
-        console.log({
-            projectName,
+        const projectData = {
+            name: projectName,
             country: country.value,
             currency: currency.value,
             unitSystem: unitSystem.value
-        });
+        };
 
         setProjectName('');
         setCountry(null);
@@ -108,63 +123,69 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
         setValidated(false);
 
         handleClose();
-        if (onProjectOpen) onProjectOpen();
+        if (onProjectCreate) {
+            onProjectCreate(projectData);
+        } else if (onProjectOpen) {
+            onProjectOpen();
+        }
     };
+
+    const customSelectStyles = getCustomSelectStyles(isDarkMode, brandColor);
 
     return (
         <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false}>
-            {/* Wrapping Modal content to force dark styling */}
-            <div style={{ backgroundColor: '#2f3136', color: '#fff', borderRadius: '6px', overflow: 'hidden' }}>
-                <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: '0' }} className="custom-dark-modal-header pt-3 px-4">
+            {/* Wrapping Modal content to force styling */}
+            <div style={{ backgroundColor: colors.modalBg, color: colors.text, borderRadius: '6px', overflow: 'hidden', transition: 'all 0.3s' }}>
+                <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: '0' }} className="custom-theme-modal-header pt-3 px-4">
                     <Modal.Title style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                        <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#8ea9a2', borderRadius: '2px' }}></span>
+                        <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: colors.headerIconBg, borderRadius: '2px' }}></span>
                         New Project
                     </Modal.Title>
                 </Modal.Header>
                 <Modal.Body className="pt-2 px-4 pb-4">
                     <Form onSubmit={handleSubmit} noValidate>
                         <Form.Group className="mb-2">
-                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: '#fff' }}>Project Name</Form.Label>
+                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: colors.text }}>Project Name</Form.Label>
                             <Form.Control
                                 type="text"
                                 placeholder="e.g. Highway 5 Bridge Replacement"
                                 value={projectName}
                                 onChange={(e) => setProjectName(e.target.value)}
-                                style={{ 
-                                    fontSize: '0.9rem', 
-                                    backgroundColor: '#36393f', 
-                                    color: '#b9bbbe', 
-                                    borderColor: (validated && !projectName) ? '#dc3545' : '#202225', 
+                                style={{
+                                    fontSize: '0.9rem',
+                                    backgroundColor: colors.inputBg,
+                                    color: colors.textMuted,
+                                    borderColor: (validated && !projectName) ? '#dc3545' : colors.inputBorder,
                                     minHeight: '36px',
                                     height: '36px',
                                     boxShadow: 'none'
                                 }}
                                 autoComplete="off"
                                 isInvalid={validated && !projectName}
-                                className="custom-dark-input"
+                                className="custom-theme-input"
                             />
                             <style>{`
-                                .custom-dark-input:focus {
-                                    border-color: #9ACD32 !important;
-                                    box-shadow: 0 0 0 1px #9ACD32 !important;
-                                    color: #fff !important;
+                                .custom-theme-input:focus {
+                                    border-color: ${brandColor} !important;
+                                    box-shadow: 0 0 0 1px ${brandColor} !important;
+                                    color: ${colors.text} !important;
                                 }
-                                .custom-dark-modal-header .btn-close {
-                                    filter: invert(1) grayscale(100%) brightness(200%);
+                                .custom-theme-modal-header .btn-close {
+                                    filter: ${isDarkMode ? 'invert(1) grayscale(100%) brightness(200%)' : 'none'};
                                 }
                             `}</style>
                             <Form.Control.Feedback type="invalid" style={{ fontSize: '0.75rem' }}>
                                 Please enter a Project Name.
                             </Form.Control.Feedback>
                             {(!validated || projectName) && (
-                                <Form.Text style={{ fontSize: '0.75rem', color: '#b9bbbe', display: 'block', marginTop: '2px' }}>
+                                <Form.Text style={{ fontSize: '0.75rem', color: colors.textMuted, display: 'block', marginTop: '2px' }}>
                                     You can rename this later.
                                 </Form.Text>
                             )}
                         </Form.Group>
 
                         <Form.Group className="mb-2">
-                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: '#fff' }}>Country</Form.Label>
+                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: colors.text }}>Country</Form.Label>
                             <Select
                                 options={countryOptions}
                                 value={country}
@@ -179,14 +200,14 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                                     Please select a Country.
                                 </div>
                             ) : (
-                                <Form.Text style={{ fontSize: '0.75rem', color: '#b9bbbe', display: 'block', marginTop: '2px' }}>
+                                <Form.Text style={{ fontSize: '0.75rem', color: colors.textMuted, display: 'block', marginTop: '2px' }}>
                                     Cannot be changed after project creation.
                                 </Form.Text>
                             )}
                         </Form.Group>
 
                         <Form.Group className="mb-2">
-                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: '#fff' }}>Currency</Form.Label>
+                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: colors.text }}>Currency</Form.Label>
                             <Select
                                 options={currencyOptions}
                                 value={currency}
@@ -201,14 +222,14 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                                     Please select a Currency.
                                 </div>
                             ) : (
-                                <Form.Text style={{ fontSize: '0.75rem', color: '#b9bbbe', display: 'block', marginTop: '2px' }}>
+                                <Form.Text style={{ fontSize: '0.75rem', color: colors.textMuted, display: 'block', marginTop: '2px' }}>
                                     Cannot be changed after project creation.
                                 </Form.Text>
                             )}
                         </Form.Group>
 
                         <Form.Group className="mb-3">
-                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: '#fff' }}>Unit System</Form.Label>
+                            <Form.Label className="fw-bold mb-1" style={{ fontSize: '0.85rem', color: colors.text }}>Unit System</Form.Label>
                             <Select
                                 options={unitOptions}
                                 value={unitSystem}
@@ -223,37 +244,37 @@ const NewProject = ({ show, handleClose, onProjectOpen }) => {
                                     Please select a Unit System.
                                 </div>
                             ) : (
-                                <Form.Text style={{ fontSize: '0.75rem', color: '#b9bbbe', display: 'block', marginTop: '2px' }}>
+                                <Form.Text style={{ fontSize: '0.75rem', color: colors.textMuted, display: 'block', marginTop: '2px' }}>
                                     Cannot be changed after project creation.
                                 </Form.Text>
                             )}
                         </Form.Group>
 
                         <div className="d-flex justify-content-end gap-3 mt-3">
-                            <Button 
-                                variant="primary" 
-                                type="submit" 
-                                style={{ 
-                                    backgroundColor: '#9ACD32', 
-                                    borderColor: '#9ACD32', 
-                                    color: '#000', 
-                                    fontWeight: 'bold', 
-                                    padding: '0.35rem 1.5rem', 
+                            <Button
+                                variant="primary"
+                                type="submit"
+                                style={{
+                                    backgroundColor: brandColor,
+                                    borderColor: brandColor,
+                                    color: '#000',
+                                    fontWeight: 'bold',
+                                    padding: '0.35rem 1.5rem',
                                     borderRadius: '4px',
                                     fontSize: '0.9rem'
                                 }}
                             >
                                 OK
                             </Button>
-                            <Button 
-                                variant="secondary" 
-                                onClick={closeModal} 
-                                style={{ 
-                                    backgroundColor: '#4f545c', 
-                                    borderColor: '#4f545c', 
-                                    color: '#fff', 
-                                    fontWeight: 'normal', 
-                                    padding: '0.35rem 1.25rem', 
+                            <Button
+                                variant="secondary"
+                                onClick={closeModal}
+                                style={{
+                                    backgroundColor: colors.cancelBtnBg,
+                                    borderColor: colors.cancelBtnBorder,
+                                    color: colors.cancelBtnColor,
+                                    fontWeight: 'normal',
+                                    padding: '0.35rem 1.25rem',
                                     borderRadius: '4px',
                                     fontSize: '0.9rem'
                                 }}
