@@ -9,15 +9,19 @@ import TrafficData from './gui/components/trafficdata/TrafficData'
 import ConstructionWorkData from './gui/components/constructionworkdata/ConstructionWorkData'
 import CarbonEmissionContainer from './gui/components/carbon_emission/CarbonEmissionContainer'
 import Logs from './gui/components/Logs'
+import Outputs from './gui/components/outputs/Outputs'
 import './App.css'
 
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isProjectOpen, setIsProjectOpen] = useState(false)
+  const [projectData, setProjectData] = useState(null)
   const [activeNode, setActiveNode] = useState('General Information')
-  const [checkpoints, setCheckpoints] = useState([])
-  const [logs, setLogs] = useState([])
+   const [checkpoints, setCheckpoints] = useState([])
+   const [logs, setLogs] = useState([])
+  const [isLocked, setIsLocked] = useState(false)
+  const [navTrigger, setNavTrigger] = useState(Date.now())
 
   const addLog = (message) => {
     const time = new Date().toTimeString().split(' ')[0]
@@ -30,8 +34,31 @@ function App() {
   }
 
   const handleProjectOpen = () => {
+    setProjectData({ name: 'Bridge_Assessment_01', country: 'India', currency: 'INR', unitSystem: 'Metric' })
     setIsProjectOpen(true)
     addLog("Project 'Bridge_Assessment_01' opened successfully.")
+  }
+
+  const handleNewProject = (data) => {
+    // Reset project state for a new project
+    setProjectData(data)
+    setCheckpoints([])
+    setLogs([])
+    setIsLocked(false)
+    setActiveNode('General Information')
+    setIsProjectOpen(true)
+    addLog(`New project '${data.name}' created.`)
+  }
+
+  const handleOpenProject = (data) => {
+    // Load existing project data
+    setProjectData(data)
+    setCheckpoints([]) // In a real app, these would come from the loaded data
+    setLogs([])
+    setIsLocked(false)
+    setActiveNode('General Information')
+    setIsProjectOpen(true)
+    addLog(`Project '${data.name}' opened successfully.`)
   }
 
   const handleSaveCheckpoint = (newCheckpoint) => {
@@ -50,6 +77,7 @@ function App() {
   }
 
   const handleSetActiveNode = (node) => {
+    setNavTrigger(Date.now())
     if (node !== activeNode) {
       setActiveNode(node)
       addLog(`Switched to ${node} view.`)
@@ -73,7 +101,7 @@ function App() {
     'Traffic Diversion Emissions': <CarbonEmissionContainer initialTab="Traffic" />,
     'Social Cost of Carbon': <CarbonEmissionContainer initialTab="SocialCost" />,
     'Logs': <Logs />,
-    'Outputs': <CarbonEmissionContainer initialTab="SocialCost" />,
+    'Outputs': <Outputs addLog={addLog} />,
   }
 
   if (!isLoggedIn) {
@@ -93,12 +121,18 @@ function App() {
         checkpoints={checkpoints}
         onSaveCheckpoint={handleSaveCheckpoint}
         onDeleteCheckpoint={handleDeleteCheckpoint}
+        onNewProject={handleNewProject}
+        onOpenProject={handleOpenProject}
         addLog={addLog}
+        isLocked={isLocked}
+        setIsLocked={setIsLocked}
       >
         {React.cloneElement(content, { 
           checkpoints, 
           logs, 
-          onClearLogs: handleClearLogs
+          onClearLogs: handleClearLogs,
+          isLocked: isLocked,
+          navTrigger: navTrigger
         })}
       </ProjectLayout>
     )

@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { Navbar, Nav, NavDropdown, Button } from 'react-bootstrap';
 import SaveCheckpointModal from './SaveCheckpointModal';
 import CheckpointManagerModal from './CheckpointManagerModal';
+import NewProjectModal from './NewProjectModal';
+import OpenProjectModal from './OpenProjectModal';
 
 const NavItemLink = ({ href, children, onClick }) => {
     const [hover, setHover] = useState(false);
@@ -46,6 +48,12 @@ const CustomDropdown = ({ title, id, items }) => {
                 : <NavDropdown.Item 
                     key={idx} 
                     href={item.href} 
+                    onClick={(e) => {
+                        if (item.onClick) {
+                            e.preventDefault();
+                            item.onClick();
+                        }
+                    }}
                     className="custom-dropdown-item"
                     style={{ fontSize: '14px', color: 'var(--app-text-primary)' }}
                   >
@@ -83,9 +91,11 @@ const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, ...prop
     );
 };
 
-const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDeleteCheckpoint, checkpoints, addLog }) => {
+const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDeleteCheckpoint, onNewProject, onOpenProject, checkpoints, addLog, isLocked, setIsLocked }) => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showManagerModal, setShowManagerModal] = useState(false);
+    const [showNewProjectModal, setShowNewProjectModal] = useState(false);
+    const [showOpenProjectModal, setShowOpenProjectModal] = useState(false);
 
     const handleRestoreCheckpoint = (cp) => {
         alert(`Restoring checkpoint: "${cp.label}"\n(This would typically replace current project data with the snapshot)`);
@@ -113,8 +123,8 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                     title="File" 
                     id="file-nav-dropdown" 
                     items={[
-                        { label: 'New', href: '#new' },
-                        { label: 'Open', href: '#open' },
+                        { label: 'New', onClick: () => setShowNewProjectModal(true) },
+                        { label: 'Open', onClick: () => setShowOpenProjectModal(true) },
                         'divider',
                         { label: 'Save', href: '#save' },
                         { label: 'Save As...', href: '#save-as' },
@@ -183,7 +193,17 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                     Calculate
                 </Button>
                 
-                <CustomNavBtn variant="outline-secondary" outlineColor="var(--app-border-dark)" outlineHoverBg="var(--app-bg-alt)">Lock</CustomNavBtn>
+                <CustomNavBtn 
+                    variant="outline-secondary" 
+                    outlineColor="var(--app-border-dark)" 
+                    outlineHoverBg="var(--app-bg-alt)"
+                    onClick={() => {
+                        setIsLocked(!isLocked);
+                        addLog(isLocked ? "Project unlocked. Operations resumed." : "Project locked. All operations suspended.");
+                    }}
+                >
+                    {isLocked ? 'Unlock' : 'Lock'}
+                </CustomNavBtn>
             </Nav>
 
             <SaveCheckpointModal 
@@ -201,6 +221,21 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                 onAddNew={() => {
                     setShowManagerModal(false);
                     setShowSaveModal(true);
+                }}
+            />
+
+            <NewProjectModal 
+                show={showNewProjectModal}
+                onHide={() => setShowNewProjectModal(false)}
+                onCreate={onNewProject}
+            />
+
+            <OpenProjectModal 
+                show={showOpenProjectModal}
+                onHide={() => setShowOpenProjectModal(false)}
+                onOpen={(data) => {
+                    onOpenProject(data);
+                    setShowOpenProjectModal(false);
                 }}
             />
         </Navbar>

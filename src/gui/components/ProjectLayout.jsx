@@ -2,7 +2,7 @@ import React from 'react';
 import ProjectNavbar from './ProjectNavbar';
 import Sidebar from './Sidebar';
 
-const ProjectLayout = ({ children, activeNode, setActiveNode, onBackToHome, checkpoints, onSaveCheckpoint, onDeleteCheckpoint }) => {
+const ProjectLayout = ({ children, activeNode, setActiveNode, onBackToHome, checkpoints, onSaveCheckpoint, onDeleteCheckpoint, onNewProject, onOpenProject, addLog, isLocked, setIsLocked }) => {
     return (
         <div style={{ display: 'flex', flexDirection: 'column', height: '100vh', width: '100vw', overflow: 'hidden' }}>
             <ProjectNavbar 
@@ -10,7 +10,12 @@ const ProjectLayout = ({ children, activeNode, setActiveNode, onBackToHome, chec
                 setActiveNode={setActiveNode} 
                 onSaveCheckpoint={onSaveCheckpoint}
                 onDeleteCheckpoint={onDeleteCheckpoint}
+                onNewProject={onNewProject}
+                onOpenProject={onOpenProject}
                 checkpoints={checkpoints}
+                addLog={addLog}
+                isLocked={isLocked}
+                setIsLocked={setIsLocked}
             />
             <div style={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
                 <Sidebar activeNode={activeNode} setActiveNode={setActiveNode} />
