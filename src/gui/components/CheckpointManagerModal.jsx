@@ -38,18 +38,19 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
             centered 
             size="lg"
             className="checkpoint-manager-modal"
-            contentClassName="bg-dark text-light border-0"
+            contentClassName="border-0"
         >
             <style>{`
                 .checkpoint-manager-modal .modal-content {
-                    background-color: #252525 !important;
+                    background-color: var(--app-bg-card) !important;
                     border-radius: 8px;
-                    border: 1px solid #444 !important;
+                    border: 1px solid var(--app-border-mid) !important;
                     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+                    color: var(--app-text-primary);
                 }
                 .checkpoint-table-container {
-                    background-color: #1a1a1a;
-                    border: 1px solid #333;
+                    background-color: var(--app-bg-main);
+                    border: 1px solid var(--app-border-mid);
                     border-radius: 4px;
                     max-height: 350px;
                     overflow-y: auto;
@@ -57,14 +58,14 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                 }
                 .checkpoint-table {
                     margin-bottom: 0;
-                    color: #ccc;
+                    color: var(--app-text-primary);
                     font-size: 14px;
                 }
                 .checkpoint-table th {
-                    background-color: #2d2d2d;
-                    color: #888;
+                    background-color: var(--app-bg-alt);
+                    color: var(--app-text-secondary);
                     font-weight: 500;
-                    border-bottom: 1px solid #444 !important;
+                    border-bottom: 1px solid var(--app-border-mid) !important;
                     padding: 12px 15px;
                     position: sticky;
                     top: 0;
@@ -72,27 +73,27 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                 }
                 .checkpoint-table td {
                     padding: 10px 15px;
-                    border-bottom: 1px solid #2a2a2a !important;
+                    border-bottom: 1px solid var(--app-border-light) !important;
                     vertical-align: middle;
                     cursor: pointer;
                 }
                 .checkpoint-table tr:hover td {
-                    background-color: #333;
+                    background-color: var(--app-bg-alt);
                 }
                 .checkpoint-table tr.selected td {
-                    background-color: #3a3a3a;
-                    color: #fff;
+                    background-color: color-mix(in srgb, var(--app-primary-accent) 20%, transparent);
+                    color: var(--app-text-primary);
                 }
                 .btn-green-plus {
-                    background-color: #9acd32 !important;
+                    background-color: var(--app-primary-accent) !important;
                     border: none !important;
-                    color: #000 !important;
+                    color: var(--app-bg-card) !important;
                     font-weight: 600;
                     padding: 10px 20px;
                     border-radius: 6px;
                 }
                 .btn-green-plus:hover {
-                    background-color: #a8d648 !important;
+                    background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff) !important;
                 }
                 .btn-outline-danger-custom {
                     border: 1px solid #dc3545 !important;
@@ -104,17 +105,17 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                     background-color: rgba(220, 53, 69, 0.1) !important;
                 }
                 .btn-outline-secondary-custom {
-                    border: 1px solid #555 !important;
-                    color: #aaa !important;
+                    border: 1px solid var(--app-border-mid) !important;
+                    color: var(--app-text-secondary) !important;
                     background: transparent !important;
                     padding: 8px 16px;
                 }
                 .btn-outline-secondary-custom:hover:not(:disabled) {
-                    background-color: rgba(255, 255, 255, 0.05) !important;
-                    color: #fff !important;
+                    background-color: var(--app-bg-alt) !important;
+                    color: var(--app-text-primary) !important;
                 }
                 .restore-hint {
-                    color: #aaa;
+                    color: var(--app-text-secondary);
                     font-size: 14px;
                     margin-bottom: 20px;
                 }
@@ -123,20 +124,20 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                     width: 8px;
                 }
                 .checkpoint-table-container::-webkit-scrollbar-track {
-                    background: #1a1a1a;
+                    background: var(--app-bg-main);
                 }
                 .checkpoint-table-container::-webkit-scrollbar-thumb {
-                    background: #444;
+                    background: var(--app-border-mid);
                     border-radius: 4px;
                 }
                 .checkpoint-table-container::-webkit-scrollbar-thumb:hover {
-                    background: #555;
+                    background: var(--app-border-dark);
                 }
             `}</style>
 
             <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
                 <Modal.Title className="d-flex align-items-center gap-2" style={{ fontSize: '18px' }}>
-                    <FaClock style={{ color: '#aaa' }} /> Checkpoint Manager
+                    <FaClock style={{ color: 'var(--app-text-secondary)' }} /> Checkpoint Manager
                 </Modal.Title>
             </Modal.Header>
 

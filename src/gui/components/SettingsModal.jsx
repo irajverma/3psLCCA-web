@@ -44,9 +44,9 @@ const getCustomSelectStyles = (isDark, brandColor) => ({
 
 const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, userSettings, onSaveSettings }) => {
     const [displayName, setDisplayName] = useState(initialUserName || '');
-    const [appearanceMode, setAppearanceMode] = useState(userSettings?.appearanceMode || 'Auto');
-    const [lightTheme, setLightTheme] = useState(userSettings?.lightTheme || 'Pink');
-    const [darkTheme, setDarkTheme] = useState(userSettings?.darkTheme || 'Pink');
+    const [appearanceMode, setAppearanceMode] = useState(userSettings?.appearanceMode || 'Auto(follow os)');
+    const [lightTheme, setLightTheme] = useState(userSettings?.lightTheme || 'standard light');
+    const [darkTheme, setDarkTheme] = useState(userSettings?.darkTheme || 'standard dark');
     const [profileCountry, setProfileCountry] = useState(null);
     const [agencyName, setAgencyName] = useState('');
     const [contactName, setContactName] = useState('');
@@ -58,9 +58,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
         if (show) {
             setDisplayName(initialUserName || '');
             // Sync from parent each time modal opens so saved settings are preserved
-            setAppearanceMode(userSettings?.appearanceMode || 'Auto');
-            setLightTheme(userSettings?.lightTheme || 'Pink');
-            setDarkTheme(userSettings?.darkTheme || 'Pink');
+            setAppearanceMode(userSettings?.appearanceMode || 'Auto(follow os)');
+            setLightTheme(userSettings?.lightTheme || 'standard light');
+            setDarkTheme(userSettings?.darkTheme || 'standard dark');
         }
     }, [show, initialUserName, userSettings]);
 
@@ -176,7 +176,7 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
 
             <Modal.Header>
                 <Modal.Title>
-                    <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#9acd32', marginRight: '4px' }}></span>
+                    <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: theme.activeIconColor, marginRight: '4px' }}></span>
                     Settings
                 </Modal.Title>
                 <button type="button" className="btn-close btn-close-white" onClick={handleClose} aria-label="Close"></button>
@@ -201,11 +201,11 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
                             {/* Appearance Mode */}
                             <Form.Group className="mb-4">
                                 <Form.Label>Appearance Mode</Form.Label>
-                                <div className="form-text mt-0">Switch between light and dark mode. 'Auto' follows your OS setting.</div>
+                                <div className="form-text mt-0">Switch between light and dark mode. 'Auto(follow os)' follows your OS setting.</div>
                                 <Form.Select value={appearanceMode} onChange={(e) => setAppearanceMode(e.target.value)}>
-                                    <option value="Light">Light</option>
-                                    <option value="Dark">Dark</option>
-                                    <option value="Auto">Auto</option>
+                                    <option value="Auto(follow os)">Auto(follow os)</option>
+                                    <option value="light">light</option>
+                                    <option value="dark">dark</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -214,9 +214,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
                                 <Form.Label>Light Theme</Form.Label>
                                 <div className="form-text mt-0">Colour scheme used in light mode.</div>
                                 <Form.Select value={lightTheme} onChange={(e) => setLightTheme(e.target.value)}>
-                                    <option value="Pink">Pink Theme</option>
-                                    <option value="Blue">Blue Theme</option>
-                                    <option value="Green">Green Theme</option>
+                                    <option value="standard light">standard light</option>
+                                    <option value="soft light">soft light</option>
+                                    <option value="soft pink">soft pink</option>
                                 </Form.Select>
                             </Form.Group>
 
@@ -225,9 +225,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
                                 <Form.Label>Dark Theme</Form.Label>
                                 <div className="form-text mt-0">Colour scheme used in dark mode.</div>
                                 <Form.Select value={darkTheme} onChange={(e) => setDarkTheme(e.target.value)}>
-                                    <option value="Pink">Pink Theme</option>
-                                    <option value="Blue">Blue Theme</option>
-                                    <option value="Green">Green Theme</option>
+                                    <option value="Dracula">Dracula</option>
+                                    <option value="Neon city standard dark">Neon city standard dark</option>
+                                    <option value="standard dark">standard dark</option>
                                 </Form.Select>
                             </Form.Group>
 

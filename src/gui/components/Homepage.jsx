@@ -89,38 +89,110 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     };
 
     if (isDarkMode) {
-        if (userSettings?.darkTheme === 'Pink') {
-            theme.bgMain = '#2a1a21';
-            theme.bgSidebar = '#1c1015';
-            theme.activeIconColor = '#e84393';
-            theme.activeIconBg = '#3a1e28';
-        } else if (userSettings?.darkTheme === 'Blue') {
-            theme.bgMain = '#0f172a';
-            theme.bgSidebar = '#0b1120';
-            theme.activeIconColor = '#3b82f6';
-            theme.activeIconBg = '#172554';
-        } else if (userSettings?.darkTheme === 'Green') {
-            theme.bgMain = '#121e12';
-            theme.bgSidebar = '#0d160d';
-            theme.activeIconColor = '#9acd32';
-            theme.activeIconBg = '#1a2e1a';
+        if (userSettings?.darkTheme === 'Dracula') {
+            theme.bgMain = '#282A36';
+            theme.bgSidebar = '#21222C';
+            theme.activeIconBg = '#383A4A';
+            theme.activeIconColor = '#BD93F9';
+            theme.brand = '#90AF13';
+            theme.surfacePressed = '#565869';
+            theme.textPrimary = '#F8F8F2';
+            theme.textSecondary = '#CED4ED';
+            theme.textDisabled = '#94A1D3';
+            theme.border = '#44475A';
+            theme.cardBg = '#21222C';
+            theme.inputBg = '#383A4A';
+            theme.success = '#50FA7B';
+            theme.warning = '#FFB86C';
+            theme.danger = '#FF5555';
+            theme.info = '#8BE9FD';
+        } else if (userSettings?.darkTheme === 'Neon city standard dark') {
+            theme.bgMain = '#0C0F17';
+            theme.bgSidebar = '#121622';
+            theme.activeIconBg = '#1A2030';
+            theme.activeIconColor = '#E93CFF';
+            theme.brand = '#00D4FF';
+            theme.surfacePressed = '#2F3750';
+            theme.textPrimary = '#E8ECF8';
+            theme.textSecondary = '#CDD4E5';
+            theme.textDisabled = '#6B738A';
+            theme.border = '#242B3D';
+            theme.cardBg = '#121622';
+            theme.inputBg = '#1A2030';
+            theme.success = '#2EE6A6';
+            theme.warning = '#FFB020';
+            theme.danger = '#FF4D6D';
+            theme.info = '#3DA9FC';
+        } else { // standard dark
+            theme.bgMain = '#0F172A';
+            theme.bgSidebar = '#111827';
+            theme.activeIconBg = '#1F2937';
+            theme.activeIconColor = '#3B82F6';
+            theme.brand = '#2563EB';
+            theme.surfacePressed = '#4B5563';
+            theme.textPrimary = '#E5E7EB';
+            theme.textSecondary = '#D1D5DB';
+            theme.textDisabled = '#6B7280';
+            theme.border = '#374151';
+            theme.cardBg = '#111827';
+            theme.inputBg = '#1F2937';
+            theme.success = '#22C55E';
+            theme.warning = '#F59E0B';
+            theme.danger = '#EF4444';
+            theme.info = '#38BDF8';
         }
     } else {
-        if (userSettings?.lightTheme === 'Pink') {
-            theme.bgMain = '#fff0f5';
-            theme.bgSidebar = '#ffe4e1';
-            theme.activeIconColor = '#d63031';
-            theme.activeIconBg = '#ffdada';
-        } else if (userSettings?.lightTheme === 'Blue') {
-            theme.bgMain = '#f0f8ff';
-            theme.bgSidebar = '#e6f0fa';
-            theme.activeIconColor = '#0984e3';
-            theme.activeIconBg = '#d0e8ff';
-        } else if (userSettings?.lightTheme === 'Green') {
-            theme.bgMain = '#f4fbf0';
-            theme.bgSidebar = '#e8f5e9';
-            theme.activeIconColor = '#9acd32';
-            theme.activeIconBg = '#d4edda';
+        if (userSettings?.lightTheme === 'soft pink') {
+            theme.bgMain = '#FDF2F8';
+            theme.bgSidebar = '#FFFFFF';
+            theme.activeIconBg = '#FCE7F3';
+            theme.activeIconColor = '#D94680';
+            theme.brand = '#EC4899';
+            theme.surfacePressed = '#F9A8D4';
+            theme.textPrimary = '#4A044E';
+            theme.textSecondary = '#6B2155';
+            theme.textDisabled = '#A78B9C';
+            theme.border = '#FBCFE8';
+            theme.cardBg = '#FFFFFF';
+            theme.inputBg = '#FCE7F3';
+            theme.success = '#22C55E';
+            theme.warning = '#F97316';
+            theme.danger = '#EF4444';
+            theme.info = '#3B82F6';
+        } else if (userSettings?.lightTheme === 'soft light') {
+            theme.bgMain = '#EFF1F5';
+            theme.bgSidebar = '#FFFFFF';
+            theme.activeIconBg = '#E6E9EF';
+            theme.activeIconColor = '#86A022';
+            theme.brand = '#90AF13';
+            theme.surfacePressed = '#DCE0E8';
+            theme.textPrimary = '#4C4F69';
+            theme.textSecondary = '#6C6F85';
+            theme.textDisabled = '#9CA0B0';
+            theme.border = '#CCD0DA';
+            theme.cardBg = '#FFFFFF';
+            theme.inputBg = '#E6E9EF';
+            theme.success = '#22C55E';
+            theme.warning = '#F97316';
+            theme.danger = '#EF4444';
+            theme.info = '#3B82F6';
+        } else { // standard light
+            theme.bgMain = '#F8FAFC';
+            theme.bgSidebar = '#FFFFFF';
+            theme.activeIconBg = '#F1F5F9';
+            theme.activeIconColor = '#2563EB';
+            theme.brand = '#1D4ED8';
+            theme.surfacePressed = '#CBD5E1';
+            theme.textPrimary = '#0F172A';
+            theme.textSecondary = '#475569';
+            theme.textDisabled = '#94A3B8';
+            theme.border = '#E2E8F0';
+            theme.cardBg = '#FFFFFF';
+            theme.inputBg = '#F1F5F9';
+            theme.success = '#16A34A';
+            theme.warning = '#F59E0B';
+            theme.danger = '#DC2626';
+            theme.info = '#0284C7';
         }
     }
 
@@ -265,11 +337,11 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
             <NewProject show={showModal} handleClose={handleCloseModal} onProjectOpen={onProjectOpen} onProjectCreate={handleProjectCreate} isDarkMode={isDarkMode} theme={theme} />
 
             {/* Settings Modal */}
-            <SettingsModal 
-                show={showSettingsModal} 
-                handleClose={() => setShowSettingsModal(false)} 
-                isDarkMode={isDarkMode} 
-                theme={theme} 
+            <SettingsModal
+                show={showSettingsModal}
+                handleClose={() => setShowSettingsModal(false)}
+                isDarkMode={isDarkMode}
+                theme={theme}
                 initialUserName={userName}
                 userSettings={userSettings}
                 onSaveSettings={(settings) => {
