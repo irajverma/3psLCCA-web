@@ -31,7 +31,7 @@ export default function MaterialTable({ section, onRowChange, onRowDelete, onAdd
                     <tbody>
                         {section.rows.length === 0 ? (
                             <tr>
-                                <td colSpan={7} style={{ textAlign: 'center', color: 'var(--app-text-muted)', padding: '18px', fontStyle: 'italic', fontSize: '0.78rem' }}>
+                                <td colSpan={7} className="text-center" style={{ color: 'var(--app-text-muted)', padding: '18px', fontStyle: 'italic', fontSize: '0.78rem' }}>
                                     No items yet. Click "Add Material" below.
                                 </td>
                             </tr>

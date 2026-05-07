@@ -80,7 +80,7 @@ const OpenProjectModal = ({ show, onHide, onOpen }) => {
                 }
             `}</style>
             <Modal.Header closeButton closeVariant="white">
-                <Modal.Title style={{ fontSize: '1.1rem', fontWeight: '600' }}>
+                <Modal.Title className="fw-semibold" style={{ fontSize: '1.1rem' }}>
                     <FaFolderOpen className="me-2" /> Open Project
                 </Modal.Title>
             </Modal.Header>
@@ -92,23 +92,23 @@ const OpenProjectModal = ({ show, onHide, onOpen }) => {
                     {recentProjects.map(project => (
                         <div key={project.id} className="project-item" onClick={() => onOpen(project)}>
                             <div>
-                                <div style={{ fontWeight: '600' }}>{project.name}</div>
+                            <div className="fw-semibold">{project.name}</div>
                                 <div style={{ fontSize: '0.75rem', color: 'var(--app-text-muted)' }}>{project.country} • Last modified: {project.date}</div>
                             </div>
-                            <Button variant="link" style={{ color: 'var(--app-primary-accent)', padding: 0 }}>Open</Button>
+                            <Button variant="link" className="p-0" style={{ color: 'var(--app-primary-accent)' }}>Open</Button>
                         </div>
                     ))}
                 </ListGroup>
 
                 <div className="import-zone" onClick={() => document.getElementById('project-import').click()}>
                     <FaFileUpload size={24} className="mb-2" style={{ color: 'var(--app-primary-accent)' }} />
-                    <div style={{ fontWeight: '600', fontSize: '0.9rem' }}>Import Project File</div>
+                    <div className="fw-semibold" style={{ fontSize: '0.9rem' }}>Import Project File</div>
                     <div style={{ fontSize: '0.75rem', color: 'var(--app-text-muted)' }}>Drag and drop or click to upload .json</div>
                     <input 
                         id="project-import" 
                         type="file" 
                         accept=".json" 
-                        style={{ display: 'none' }} 
+                        className="d-none"
                         onChange={handleImport}
                     />
                 </div>

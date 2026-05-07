@@ -72,6 +72,10 @@ const getCustomSelectStyles = (isDark, brandColor) => ({
     indicatorsContainer: (provided) => ({
         ...provided,
         height: '36px'
+    }),
+    menuPortal: (provided) => ({
+        ...provided,
+        zIndex: 9999
     })
 });
 
@@ -134,12 +138,12 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
     const customSelectStyles = getCustomSelectStyles(isDarkMode, brandColor);
 
     return (
-        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false} size="sm">
+        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false}>
             {/* Wrapping Modal content to force styling */}
-            <div style={{ backgroundColor: colors.modalBg, color: colors.text, borderRadius: '6px', overflow: 'hidden', transition: 'all 0.3s' }}>
+            <div className="overflow-hidden" style={{ backgroundColor: colors.modalBg, color: colors.text, borderRadius: '6px', transition: 'all 0.3s' }}>
                 <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: '0' }} className="custom-theme-modal-header pt-3 px-4">
-                    <Modal.Title style={{ fontSize: '1rem', display: 'flex', alignItems: 'center', gap: '8px', fontWeight: 'bold' }}>
-                        <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: colors.headerIconBg, borderRadius: '2px' }}></span>
+                    <Modal.Title className="d-flex align-items-center fw-bold" style={{ fontSize: '1rem', gap: '8px' }}>
+                        <span className="d-inline-block" style={{ width: '12px', height: '12px', backgroundColor: colors.headerIconBg, borderRadius: '2px' }}></span>
                         New Project
                     </Modal.Title>
                 </Modal.Header>
@@ -194,6 +198,9 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 placeholder="— Select country —"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                maxMenuHeight={180}
                                 isSearchable
                             />
                             {validated && !country ? (
@@ -216,6 +223,9 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 placeholder="— Select currency —"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                maxMenuHeight={180}
                                 isSearchable
                             />
                             {validated && !currency ? (
@@ -238,6 +248,9 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 placeholder="— Select unit system —"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
+                                menuPortalTarget={document.body}
+                                menuPosition="fixed"
+                                maxMenuHeight={180}
                                 isSearchable={false}
                             />
                             {validated && !unitSystem ? (

@@ -148,7 +148,7 @@ function SelectField({ id, label, hint, required, options, value, onChange, hasE
                     <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
                 </button>
                 {open && (
-                    <ul className="dropdown-menu show w-100 p-1 shadow-sm" role="listbox" style={{ maxHeight: '250px', overflowY: 'auto', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
+                    <ul className="dropdown-menu show w-100 p-1 shadow-sm overflow-y-auto" role="listbox" style={{ maxHeight: '250px', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
                         <li
                             className="dropdown-item text-muted fst-italic"
                             style={{ cursor: 'pointer', fontSize: '0.875rem' }}

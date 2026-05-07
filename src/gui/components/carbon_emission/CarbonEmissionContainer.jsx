@@ -29,7 +29,7 @@ const CarbonEmissionContainer = ({ controller, initialTab = 'Material' }) => {
     return (
         <div className="d-flex flex-column h-100 overflow-hidden" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)' }}>
             {/* Native-style Tab Bar */}
-            <div className="d-flex border-bottom px-2" style={{ backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-border-light)', flexShrink: 0 }}>
+            <div className="d-flex border-bottom px-2 flex-shrink-0" style={{ backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-border-light)' }}>
                 {TABS.map((tab) => {
                     const isActive = activeTab === tab.key;
                     return (

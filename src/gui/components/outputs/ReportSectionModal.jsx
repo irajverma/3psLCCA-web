@@ -104,11 +104,11 @@ const ReportSectionModal = ({ show, onHide, onConfirm }) => {
             contentClassName="report-modal-content"
         >
             <Modal.Header closeButton style={{ borderBottom: '1px solid var(--app-border-light)', backgroundColor: 'var(--app-bg-card)' }}>
-                <Modal.Title style={{ color: 'var(--app-primary-accent)', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Modal.Title className="d-flex align-items-center" style={{ color: 'var(--app-primary-accent)', gap: '10px' }}>
                     <FaFilePdf /> Report Customization
                 </Modal.Title>
             </Modal.Header>
-            <Modal.Body style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', maxHeight: '70vh', overflowY: 'auto' }}>
+            <Modal.Body className="overflow-y-auto" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', maxHeight: '70vh' }}>
                 <div className="mb-4 d-flex justify-content-between align-items-center">
                     <p className="text-muted mb-0" style={{ fontSize: '0.9rem' }}>
                         Select the sections and tables to include in your professional LCCA report.
@@ -211,8 +211,9 @@ const ReportSectionModal = ({ show, onHide, onConfirm }) => {
                 </Button>
                 <Button 
                     variant="primary" 
+                    className="fw-bold"
                     onClick={() => onConfirm(selections)}
-                    style={{ backgroundColor: 'var(--app-primary-accent)', borderColor: 'var(--app-primary-accent)', color: '#000', fontWeight: 'bold' }}
+                    style={{ backgroundColor: 'var(--app-primary-accent)', borderColor: 'var(--app-primary-accent)', color: '#000' }}
                 >
                     Generate PDF Report
                 </Button>

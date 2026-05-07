@@ -44,14 +44,12 @@ const CustomDropdown = ({ title, id, items, icon: Icon }) => {
         <NavDropdown 
             title={Icon ? <Icon size={16} className="me-1" /> : title} 
             id={id} 
-            className="px-1 custom-nav-dropdown"
+            className="px-1 custom-nav-dropdown d-flex align-items-center"
             style={{
                 color: hover ? 'var(--app-primary-accent)' : 'var(--app-text-primary)', 
                 backgroundColor: hover ? 'var(--app-bg-alt)' : 'transparent',
                 borderRadius: '4px',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center'
+                transition: 'all 0.2s ease'
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}

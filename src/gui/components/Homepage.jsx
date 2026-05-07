@@ -132,7 +132,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     }
 
     return (
-        <div className="d-flex" style={{ height: '100vh', backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>
+        <div className="d-flex vh-100" style={{ backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>
 
             {/* Left Sidebar */}
             <div className="d-flex flex-column align-items-center" style={{ width: '85px', backgroundColor: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, zIndex: 10, transition: 'background-color 0.3s ease' }}>
@@ -183,7 +183,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
             </div>
 
             {/* Main Area */}
-            <div className="flex-grow-1 d-flex flex-column" style={{ overflow: 'hidden' }}>
+            <div className="flex-grow-1 d-flex flex-column overflow-hidden">
 
                 {/* Header */}
                 <header className="d-flex justify-content-between align-items-center px-5 py-3" style={{ borderBottom: `1px solid ${theme.border}`, backgroundColor: theme.bgMain, transition: 'background-color 0.3s ease' }}>
@@ -194,7 +194,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
                 </header>
 
                 {/* Content */}
-                <main className="flex-grow-1 px-5 py-4 d-flex flex-column" style={{ overflowY: 'auto' }}>
+                <main className="flex-grow-1 px-5 py-4 d-flex flex-column overflow-y-auto">
 
                     {/* Projects Header & Filters */}
                     <div className="d-flex justify-content-between align-items-center mb-4 pb-2" style={{ borderBottom: `1px solid ${theme.border}` }}>

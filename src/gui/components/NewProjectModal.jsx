@@ -120,7 +120,7 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
                 }
             `}</style>
             <Modal.Header closeButton closeVariant="white">
-                <Modal.Title style={{ fontSize: '1.1rem', fontWeight: '600' }}>
+                <Modal.Title className="fw-semibold" style={{ fontSize: '1.1rem' }}>
                     <span className="me-2">📁</span> New Project
                 </Modal.Title>
             </Modal.Header>

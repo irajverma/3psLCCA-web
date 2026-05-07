@@ -169,7 +169,7 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                                         className={selectedIndex === idx ? 'selected' : ''}
                                         onClick={() => setSelectedIndex(idx)}
                                     >
-                                        <td style={{ fontWeight: 'bold' }}>{cp.label}</td>
+                                        <td className="fw-bold">{cp.label}</td>
                                         <td>{formatDate(cp.timestamp)}</td>
                                         <td className="text-truncate" style={{ maxWidth: '100px' }}>
                                             {cp.notes || '-'}

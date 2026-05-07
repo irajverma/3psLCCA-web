@@ -561,7 +561,7 @@ const MachineryEmissions = ({ controller }) => {
 
             {/* Final Total Summary - Full Width Box */}
             <div className="mx-3 mb-3">
-                <div className="p-2 px-3 rounded" style={{ backgroundColor: 'var(--app-bg-card)', border: '1px solid var(--app-border-mid)', display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+                <div className="p-2 px-3 rounded d-flex justify-content-end align-items-center" style={{ backgroundColor: 'var(--app-bg-card)', border: '1px solid var(--app-border-mid)' }}>
                     <div className="fw-bold" style={{ fontSize: '13px', color: 'var(--app-text-primary)' }}>
                         Total Machinery Emissions: {(mode === 'detailed' ? detailedTotal : lumpSumTotal).toFixed(3)} kg CO₂e
                     </div>

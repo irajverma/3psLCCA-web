@@ -70,7 +70,7 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
             <Modal.Header closeButton closeVariant="white" className="border-secondary">
                 <Modal.Title style={{ fontSize: '1.1rem' }}>{initialData ? 'Edit Delivery' : 'Add New Delivery'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="custom-scrollbar" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+            <Modal.Body className="custom-scrollbar overflow-y-auto" style={{ maxHeight: '70vh' }}>
                 <Form>
                     <div className="row g-3 mb-4">
                         <div className="col-md-6">
@@ -169,8 +169,9 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
                 <Button 
                     variant="primary" 
                     size="sm" 
+                    className="fw-bold"
                     onClick={handleSave} 
-                    style={{ backgroundColor: '#9adc32', color: '#000', border: 'none', fontWeight: 'bold' }}
+                    style={{ backgroundColor: '#9adc32', color: '#000', border: 'none' }}
                 >
                     Save Delivery
                 </Button>

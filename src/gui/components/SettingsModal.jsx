@@ -176,7 +176,7 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
 
             <Modal.Header>
                 <Modal.Title>
-                    <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#9acd32', marginRight: '4px' }}></span>
+                    <span className="d-inline-block" style={{ width: '12px', height: '12px', backgroundColor: '#9acd32', marginRight: '4px' }}></span>
                     Settings
                 </Modal.Title>
                 <button type="button" className="btn-close btn-close-white" onClick={handleClose} aria-label="Close"></button>
@@ -239,13 +239,13 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, 
                 </Tab>
                 <Tab eventKey="profiles" title="Profiles">
                     <Modal.Body className="px-4 py-3" style={{ minHeight: '350px' }}>
-                        <div style={{ border: `1px solid ${theme.border}`, padding: '20px', borderRadius: '4px', backgroundColor: theme.bgCard, height: '400px', overflowY: 'auto' }}>
+                        <div className="overflow-y-auto" style={{ border: `1px solid ${theme.border}`, padding: '20px', borderRadius: '4px', backgroundColor: theme.bgCard, height: '400px' }}>
                             <p style={{ fontSize: '13px', color: theme.textSecondary, marginBottom: '20px' }}>
                                 Profiles store your agency details - name, logo, and contact information. The active profile is used in generated reports and exports.
                             </p>
 
                             <div className="d-flex justify-content-center mb-4">
-                                <div style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#d1d5db', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', color: '#374151', fontSize: '30px' }}>
+                                <div className="d-flex align-items-center justify-content-center" style={{ width: '80px', height: '80px', borderRadius: '50%', backgroundColor: '#d1d5db', cursor: 'pointer', color: '#374151', fontSize: '30px' }}>
                                     +
                                 </div>
                             </div>
