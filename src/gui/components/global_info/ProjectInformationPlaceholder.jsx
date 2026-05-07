@@ -42,33 +42,21 @@ function SectionHeader({ title }) {
     );
 }
 
-function FieldHint({ text, docSlug }) {
+function FieldHint({ text }) {
     return (
         <div style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginBottom: '8px' }}>
             {text}
-            {docSlug && (
-                <a
-                    href={`${BASE_DOCS_URL}${docSlug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-decoration-none ms-1"
-                    style={{ color: 'var(--app-primary-accent)', fontSize: '0.75rem' }}
-                    title="View documentation"
-                >
-                    ⓘ
-                </a>
-            )}
         </div>
     );
 }
 
-function TextField({ id, label, hint, docSlug, required, value, onChange, hasError, disabled }) {
+function TextField({ id, label, hint, required, value, onChange, hasError, disabled }) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <input
                 id={id}
                 type="text"
@@ -82,13 +70,13 @@ function TextField({ id, label, hint, docSlug, required, value, onChange, hasErr
     );
 }
 
-function TextAreaField({ id, label, hint, docSlug, required, value, onChange, hasError }) {
+function TextAreaField({ id, label, hint, required, value, onChange, hasError }) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <textarea
                 id={id}
                 rows={4}
@@ -120,7 +108,7 @@ function PhoneField({ id, label, hint, value, onChange, hasError }) {
     );
 }
 
-function SelectField({ id, label, hint, docSlug, required, options, value, onChange, hasError }) {
+function SelectField({ id, label, hint, required, options, value, onChange, hasError }) {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
 
@@ -143,7 +131,7 @@ function SelectField({ id, label, hint, docSlug, required, options, value, onCha
             <label className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <div className="position-relative" ref={ref}>
                 <button
                     type="button"
@@ -268,7 +256,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="project_name"
                 label="Project Name"
                 hint="Official name or title of the bridge/infrastructure project."
-                docSlug="project-name"
                 required
                 value={form.project_name}
                 onChange={handleChange}
@@ -279,7 +266,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="project_code"
                 label="Project Code"
                 hint="Unique reference code assigned to this project."
-                docSlug="project-code"
                 value={form.project_code}
                 onChange={handleChange}
                 hasError={hasError('project_code')}
@@ -289,7 +275,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="project_description"
                 label="Project Description"
                 hint="Brief description of the project scope, objectives, or background."
-                docSlug="project-description"
                 value={form.project_description}
                 onChange={handleChange}
                 hasError={hasError('project_description')}
@@ -299,7 +284,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="remarks"
                 label="Remarks"
                 hint="Any additional notes, assumptions, or comments relevant to this evaluation."
-                docSlug="remarks"
                 value={form.remarks}
                 onChange={handleChange}
                 hasError={hasError('remarks')}
@@ -312,7 +296,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="agency_name"
                 label="Agency Name"
                 hint="Name of the organization responsible for this evaluation."
-                docSlug="agency-name"
                 value={form.agency_name}
                 onChange={handleChange}
                 hasError={hasError('agency_name')}
@@ -322,7 +305,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="contact_person"
                 label="Contact Person"
                 hint="Primary contact handling this project."
-                docSlug="contact-person"
                 value={form.contact_person}
                 onChange={handleChange}
                 hasError={hasError('contact_person')}
@@ -332,7 +314,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="agency_address"
                 label="Agency Address"
                 hint="Street address of the evaluating agency."
-                docSlug="agency-address"
                 value={form.agency_address}
                 onChange={handleChange}
                 hasError={hasError('agency_address')}
@@ -342,7 +323,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="agency_country"
                 label="Country"
                 hint="Country where the evaluating agency is based."
-                docSlug="agency-country"
                 options={COUNTRIES}
                 value={form.agency_country}
                 onChange={handleChange}
@@ -353,7 +333,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="agency_email"
                 label="Email"
                 hint="Official email address for correspondence."
-                docSlug="agency-email"
                 value={form.agency_email}
                 onChange={handleChange}
                 hasError={hasError('agency_email')}
@@ -375,7 +354,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="project_country"
                 label="Country"
                 hint="Country where the bridge project is located. Set at project creation."
-                docSlug="project_country"
                 value={form.project_country}
                 disabled
             />
@@ -384,7 +362,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="project_currency"
                 label="Currency"
                 hint="Currency used for all cost figures. Set at project creation."
-                docSlug="project_currency"
                 value={form.project_currency}
                 disabled
             />
@@ -393,7 +370,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="unit_system"
                 label="Unit System"
                 hint="Measurement unit system (Metric or Imperial). Set at project creation."
-                docSlug="unit-system"
                 value={form.unit_system}
                 disabled
             />
@@ -402,7 +378,6 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 id="sor_database"
                 label="Material Suggestions"
                 hint="Schedule of Rates database used to auto-suggest material names, rates, and emission factors."
-                docSlug="sor-database"
                 value={form.sor_database}
                 onChange={handleChange}
                 hasError={hasError('sor_database')}

@@ -69,33 +69,21 @@ function SectionHeader({ title }) {
     );
 }
 
-function FieldHint({ text, docSlug }) {
+function FieldHint({ text }) {
     return (
         <div style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginBottom: '8px' }}>
             {text}
-            {docSlug && (
-                <a
-                    href={`${BASE_DOCS_URL}${docSlug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-decoration-none ms-1"
-                    style={{ color: 'var(--app-primary-accent)', fontSize: '0.75rem' }}
-                    title="View documentation"
-                >
-                    ⓘ
-                </a>
-            )}
         </div>
     );
 }
 
-function TextField({ id, label, hint, docSlug, required, value, onChange, hasError }) {
+function TextField({ id, label, hint, required, value, onChange, hasError }) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <input
                 id={id}
                 type="text"
@@ -181,13 +169,13 @@ function SelectField({ id, label, hint, docSlug, required, options, value, onCha
     );
 }
 
-function NumberField({ id, label, hint, docSlug, required, min, max, step, unit, value, onChange, hasError }) {
+function NumberField({ id, label, hint, required, min, max, step, unit, value, onChange, hasError }) {
     return (
         <div className="mb-4">
             <label htmlFor={id} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <div className={`input-group ${hasError ? 'is-invalid' : ''}`}>
                 <input
                     id={id}
@@ -211,15 +199,24 @@ function NumberField({ id, label, hint, docSlug, required, min, max, step, unit,
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-const BridgeData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+const BridgeData = ({ data, onUpdate, controller }) => {
+    const [form, setForm] = useState(data || INITIAL_STATE);
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
+
+    // Sync local state if prop changes
+    useEffect(() => {
+        if (data && Object.keys(data).length > 0) {
+            setForm(data);
+        }
+    }, [data]);
 
     // ── Handlers ────────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
+        const nextForm = { ...form, [key]: value };
+        setForm(nextForm);
+        onUpdate(nextForm);
         // Clear error on edit
         setErrors((prev) => {
             if (!prev.has(key)) return prev;
@@ -397,7 +394,6 @@ const BridgeData = ({ controller }) => {
                 id="footpath"
                 label="Footpath"
                 hint="Indicates whether a dedicated pedestrian footpath is provided."
-                docSlug="footpath"
                 required
                 options={['Yes', 'No']}
                 value={form.footpath}
@@ -409,7 +405,6 @@ const BridgeData = ({ controller }) => {
                 id="wind_speed"
                 label="Wind Speed"
                 hint="Design wind speed used for structural analysis at the bridge site."
-                docSlug="wind-speed"
                 required
                 min={0}
                 max={999}
@@ -424,7 +419,6 @@ const BridgeData = ({ controller }) => {
                 id="carriageway_width"
                 label="Carriageway Width"
                 hint="Clear width of the roadway portion of the bridge deck."
-                docSlug="carriageway-width"
                 required
                 min={0}
                 max={9999}
@@ -442,7 +436,6 @@ const BridgeData = ({ controller }) => {
                 id="year_of_construction"
                 label="Year of Construction / Present Year"
                 hint="Year the bridge was (or is planned to be) constructed, used as the baseline for life cycle cost assessment."
-                docSlug="year-of-construction"
                 required
                 min={1900}
                 max={2200}
@@ -455,7 +448,6 @@ const BridgeData = ({ controller }) => {
                 id="duration_construction_months"
                 label="Duration of Construction"
                 hint="Construction duration expressed in months."
-                docSlug="duration-construction-months"
                 min={0}
                 max={1200}
                 unit="(months)"
