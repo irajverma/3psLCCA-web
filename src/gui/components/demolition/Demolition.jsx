@@ -1,6 +1,5 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import '../financialdata/FinancialData.css';
-import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -155,17 +154,9 @@ function InputField({ field, value, onChange, hasError }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const Demolition = ({ controller, engine }) => {
-    const { projectData, updateProjectData } = useProjectData();
-    const [form, setForm] = useState(() => {
-        const saved = projectData.demolition_data;
-        return saved || INITIAL_STATE;
-    });
+    const [form, setForm] = useState(INITIAL_STATE);
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
-
-    useEffect(() => {
-        updateProjectData('demolition_data', form);
-    }, [form, updateProjectData]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 

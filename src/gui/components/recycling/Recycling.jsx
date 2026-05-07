@@ -1,5 +1,4 @@
-import React, { useState, useEffect } from 'react';
-import { useProjectData } from '../../../contexts/ProjectDataContext';
+import React, { useState } from 'react';
 import EditRecyclabilityModal from './EditRecyclabilityModal';
 import { FaEdit, FaChevronDown, FaChevronUp } from 'react-icons/fa';
 
@@ -25,16 +24,9 @@ const EXCLUDED_DATA = [
 ];
 
 const Recycling = () => {
-    const { projectData, updateProjectData } = useProjectData();
-    const savedData = projectData.recycling_data || {};
-    
-    const [included, setIncluded] = useState(savedData.included || INCLUDED_DATA);
-    const [excluded, setExcluded] = useState(savedData.excluded || EXCLUDED_DATA);
+    const [included, setIncluded] = useState(INCLUDED_DATA);
+    const [excluded, setExcluded] = useState(EXCLUDED_DATA);
     const [editingItem, setEditingItem] = useState(null);
-
-    useEffect(() => {
-        updateProjectData('recycling_data', { included, excluded });
-    }, [included, excluded, updateProjectData]);
 
     const handleEdit = (item) => {
         setEditingItem(item);
