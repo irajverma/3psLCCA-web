@@ -225,10 +225,17 @@ function RichTextEditor({ value, onChange }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-const TrafficData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+const TrafficData = ({ data, onUpdate, controller }) => {
+    const [form, setForm] = useState(data || INITIAL_STATE);
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
+
+    // Sync local state if prop changes
+    useEffect(() => {
+        if (data && Object.keys(data).length > 0) {
+            setForm(data);
+        }
+    }, [data]);
 
     const clearErrors = useCallback((key) => {
         setErrors((prev) => {
@@ -239,20 +246,27 @@ const TrafficData = ({ controller }) => {
     }, []);
 
     const handleModeChange = (val) => {
-        setForm((prev) => ({ ...prev, calculation_mode: val }));
+        const nextForm = { ...form, calculation_mode: val };
+        setForm(nextForm);
+        onUpdate(nextForm);
         clearErrors('calculation_mode');
     };
 
     const handleCostChange = (val) => {
-        setForm((prev) => ({ ...prev, road_user_cost_per_day: val }));
+        const nextForm = { ...form, road_user_cost_per_day: val };
+        setForm(nextForm);
+        onUpdate(nextForm);
     };
 
     const handleRemarksChange = (html) => {
-        setForm((prev) => ({ ...prev, remarks: html }));
+        const nextForm = { ...form, remarks: html };
+        setForm(nextForm);
+        onUpdate(nextForm);
     };
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        onUpdate(INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Traffic: All fields cleared.');

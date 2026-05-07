@@ -120,34 +120,22 @@ function SectionHeader({ title }) {
     );
 }
 
-function FieldHint({ text, docSlug }) {
+function FieldHint({ text }) {
     return (
         <div style={{ fontSize: '0.8rem', color: 'var(--app-text-muted)', marginBottom: '8px' }}>
             {text}
-            {docSlug && (
-                <a
-                    href={`${BASE_DOCS_URL}${docSlug}`}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-decoration-none ms-1"
-                    style={{ color: 'var(--app-primary-accent)', fontSize: '0.75rem' }}
-                    title="View documentation"
-                >
-                    ⓘ
-                </a>
-            )}
         </div>
     );
 }
 
 function NumberField({ field, value, onChange, hasError }) {
-    const { key, label, hint, docSlug, required, min, max, step, unit } = field;
+    const { key, label, hint, required, min, max, step, unit } = field;
     return (
         <div className="mb-4">
             <label htmlFor={key} className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)', transition: 'color 0.3s' }}>
                 {label}{required && <span className="text-danger"> *</span>}
             </label>
-            <FieldHint text={hint} docSlug={docSlug} />
+            <FieldHint text={hint} />
             <div className={`input-group ${hasError ? 'is-invalid' : ''}`}>
                 <input
                     id={key}
@@ -171,15 +159,24 @@ function NumberField({ field, value, onChange, hasError }) {
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-const FinancialData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+const FinancialData = ({ data, onUpdate, controller }) => {
+    const [form, setForm] = useState(data || INITIAL_STATE);
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
+
+    // Sync local state if prop changes
+    useEffect(() => {
+        if (data && Object.keys(data).length > 0) {
+            setForm(data);
+        }
+    }, [data]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
+        const nextForm = { ...form, [key]: value };
+        setForm(nextForm);
+        onUpdate(nextForm);
         setErrors((prev) => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
@@ -187,14 +184,16 @@ const FinancialData = ({ controller }) => {
             return next;
         });
         setValidationMsg('');
-    }, []);
+    }, [form, onUpdate]);
 
     const handleLoadSuggested = () => {
-        setForm((prev) => ({
-            ...prev, ...Object.fromEntries(
+        const nextForm = {
+            ...form, ...Object.fromEntries(
                 Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
             )
-        }));
+        };
+        setForm(nextForm);
+        onUpdate(nextForm);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: Suggested values applied.');
@@ -202,6 +201,7 @@ const FinancialData = ({ controller }) => {
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        onUpdate(INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: All fields cleared.');

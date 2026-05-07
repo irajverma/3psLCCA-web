@@ -1,43 +1,57 @@
 import React, { useState } from 'react';
-import { Navbar, Nav, NavDropdown, Button } from 'react-bootstrap';
+import { Navbar, Nav, NavDropdown, Button, Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { FaHome, FaLock, FaLockOpen, FaInfoCircle, FaCheckCircle, FaUndo, FaSave, FaCalculator, FaHistory, FaFolderOpen, FaPlus, FaSignOutAlt, FaCog } from 'react-icons/fa';
 import SaveCheckpointModal from './SaveCheckpointModal';
 import CheckpointManagerModal from './CheckpointManagerModal';
 import NewProjectModal from './NewProjectModal';
 import OpenProjectModal from './OpenProjectModal';
+import RenameProjectModal from './RenameProjectModal';
+import VersionHistoryModal from './VersionHistoryModal';
+import HelpModal from './HelpModal';
+import ProjectInfoModal from './ProjectInfoModal';
 
-const NavItemLink = ({ href, children, onClick }) => {
+const NavItemLink = ({ href, children, onClick, icon: Icon }) => {
     const [hover, setHover] = useState(false);
     return (
         <Nav.Link 
             href={href} 
-            className="px-2 py-1 mx-1 rounded"
+            className="px-2 py-1 mx-1 rounded d-flex align-items-center justify-content-center"
             style={{ 
                 color: hover ? 'var(--app-primary-accent)' : 'var(--app-text-primary)', 
                 backgroundColor: hover ? 'var(--app-bg-alt)' : 'transparent',
                 fontSize: '14px',
                 transition: 'all 0.2s ease',
+                minWidth: Icon ? '36px' : 'auto',
+                height: '32px'
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
-            onClick={onClick}
+            onClick={(e) => {
+                if (onClick) {
+                    e.preventDefault();
+                    onClick();
+                }
+            }}
         >
-            {children}
+            {Icon ? <Icon size={18} /> : children}
         </Nav.Link>
     );
 };
 
-const CustomDropdown = ({ title, id, items }) => {
+const CustomDropdown = ({ title, id, items, icon: Icon }) => {
     const [hover, setHover] = useState(false);
     return (
         <NavDropdown 
-            title={title} 
+            title={Icon ? <Icon size={16} className="me-1" /> : title} 
             id={id} 
-            className="px-1"
+            className="px-1 custom-nav-dropdown"
             style={{
                 color: hover ? 'var(--app-primary-accent)' : 'var(--app-text-primary)', 
                 backgroundColor: hover ? 'var(--app-bg-alt)' : 'transparent',
                 borderRadius: '4px',
-                transition: 'all 0.2s ease'
+                transition: 'all 0.2s ease',
+                display: 'flex',
+                alignItems: 'center'
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
@@ -54,9 +68,10 @@ const CustomDropdown = ({ title, id, items }) => {
                             item.onClick();
                         }
                     }}
-                    className="custom-dropdown-item"
-                    style={{ fontSize: '14px', color: 'var(--app-text-primary)' }}
+                    className="custom-dropdown-item d-flex align-items-center"
+                    style={{ fontSize: '13px', color: 'var(--app-text-primary)', padding: '6px 16px' }}
                   >
+                      {item.icon && <item.icon size={14} className="me-2" style={{ opacity: 0.8 }} />}
                       {item.label}
                   </NavDropdown.Item>
             ))}
@@ -64,38 +79,48 @@ const CustomDropdown = ({ title, id, items }) => {
     );
 };
 
-const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, ...props }) => {
+const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, icon: Icon, ...props }) => {
     const [hover, setHover] = useState(false);
-    const borderCol = hover ? '#9adc32' : outlineColor;
+    const borderCol = hover ? 'var(--app-primary-accent)' : outlineColor;
     const bgCol = hover ? outlineHoverBg : 'transparent';
-    const textCol = hover ? '#9adc32' : 'var(--app-text-secondary)';
+    const textCol = hover ? '#000' : 'var(--app-text-secondary)';
+    const finalOutlineHoverBg = hover ? 'var(--app-primary-accent)' : bgCol;
 
     return (
         <Button 
             variant={variant} 
             size="sm" 
+            className="d-flex align-items-center justify-content-center"
             style={{ 
                 borderColor: variant === 'outline-secondary' ? borderCol : 'transparent',
-                backgroundColor: variant === 'outline-secondary' ? bgCol : 'transparent',
-                color: variant === 'outline-secondary' ? textCol : 'var(--app-text-secondary)',
+                backgroundColor: variant === 'outline-secondary' ? (hover ? 'var(--app-primary-accent)' : 'transparent') : 'transparent',
+                color: variant === 'outline-secondary' ? (hover ? '#000' : 'var(--app-text-secondary)') : 'var(--app-text-secondary)',
                 fontSize: '13px',
-                padding: '4px 12px',
-                transition: 'all 0.2s ease'
+                padding: Icon && !children ? '4px 8px' : '4px 12px',
+                transition: 'all 0.2s ease',
+                height: '32px',
+                borderRadius: '4px'
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
             {...props}
         >
+            {Icon && <Icon size={14} className={children ? "me-2" : ""} />}
             {children}
         </Button>
     );
 };
 
-const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDeleteCheckpoint, onNewProject, onOpenProject, checkpoints, addLog, isLocked, setIsLocked }) => {
+const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDeleteCheckpoint, onNewProject, onOpenProject, checkpoints, addLog, isLocked, setIsLocked, projectName, projectData, onRenameProject, onExportProject }) => {
     const [showSaveModal, setShowSaveModal] = useState(false);
     const [showManagerModal, setShowManagerModal] = useState(false);
     const [showNewProjectModal, setShowNewProjectModal] = useState(false);
     const [showOpenProjectModal, setShowOpenProjectModal] = useState(false);
+    const [showRenameModal, setShowRenameModal] = useState(false);
+    const [showVersionModal, setShowVersionModal] = useState(false);
+    const [showContactModal, setShowContactModal] = useState(false);
+    const [showFeedbackModal, setShowFeedbackModal] = useState(false);
+    const [showInfoModal, setShowInfoModal] = useState(false);
 
     const handleRestoreCheckpoint = (cp) => {
         alert(`Restoring checkpoint: "${cp.label}"\n(This would typically replace current project data with the snapshot)`);
@@ -117,24 +142,25 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
             `}</style>
             
             <Nav className="me-auto align-items-center">
-                <NavItemLink href="#home" onClick={onBackToHome}>Home</NavItemLink>
+                <NavItemLink icon={FaHome} onClick={onBackToHome} />
                 
                 <CustomDropdown 
                     title="File" 
                     id="file-nav-dropdown" 
                     items={[
-                        { label: 'New', onClick: () => setShowNewProjectModal(true) },
-                        { label: 'Open', onClick: () => setShowOpenProjectModal(true) },
+                        { label: 'New Project', icon: FaPlus, onClick: () => setShowNewProjectModal(true) },
+                        { label: 'Open Project', icon: FaFolderOpen, onClick: onBackToHome },
                         'divider',
-                        { label: 'Save', href: '#save' },
-                        { label: 'Save As...', href: '#save-as' },
-                        { label: 'Create a Copy', href: '#copy' },
-                        { label: 'Print', href: '#print' },
+                        { label: 'Save Now', icon: FaSave, href: '#save' },
                         'divider',
-                        { label: 'Rename', href: '#rename' },
-                        { label: 'Export', href: '#export' },
-                        { label: 'Version History', href: '#history' },
-                        { label: 'Info', href: '#info' }
+                        { label: 'Rename', icon: FaCog, onClick: () => setShowRenameModal(true) },
+                        { label: 'Export...', icon: FaSave, onClick: onExportProject },
+                        'divider',
+                        { label: 'Version History', icon: FaHistory, onClick: () => setShowVersionModal(true) },
+                        'divider',
+                        { label: 'Info', onClick: () => setShowInfoModal(true) },
+                        'divider',
+                        { label: 'Close Project', icon: FaSignOutAlt, onClick: onBackToHome }
                     ]}
                 />
 
@@ -142,32 +168,35 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                     title="Help" 
                     id="help-nav-dropdown" 
                     items={[
-                        { label: 'Contact us', href: '#contact' },
-                        { label: 'Feedback', href: '#feedback' },
-                        'divider',
-                        { label: 'Video Tutorials', href: '#tutorials' },
-                        { label: 'Join our Community', href: '#community' }
+                        { label: 'Contact us', onClick: () => setShowContactModal(true) },
+                        { label: 'Feedback', onClick: () => setShowFeedbackModal(true) }
                     ]}
                 />
 
-                <NavItemLink href="#tutorials">Tutorials</NavItemLink>
                 <NavItemLink href="#logs" onClick={() => setActiveNode('Logs')}>Logs</NavItemLink>
             </Nav>
 
-            <Nav className="ms-auto align-items-center column-gap-3">
-                <span className="me-2" style={{ color: '#9adc32', fontSize: '13px' }}>All changes saved</span>
+            <Nav className="ms-auto align-items-center column-gap-2">
+                <div className="d-flex align-items-center me-2" style={{ color: 'var(--app-primary-accent)', fontSize: '12px', opacity: 0.9 }}>
+                    <FaCheckCircle size={12} className="me-1" />
+                    <span>All changes saved</span>
+                </div>
+                
                 <CustomNavBtn 
                     variant="outline-secondary" 
-                    outlineColor="var(--app-border-dark)" 
+                    outlineColor="var(--app-border-mid)" 
                     outlineHoverBg="var(--app-bg-alt)"
+                    icon={FaSave}
                     onClick={() => setShowSaveModal(true)}
                 >
                     Save Checkpoint
                 </CustomNavBtn>
+                
                 <CustomNavBtn 
                     variant="outline-secondary" 
-                    outlineColor="var(--app-border-dark)" 
+                    outlineColor="var(--app-border-mid)" 
                     outlineHoverBg="var(--app-bg-alt)"
+                    icon={FaHistory}
                     onClick={() => {
                         setShowManagerModal(true);
                         addLog("Opened Checkpoint Manager.");
@@ -179,10 +208,19 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                 <Button 
                     variant="outline-secondary" 
                     size="sm" 
-                    className="calc-btn mx-1"
-                    style={{ fontSize: '13px', padding: '4px 12px', transition: 'all 0.2s', borderColor: 'var(--app-border-dark)', color: 'var(--app-text-secondary)', backgroundColor: 'transparent' }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = '#9adc32'; e.currentTarget.style.borderColor = '#9adc32'; e.currentTarget.style.color = '#000'; }}
-                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'var(--app-border-dark)'; e.currentTarget.style.color = 'var(--app-text-secondary)'; }}
+                    className="calc-btn d-flex align-items-center"
+                    style={{ 
+                        fontSize: '13px', 
+                        padding: '4px 12px', 
+                        transition: 'all 0.2s', 
+                        borderColor: 'var(--app-border-mid)', 
+                        color: 'var(--app-text-secondary)', 
+                        backgroundColor: 'transparent',
+                        height: '32px',
+                        borderRadius: '4px'
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-primary-accent)'; e.currentTarget.style.borderColor = 'var(--app-primary-accent)'; e.currentTarget.style.color = '#000'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'var(--app-border-mid)'; e.currentTarget.style.color = 'var(--app-text-secondary)'; }}
                     onClick={() => {
                         addLog("Calculation request initiated...");
                         setTimeout(() => addLog("Calculation engine: processing LCCA data models."), 300);
@@ -190,20 +228,26 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                         setActiveNode('Outputs');
                     }}
                 >
+                    <FaCalculator size={13} className="me-2" />
                     Calculate
                 </Button>
-                
-                <CustomNavBtn 
-                    variant="outline-secondary" 
-                    outlineColor="var(--app-border-dark)" 
-                    outlineHoverBg="var(--app-bg-alt)"
-                    onClick={() => {
-                        setIsLocked(!isLocked);
-                        addLog(isLocked ? "Project unlocked. Operations resumed." : "Project locked. All operations suspended.");
-                    }}
+
+                <OverlayTrigger
+                    placement="bottom"
+                    overlay={<Tooltip>{isLocked ? 'Unlock Project' : 'Lock Project'}</Tooltip>}
                 >
-                    {isLocked ? 'Unlock' : 'Lock'}
-                </CustomNavBtn>
+                    <Button 
+                        variant="link"
+                        className="p-1 mx-1 text-secondary"
+                        onClick={() => {
+                            setIsLocked(!isLocked);
+                            addLog(isLocked ? "Project unlocked. Operations resumed." : "Project locked. All operations suspended.");
+                        }}
+                        style={{ transition: 'all 0.2s' }}
+                    >
+                        {isLocked ? <FaLock size={18} color="var(--app-primary-accent)" /> : <FaLockOpen size={18} style={{ opacity: 0.7 }} />}
+                    </Button>
+                </OverlayTrigger>
             </Nav>
 
             <SaveCheckpointModal 
@@ -237,6 +281,38 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                     onOpenProject(data);
                     setShowOpenProjectModal(false);
                 }}
+            />
+
+            <RenameProjectModal 
+                show={showRenameModal}
+                onHide={() => setShowRenameModal(false)}
+                onRename={onRenameProject}
+                currentName={projectName}
+            />
+
+            <VersionHistoryModal 
+                show={showVersionModal}
+                onHide={() => setShowVersionModal(false)}
+            />
+
+            <HelpModal 
+                show={showContactModal}
+                onHide={() => setShowContactModal(false)}
+                title="Contact Us"
+                message="For support or enquiries, please email: support@3pslcca.com"
+            />
+
+            <HelpModal 
+                show={showFeedbackModal}
+                onHide={() => setShowFeedbackModal(false)}
+                title="Feedback"
+                message="We'd love to hear from you! Send feedback to: feedback@3pslcca.com"
+            />
+
+            <ProjectInfoModal 
+                show={showInfoModal}
+                onHide={() => setShowInfoModal(false)}
+                projectData={projectData}
             />
         </Navbar>
     );

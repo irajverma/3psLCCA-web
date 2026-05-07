@@ -36,7 +36,8 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
             name: projectName,
             country,
             currency,
-            unitSystem
+            unitSystem,
+            createdAt: new Date().toLocaleString()
         });
         onHide();
     };
@@ -55,17 +56,19 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
                     border: 1px solid var(--app-border-mid);
                     color: var(--app-text-primary);
                     border-radius: 12px;
+                    max-width: 480px;
+                    margin: auto;
                 }
                 .new-project-modal .modal-header {
                     border-bottom: 1px solid var(--app-border-light);
-                    padding: 1rem 1.5rem;
+                    padding: 0.75rem 1.25rem;
                 }
                 .new-project-modal .modal-body {
-                    padding: 1.5rem;
+                    padding: 1.25rem;
                 }
                 .new-project-modal .modal-footer {
                     border-top: none;
-                    padding: 0 1.5rem 1.5rem 1.5rem;
+                    padding: 0 1.25rem 1.25rem 1.25rem;
                 }
                 .new-project-modal .form-label {
                     font-size: 0.9rem;
@@ -123,7 +126,7 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className="mb-4">
+                    <Form.Group className="mb-3">
                         <Form.Label>Project Name</Form.Label>
                         <Form.Control 
                             type="text" 
@@ -134,7 +137,7 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
                         <div className="help-text">You can rename this later.</div>
                     </Form.Group>
 
-                    <Form.Group className="mb-4">
+                    <Form.Group className="mb-3">
                         <Form.Label>Country</Form.Label>
                         <Form.Select value={country} onChange={handleCountryChange}>
                             <option value="">- Select country -</option>
@@ -145,7 +148,7 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
                         <div className="help-text">Cannot be changed after project creation.</div>
                     </Form.Group>
 
-                    <Form.Group className="mb-4">
+                    <Form.Group className="mb-3">
                         <Form.Label>Currency</Form.Label>
                         <Form.Select value={currency} onChange={(e) => setCurrency(e.target.value)}>
                             <option value="">- Select currency -</option>
@@ -153,7 +156,7 @@ const NewProjectModal = ({ show, onHide, onCreate }) => {
                             <option value="US Dollar (USD)">US Dollar (USD)</option>
                             <option value="British Pound (GBP)">British Pound (GBP)</option>
                         </Form.Select>
-                        <div className="help-text">Auto-filled based on the selected country. Cannot be changed after project creation.</div>
+                        <div className="help-text">Auto-filled based on country.</div>
                     </Form.Group>
 
                     <Form.Group className="mb-0">
