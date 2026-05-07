@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './BridgeData.css';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -212,14 +213,22 @@ function NumberField({ id, label, hint, docSlug, required, min, max, step, unit,
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const BridgeData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.bridge_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
     // ── Handlers ────────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
+        setForm((prev) => {
+            const next = { ...prev, [key]: value };
+            updateProjectData('bridge_data', next);
+            return next;
+        });
         // Clear error on edit
         setErrors((prev) => {
             if (!prev.has(key)) return prev;
@@ -232,6 +241,7 @@ const BridgeData = ({ controller }) => {
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        updateProjectData('bridge_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Bridge: All fields cleared.');

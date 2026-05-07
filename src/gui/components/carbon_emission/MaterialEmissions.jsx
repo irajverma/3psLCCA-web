@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const MaterialEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [materials, setMaterials] = useState([]);
     const [excludedIds, setExcludedIds] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState('');
@@ -16,36 +18,33 @@ const MaterialEmissions = ({ controller }) => {
 
         let allMats = [];
         STRUCTURE_CHUNKS.forEach(([chunkId, category]) => {
-            const data = controller?.engine?.fetch_chunk(chunkId) || {};
-            Object.entries(data).forEach(([compName, items]) => {
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (item.id && !item.state?.in_trash) {
-                            const val = item.values || {};
-                            allMats.push({
-                                id: item.id,
-                                name: val.material_name || 'Unnamed Material',
-                                category: category,
-                                component: compName,
-                                quantity: parseFloat(val.quantity || 0),
-                                unit: val.unit || '',
-                                cf: parseFloat(val.conversion_factor || 1.0) || 1.0,
-                                ef: parseFloat(val.carbon_emission || 0) || 0,
-                                chunkId: chunkId
-                            });
-                        }
+            const sections = projectData[chunkId] || [];
+            sections.forEach(section => {
+                const compName = section.name || '';
+                const items = section.rows || [];
+                items.forEach(item => {
+                    allMats.push({
+                        id: item.id,
+                        name: item.workName || 'Unnamed Material',
+                        category: category,
+                        component: compName,
+                        quantity: parseFloat(item.qty || 0),
+                        unit: item.unit || '',
+                        cf: 1.0,
+                        ef: item.carbonEmission ? parseFloat(item.carbonEmission.factor || 0) : 0,
+                        chunkId: chunkId
                     });
-                }
+                });
             });
         });
         setMaterials(allMats);
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const matData = carbonData.material_emissions_data || {};
         if (matData.excluded_ids) {
             setExcludedIds(new Set(matData.excluded_ids));
         }
-    }, [controller]);
+    }, [projectData]);
 
     const handleToggleInclusion = (id, include) => {
         const newSet = new Set(excludedIds);
@@ -60,13 +59,14 @@ const MaterialEmissions = ({ controller }) => {
 
     const saveToEngine = (newExcludedSet) => {
         const excludedList = Array.from(newExcludedSet);
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             material_emissions_data: {
-                ...prev.material_emissions_data,
+                ...(prev.material_emissions_data || {}),
                 excluded_ids: excludedList
             }
-        }));
+        });
     };
 
     const categoryTotals = useMemo(() => {

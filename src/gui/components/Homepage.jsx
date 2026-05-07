@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BsHouseDoorFill, BsFileEarmarkPlus, BsFolder2Open, BsGearFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { AiOutlineRedo } from 'react-icons/ai';
 import NewProject from './NewProject';
@@ -29,7 +29,14 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     const [showModal, setShowModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState(() => {
+        const saved = localStorage.getItem('recentProjects');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('recentProjects', JSON.stringify(projects));
+    }, [projects]);
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
@@ -224,7 +231,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
                     <div className="row g-3">
                         {projects.map((proj) => (
                             <div key={proj.id} className="col-12 col-md-6 col-lg-6">
-                                <div className="p-3 d-flex justify-content-between align-items-start shadow-sm" style={{ backgroundColor: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', minHeight: '90px' }} onClick={() => onProjectOpen()}>
+                                <div className="p-3 d-flex justify-content-between align-items-start shadow-sm" style={{ backgroundColor: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', minHeight: '90px' }} onClick={() => onProjectOpen(proj.id, proj.name)}>
                                     <div className="d-flex flex-column justify-content-between h-100">
                                         <h6 className="mb-2" style={{ color: theme.textPrimary, fontSize: '0.95rem', fontWeight: '500' }}>{proj.name}</h6>
                                         <small style={{ color: theme.textSecondary, fontSize: '0.75rem' }}>{proj.date}</small>

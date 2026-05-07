@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './FinancialData.css';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -172,14 +173,22 @@ function NumberField({ field, value, onChange, hasError }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const FinancialData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.financial_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
+        setForm((prev) => {
+            const next = { ...prev, [key]: value };
+            updateProjectData('financial_data', next);
+            return next;
+        });
         setErrors((prev) => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
@@ -190,11 +199,15 @@ const FinancialData = ({ controller }) => {
     }, []);
 
     const handleLoadSuggested = () => {
-        setForm((prev) => ({
-            ...prev, ...Object.fromEntries(
-                Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
-            )
-        }));
+        setForm((prev) => {
+            const next = {
+                ...prev, ...Object.fromEntries(
+                    Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
+                )
+            };
+            updateProjectData('financial_data', next);
+            return next;
+        });
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: Suggested values applied.');
@@ -202,6 +215,7 @@ const FinancialData = ({ controller }) => {
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        updateProjectData('financial_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: All fields cleared.');

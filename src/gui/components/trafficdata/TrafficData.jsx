@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './TrafficData.css';
 
 // ── Constants ────────────────────────────────────────────────────────────────
@@ -226,7 +227,11 @@ function RichTextEditor({ value, onChange }) {
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const TrafficData = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.traffic_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
@@ -239,20 +244,33 @@ const TrafficData = ({ controller }) => {
     }, []);
 
     const handleModeChange = (val) => {
-        setForm((prev) => ({ ...prev, calculation_mode: val }));
+        setForm((prev) => {
+            const next = { ...prev, calculation_mode: val };
+            updateProjectData('traffic_data', next);
+            return next;
+        });
         clearErrors('calculation_mode');
     };
 
     const handleCostChange = (val) => {
-        setForm((prev) => ({ ...prev, road_user_cost_per_day: val }));
+        setForm((prev) => {
+            const next = { ...prev, road_user_cost_per_day: val };
+            updateProjectData('traffic_data', next);
+            return next;
+        });
     };
 
     const handleRemarksChange = (html) => {
-        setForm((prev) => ({ ...prev, remarks: html }));
+        setForm((prev) => {
+            const next = { ...prev, remarks: html };
+            updateProjectData('traffic_data', next);
+            return next;
+        });
     };
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        updateProjectData('traffic_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Traffic: All fields cleared.');

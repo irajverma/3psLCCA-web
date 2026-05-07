@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
@@ -18,7 +19,15 @@ const DEFAULT_SECTIONS = [
 // MaterialTable imported from shared component
 
 const SubStructure = ({ controller }) => {
-    const [sections, setSections] = useState(DEFAULT_SECTIONS);
+    const { projectData, updateProjectData } = useProjectData();
+    const [sections, setSections] = useState(() => {
+        const saved = projectData.substructure_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
+    });
+
+    useEffect(() => {
+        updateProjectData('substructure_data', sections);
+    }, [sections, updateProjectData]);
     const handleRowChange = useCallback((sId, rId, field, val) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) })), []);
     const handleRowDelete = useCallback((sId, rId) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) })), []);
     const handleAddRow = useCallback((sId, newRowData) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] })), []);

@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -196,9 +197,17 @@ function SelectField({ id, label, hint, docSlug, required, options, value, onCha
 // ── Main Component ────────────────────────────────────────────────────────────
 
 const ProjectInformationPlaceholder = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.general_info;
+        return saved ? { ...INITIAL_STATE, ...saved } : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
+
+    useEffect(() => {
+        updateProjectData('general_info', form);
+    }, [form, updateProjectData]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 

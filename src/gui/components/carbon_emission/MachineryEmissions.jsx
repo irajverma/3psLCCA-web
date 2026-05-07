@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const ENERGY_SOURCES = [
     { label: "Diesel", unit: "l/hr", ef: 2.69 },
@@ -30,6 +31,7 @@ const DEFAULT_MACHINERY_DATA = [
 ];
 
 const MachineryEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [mode, setMode] = useState('detailed'); 
     const [detailedEntries, setDetailedEntries] = useState([]);
     const [lumpSum, setLumpSum] = useState({
@@ -44,13 +46,13 @@ const MachineryEmissions = ({ controller }) => {
     const [applyDaysVal, setApplyDaysVal] = useState(1);
 
     useEffect(() => {
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const machineryData = carbonData.machinery_emissions_data || {};
         if (machineryData.mode) setMode(machineryData.mode);
         if (machineryData.detailed_entries) setDetailedEntries(machineryData.detailed_entries);
         if (machineryData.lump_sum) setLumpSum(machineryData.lump_sum);
         if (machineryData.remarks) setRemarks(machineryData.remarks);
-    }, [controller]);
+    }, [projectData]);
 
     const handleAddEntry = (template = null) => {
         const newEntry = template ? { ...template, hours: 8, days: 1 } : {
@@ -107,7 +109,8 @@ const MachineryEmissions = ({ controller }) => {
     };
 
     const saveToEngine = (newMode, entries, ls, rem) => {
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             machinery_emissions_data: {
                 mode: newMode,
@@ -118,7 +121,7 @@ const MachineryEmissions = ({ controller }) => {
                     entries.reduce((sum, e) => sum + (e.rate * e.hours * e.days * e.ef), 0) :
                     (ls.elec_kwh_per_day * ls.elec_days * ls.elec_ef) + (ls.fuel_litres_per_day * ls.fuel_days * ls.fuel_ef)
             }
-        }));
+        });
     };
 
     const detailedTotal = useMemo(() => {

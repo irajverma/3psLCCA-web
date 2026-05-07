@@ -12,22 +12,37 @@ import Logs from './gui/components/Logs'
 import MaintenanceAndRepair from './gui/components/maintenance_and_repair/MaintenanceAndRepair'
 import Recycling from './gui/components/recycling/Recycling'
 import Demolition from './gui/components/demolition/Demolition'
+import { ProjectDataProvider } from './contexts/ProjectDataContext'
 import './App.css'
 
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isProjectOpen, setIsProjectOpen] = useState(false)
-  const [activeNode, setActiveNode] = useState('General Information')
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true')
+  const [isProjectOpen, setIsProjectOpen] = useState(() => localStorage.getItem('isProjectOpen') === 'true')
+  const [activeProjectId, setActiveProjectId] = useState(() => localStorage.getItem('activeProjectId') || 'default_project')
+  const [activeNode, setActiveNode] = useState(() => localStorage.getItem('activeNode') || 'General Information')
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
-  const [userName, setUserName] = useState('')
+  const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '')
 
-  const [userSettings, setUserSettings] = useState({
-    appearanceMode: 'Auto',
-    lightTheme: 'Pink',
-    darkTheme: 'Pink'
+  useEffect(() => { localStorage.setItem('isLoggedIn', isLoggedIn); }, [isLoggedIn]);
+  useEffect(() => { localStorage.setItem('isProjectOpen', isProjectOpen); }, [isProjectOpen]);
+  useEffect(() => { localStorage.setItem('activeProjectId', activeProjectId); }, [activeProjectId]);
+  useEffect(() => { localStorage.setItem('activeNode', activeNode); }, [activeNode]);
+  useEffect(() => { localStorage.setItem('userName', userName); }, [userName]);
+
+  const [userSettings, setUserSettings] = useState(() => {
+    const saved = localStorage.getItem('userSettings');
+    return saved ? JSON.parse(saved) : {
+      appearanceMode: 'Auto',
+      lightTheme: 'Pink',
+      darkTheme: 'Pink'
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('userSettings', JSON.stringify(userSettings));
+  }, [userSettings]);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -111,9 +126,10 @@ function App() {
     addLog(isGuest ? `Guest user '${name}' logged in.` : `User '${name}' logged in.`)
   }
 
-  const handleProjectOpen = () => {
+  const handleProjectOpen = (projectId = 'default_project', projectName = 'Default Project') => {
+    setActiveProjectId(projectId);
     setIsProjectOpen(true)
-    addLog("Project 'Bridge_Assessment_01' opened successfully.")
+    addLog(`Project '${projectName}' opened successfully.`)
   }
 
   const handleSaveCheckpoint = (newCheckpoint) => {
@@ -172,8 +188,9 @@ function App() {
   if (isProjectOpen) {
     const content = CONTENT_MAP[activeNode] || null
     return (
-      <ProjectLayout
-        activeNode={activeNode}
+      <ProjectDataProvider key={activeProjectId} projectId={activeProjectId}>
+        <ProjectLayout
+          activeNode={activeNode}
         setActiveNode={handleSetActiveNode}
         onBackToHome={() => {
           setIsProjectOpen(false)
@@ -190,6 +207,7 @@ function App() {
           onClearLogs: handleClearLogs
         })}
       </ProjectLayout>
+      </ProjectDataProvider>
     )
   }
 

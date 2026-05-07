@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const MODES = {
     NITI: "NITI Aayog",
@@ -33,6 +34,7 @@ const RICKE_SCC_TABLE = {
 const NITI_SCC_INR = 6.3936;
 
 const SocialCost = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [mode, setMode] = useState(MODES.NITI);
     const [currency, setCurrency] = useState('INR');
     
@@ -43,10 +45,10 @@ const SocialCost = ({ controller }) => {
     const [customScc, setCustomScc] = useState(0.05);
 
     useEffect(() => {
-        const genInfo = controller?.engine?.fetch_chunk('general_info') || {};
+        const genInfo = projectData.general_info || {};
         if (genInfo.project_currency) setCurrency(genInfo.project_currency);
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const socialData = carbonData.social_cost_data || {};
         
         if (socialData.mode) setMode(socialData.mode);
@@ -55,7 +57,7 @@ const SocialCost = ({ controller }) => {
         if (socialData.ssp) setSsp(socialData.ssp);
         if (socialData.rcp) setRcp(socialData.rcp);
         if (socialData.custom_scc) setCustomScc(socialData.custom_scc);
-    }, [controller]);
+    }, [projectData]);
 
     const currentScc = useMemo(() => {
         if (mode === MODES.NITI) return NITI_SCC_INR * inrRate;
@@ -68,7 +70,8 @@ const SocialCost = ({ controller }) => {
     }, [mode, inrRate, usdRate, ssp, rcp, customScc]);
 
     const saveChanges = (updates) => {
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             social_cost_data: {
                 mode,
@@ -81,7 +84,7 @@ const SocialCost = ({ controller }) => {
                 currency,
                 ...updates
             }
-        }));
+        });
     };
 
     const handleClearAll = () => {

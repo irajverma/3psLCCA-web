@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
@@ -28,7 +29,15 @@ const DEFAULT_SECTIONS = [
 // ── Foundation main component ─────────────────────────────────────────────────
 
 const Foundation = ({ controller }) => {
-    const [sections, setSections] = useState(DEFAULT_SECTIONS);
+    const { projectData, updateProjectData } = useProjectData();
+    const [sections, setSections] = useState(() => {
+        const saved = projectData.foundation_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
+    });
+
+    useEffect(() => {
+        updateProjectData('foundation_data', sections);
+    }, [sections, updateProjectData]);
 
     const handleRowChange = useCallback((sectionId, rowId, field, value) => {
         setSections((prev) =>

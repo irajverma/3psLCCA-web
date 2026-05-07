@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Form, Table } from 'react-bootstrap';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const VEHICLE_PRESETS = [
     { name: "Light Commercial Vehicle (LCV)", capacity: 3.5, gross_weight: 7.5, empty_weight: 4.0, emission_factor: 0.8, class_label: "Small Truck" },
@@ -23,23 +24,19 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
 
         let mats = [];
         STRUCTURE_CHUNKS.forEach(([chunkId, category]) => {
-            const data = controller?.engine?.fetch_chunk(chunkId) || {};
-            Object.values(data).forEach(items => {
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (!item.state?.in_trash) {
-                            const val = item.values || {};
-                            mats.push({
-                                id: item.id,
-                                name: val.material_name || 'Unnamed',
-                                category: category,
-                                quantity: parseFloat(val.quantity || 0),
-                                unit: val.unit || '',
-                                kgFactor: parseFloat(val.conversion_factor || 1.0)
-                            });
-                        }
+            const sections = projectData[chunkId] || [];
+            sections.forEach(section => {
+                const items = section.rows || [];
+                items.forEach(item => {
+                    mats.push({
+                        id: item.id,
+                        name: item.workName || 'Unnamed',
+                        category: category,
+                        quantity: parseFloat(item.qty || 0),
+                        unit: item.unit || '',
+                        kgFactor: 1.0 // This could be inferred from the unit if needed
                     });
-                }
+                });
             });
         });
         setAllMaterials(mats);
@@ -49,7 +46,7 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
             setRoute(initialData.route || { origin: '', distance_km: 0 });
             setSelectedMaterialIds(new Set((initialData.selectedMaterials || []).map(m => m.id)));
         }
-    }, [isOpen, initialData, controller]);
+    }, [isOpen, initialData, projectData]);
 
     const handleSave = () => {
         const selectedMaterials = allMaterials.filter(m => selectedMaterialIds.has(m.id));
@@ -182,15 +179,16 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
 };
 
 const TransportationEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [deliveries, setDeliveries] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingDelivery, setEditingDelivery] = useState(null);
 
     useEffect(() => {
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const transportData = carbonData.transport_emissions_data || {};
         setDeliveries(transportData.raw_ui_entries || []);
-    }, [controller]);
+    }, [projectData]);
 
     const handleAddDelivery = () => {
         setEditingDelivery(null);
@@ -223,13 +221,14 @@ const TransportationEmissions = ({ controller }) => {
 
     const saveToEngine = (updatedDeliveries) => {
         const computed = computeEmissions(updatedDeliveries);
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             transport_emissions_data: {
                 ...computed,
                 raw_ui_entries: updatedDeliveries
             }
-        }));
+        });
     };
 
     const computeEmissionsForSingle = (entry) => {

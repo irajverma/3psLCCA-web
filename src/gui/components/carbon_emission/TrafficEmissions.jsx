@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const VEHICLE_TYPES = [
     { key: "small_cars",   label: "Small Car",       defaultEf: 0.1030 },
@@ -12,6 +13,7 @@ const VEHICLE_TYPES = [
 ];
 
 const TrafficEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [mode, setMode] = useState('calculate'); 
     const [rerouteKm, setRerouteKm] = useState(0);
     const [factors, setFactors] = useState(
@@ -24,18 +26,18 @@ const TrafficEmissions = ({ controller }) => {
     const [remarks, setRemarks] = useState('');
 
     useEffect(() => {
-        const trafficData = controller?.engine?.fetch_chunk('traffic_and_road_data') || {};
+        const trafficData = projectData.traffic_data || {};
         const vpd = trafficData.vehicles_per_day || {};
         setAadt(prev => ({ ...prev, ...vpd }));
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const diversionData = carbonData.diversion_emissions_data || {};
         if (diversionData.mode) setMode(diversionData.mode);
         if (diversionData.reroute_km) setRerouteKm(diversionData.reroute_km);
         if (diversionData.factors) setFactors(prev => ({ ...prev, ...diversionData.factors }));
         if (diversionData.direct_value) setDirectValue(diversionData.direct_value);
         if (diversionData.remarks) setRemarks(diversionData.remarks);
-    }, [controller]);
+    }, [projectData]);
 
     const handleUpdateFactor = (key, val) => {
         const updated = { ...factors, [key]: parseFloat(val) || 0 };
@@ -48,7 +50,8 @@ const TrafficEmissions = ({ controller }) => {
             VEHICLE_TYPES.reduce((sum, v) => sum + ((aadt[v.key] || 0) * km * (f[v.key] || 0)), 0) :
             direct;
 
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             diversion_emissions_data: {
                 mode: newMode,
@@ -58,7 +61,7 @@ const TrafficEmissions = ({ controller }) => {
                 remarks: rem,
                 total_kgCO2e_per_day: totalPerDay
             }
-        }));
+        });
     };
 
     const handleClearAll = () => {
