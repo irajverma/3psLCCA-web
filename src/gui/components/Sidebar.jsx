@@ -77,14 +77,14 @@ const TreeNode = ({ label, childrenData, depth, activeNode, setActiveNode }) => 
                 style={{
                     paddingLeft: `${depth * 15 + 10}px`,
                     cursor: 'pointer',
-                    color: isActive ? '#9acd32' : nodeColor,
+                    color: isActive ? 'var(--app-primary-accent)' : nodeColor,
                 }}
                 onClick={handleToggle}
                 onMouseEnter={() => setIsHovered(true)}
                 onMouseLeave={() => setIsHovered(false)}
             >
                 {isActive && (
-                    <div style={{ position: 'absolute', left: 0, top: '4px', bottom: '4px', width: '3px', backgroundColor: '#9acd32', borderRadius: '0 3px 3px 0' }}></div>
+                    <div style={{ position: 'absolute', left: 0, top: '4px', bottom: '4px', width: '3px', backgroundColor: 'var(--app-primary-accent)', borderRadius: '0 3px 3px 0' }}></div>
                 )}
                 <span className="d-inline-flex justify-content-center align-items-center me-1" style={{ width: '20px', color: expanderColor, visibility: hasChildren ? 'visible' : 'hidden' }}>
                     {isExpanded ? <FaChevronDown size={10} /> : <FaChevronRight size={10} />}
@@ -206,11 +206,11 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                 }
                 .sidebar-btn.checked {
                     border-radius: 15px;
-                    background: rgba(154, 205, 50, 0.15);
+                    background: color-mix(in srgb, var(--app-primary-accent) 15%, transparent);
                 }
                 .sidebar-btn.checked:hover {
                     border-radius: 15px;
-                    background: rgba(154, 205, 50, 0.25);
+                    background: color-mix(in srgb, var(--app-primary-accent) 25%, transparent);
                 }
             `}</style>
 
@@ -239,10 +239,10 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
                     height: '100%',
                     cursor: 'col-resize',
                     zIndex: 100,
-                    backgroundColor: isResizing ? 'rgba(154, 205, 50, 0.8)' : 'transparent',
+                    backgroundColor: isResizing ? 'color-mix(in srgb, var(--app-primary-accent) 80%, transparent)' : 'transparent',
                     transition: 'background-color 0.2s ease',
                 }}
-                onMouseEnter={(e) => { if (!isResizing) e.target.style.backgroundColor = 'rgba(154, 205, 50, 0.5)'; }}
+                onMouseEnter={(e) => { if (!isResizing) e.target.style.backgroundColor = 'color-mix(in srgb, var(--app-primary-accent) 50%, transparent)'; }}
                 onMouseLeave={(e) => { if (!isResizing) e.target.style.backgroundColor = 'transparent'; }}
             />
         </div>

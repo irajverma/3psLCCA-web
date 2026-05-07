@@ -54,18 +54,18 @@ const Recycling = () => {
 
     const headerStyle = {
         padding: '10px 16px',
-        borderBottom: '1px solid #333',
-        color: '#ccc',
+        borderBottom: '1px solid var(--app-border-mid)',
+        color: 'var(--app-text-secondary)',
         fontSize: '0.85rem',
-        fontWeight: 'normal',
+        fontWeight: 'bold',
         backgroundColor: 'var(--app-bg-card)',
     };
 
     const cellStyle = {
         padding: '10px 16px',
-        borderBottom: '1px solid #333',
+        borderBottom: '1px solid var(--app-border-light)',
         fontSize: '0.85rem',
-        color: '#fff',
+        color: 'var(--app-text-primary)',
         verticalAlign: 'middle',
     };
 
@@ -87,7 +87,7 @@ const Recycling = () => {
                 {/* Included Table */}
                 <h6 className="mb-3 mt-2 fw-bold">Included in Recyclability</h6>
                 <div className="table-responsive rounded border border-secondary mb-4" style={{ backgroundColor: 'var(--app-bg-card)' }}>
-                    <table className="table table-borderless table-hover m-0" style={{ '--bs-table-bg': 'transparent', '--bs-table-hover-bg': 'rgba(255,255,255,0.05)' }}>
+                    <table className="table table-borderless table-hover m-0" style={{ '--bs-table-bg': 'transparent' }}>
                         <thead>
                             <tr>
                                 <th style={headerStyle}>Category</th>
@@ -124,7 +124,7 @@ const Recycling = () => {
                                     <td style={cellStyle} className="text-end"></td>
                                     <td style={cellStyle} className="text-center">
                                         <div className="d-flex justify-content-center gap-3">
-                                            <FaEdit style={{ cursor: 'pointer', color: '#ccc' }} title="Edit" onClick={() => handleEdit(item)} />
+                                            <FaEdit style={{ cursor: 'pointer', color: 'var(--app-text-muted)' }} title="Edit" onClick={() => handleEdit(item)} />
                                             <FaChevronDown style={{ cursor: 'pointer', color: '#dc3545' }} title="Exclude" onClick={() => handleExclude(item)} />
                                         </div>
                                     </td>
@@ -137,7 +137,7 @@ const Recycling = () => {
                 {/* Excluded Table */}
                 <h6 className="mb-3 mt-4 fw-bold">Excluded from Recyclability</h6>
                 <div className="table-responsive rounded border border-secondary" style={{ backgroundColor: 'var(--app-bg-card)', marginBottom: '50px' }}>
-                    <table className="table table-borderless table-hover m-0" style={{ '--bs-table-bg': 'transparent', '--bs-table-hover-bg': 'rgba(255,255,255,0.05)' }}>
+                    <table className="table table-borderless table-hover m-0" style={{ '--bs-table-bg': 'transparent' }}>
                         <thead>
                             <tr>
                                 <th style={headerStyle}>Category</th>
@@ -171,7 +171,7 @@ const Recycling = () => {
                                     </td>
                                     <td style={cellStyle} className="text-center">
                                         <div className="d-flex justify-content-center gap-3">
-                                            <FaEdit style={{ cursor: 'pointer', color: '#ccc' }} title="Edit" onClick={() => handleEdit(item)} />
+                                            <FaEdit style={{ cursor: 'pointer', color: 'var(--app-text-muted)' }} title="Edit" onClick={() => handleEdit(item)} />
                                             <FaChevronUp style={{ cursor: 'pointer', color: '#198754' }} title="Include" onClick={() => handleInclude(item)} />
                                         </div>
                                     </td>

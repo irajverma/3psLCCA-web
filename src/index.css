@@ -30,8 +30,7 @@
   }
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+[data-bs-theme="dark"] {
     --text: #9ca3af;
     --text-h: #f3f4f6;
     --bg: #16171d;
@@ -43,11 +42,10 @@
     --social-bg: rgba(47, 48, 58, 0.5);
     --shadow:
       rgba(0, 0, 0, 0.4) 0 10px 15px -3px, rgba(0, 0, 0, 0.25) 0 4px 6px -2px;
-  }
+}
 
-  #social .button-icon {
-    filter: invert(1) brightness(2);
-  }
+[data-bs-theme="dark"] #social .button-icon {
+  filter: invert(1) brightness(2);
 }
 
 body {
@@ -131,8 +129,7 @@ code {
   --app-input-text: #495057;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
+[data-bs-theme="dark"] {
     --app-bg-main: #121212;
     --app-bg-card: #1e1e1e;
     --app-bg-alt: #2c2c2c;
@@ -150,7 +147,6 @@ code {
     --app-input-bg: #2c2c2c;
     --app-input-border: #444444;
     --app-input-text: #ffffff;
-  }
 }
 
 /* Global Bootstrap Modals Dark Mode Support */

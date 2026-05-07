@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import HomePage from './gui/components/Homepage'
 import Loginpage from './gui/Login/Loginpage'
 import ProjectLayout from './gui/components/ProjectLayout'
@@ -22,6 +22,83 @@ function App() {
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
   const [userName, setUserName] = useState('')
+
+  const [userSettings, setUserSettings] = useState({
+    appearanceMode: 'Auto',
+    lightTheme: 'Pink',
+    darkTheme: 'Pink'
+  });
+
+  const [isDarkMode, setIsDarkMode] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches;
+    }
+    return false;
+  });
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+    
+    const updateTheme = () => {
+      if (userSettings.appearanceMode === 'Dark') {
+        setIsDarkMode(true);
+      } else if (userSettings.appearanceMode === 'Light') {
+        setIsDarkMode(false);
+      } else {
+        // Auto
+        setIsDarkMode(mediaQuery.matches);
+      }
+    };
+
+    updateTheme(); // Call on appearanceMode change
+
+    const handleChange = (e) => {
+      if (userSettings.appearanceMode === 'Auto') {
+        setIsDarkMode(e.matches);
+      }
+    };
+    if (mediaQuery.addEventListener) mediaQuery.addEventListener('change', handleChange);
+    else mediaQuery.addListener(handleChange);
+    return () => {
+      if (mediaQuery.removeEventListener) mediaQuery.removeEventListener('change', handleChange);
+      else mediaQuery.removeListener(handleChange);
+    };
+  }, [userSettings.appearanceMode]);
+
+  useEffect(() => {
+    const root = document.documentElement;
+    root.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+
+    if (isDarkMode) {
+      if (userSettings.darkTheme === 'Pink') {
+        root.style.setProperty('--app-bg-main', '#2a1a21');
+        root.style.setProperty('--app-bg-card', '#1c1015');
+        root.style.setProperty('--app-primary-accent', '#e84393');
+      } else if (userSettings.darkTheme === 'Blue') {
+        root.style.setProperty('--app-bg-main', '#0f172a');
+        root.style.setProperty('--app-bg-card', '#0b1120');
+        root.style.setProperty('--app-primary-accent', '#3b82f6');
+      } else if (userSettings.darkTheme === 'Green') {
+        root.style.setProperty('--app-bg-main', '#121e12');
+        root.style.setProperty('--app-bg-card', '#0d160d');
+        root.style.setProperty('--app-primary-accent', '#9acd32');
+      }
+    } else {
+      if (userSettings.lightTheme === 'Pink') {
+        root.style.setProperty('--app-bg-main', '#fff0f5');
+        root.style.setProperty('--app-bg-card', '#ffe4e1');
+        root.style.setProperty('--app-primary-accent', '#d63031');
+      } else if (userSettings.lightTheme === 'Blue') {
+        root.style.setProperty('--app-bg-main', '#f0f8ff');
+        root.style.setProperty('--app-bg-card', '#e6f0fa');
+        root.style.setProperty('--app-primary-accent', '#0984e3');
+      } else if (userSettings.lightTheme === 'Green') {
+        root.style.setProperty('--app-bg-main', '#f4fbf0');
+        root.style.setProperty('--app-bg-card', '#e8f5e9');
+        root.style.setProperty('--app-primary-accent', '#9acd32');
+      }
+    }
+  }, [isDarkMode, userSettings]);
 
   const addLog = (message) => {
     const time = new Date().toTimeString().split(' ')[0]
@@ -117,7 +194,13 @@ function App() {
   }
 
   return (
-    <HomePage onProjectOpen={handleProjectOpen} userName={userName} />
+    <HomePage
+      onProjectOpen={handleProjectOpen}
+      userName={userName}
+      isDarkMode={isDarkMode}
+      userSettings={userSettings}
+      setUserSettings={setUserSettings}
+    />
   )
 }
 
