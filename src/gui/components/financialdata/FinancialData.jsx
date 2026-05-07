@@ -169,40 +169,39 @@ const FinancialData = ({ controller }) => {
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
+    // Sync local state when projectData changes externally
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
+        const saved = projectData.financial_data;
+        if (saved && Object.keys(saved).length > 0) {
+            setForm(saved);
         }
-    }, [data]);
+    }, []);
+
+    // Sync form to context whenever it changes
+    useEffect(() => {
+        updateProjectData('financial_data', form);
+    }, [form, updateProjectData]);
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => {
-            const next = { ...prev, [key]: value };
-            updateProjectData('financial_data', next);
-            return next;
-        });
-        setErrors((prev) => {
+        setForm(prev => ({ ...prev, [key]: value }));
+        setErrors(prev => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
             next.delete(key);
             return next;
         });
         setValidationMsg('');
-    }, [form, onUpdate]);
+    }, []);
 
     const handleLoadSuggested = () => {
-        setForm((prev) => {
-            const next = {
-                ...prev, ...Object.fromEntries(
-                    Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
-                )
-            };
-            updateProjectData('financial_data', next);
-            return next;
-        });
+        const next = {
+            ...form, ...Object.fromEntries(
+                Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
+            )
+        };
+        setForm(next);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: Suggested values applied.');

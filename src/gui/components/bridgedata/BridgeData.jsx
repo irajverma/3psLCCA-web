@@ -209,23 +209,18 @@ const BridgeData = ({ controller }) => {
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
+
+    // Sync form to context whenever it changes (updateProjectData is stable via useCallback)
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
-        }
-    }, [data]);
+        updateProjectData('bridge_data', form);
+    }, [form, updateProjectData]);
 
     // ── Handlers ────────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => {
-            const next = { ...prev, [key]: value };
-            updateProjectData('bridge_data', next);
-            return next;
-        });
+        setForm(prev => ({ ...prev, [key]: value }));
         // Clear error on edit
-        setErrors((prev) => {
+        setErrors(prev => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
             next.delete(key);

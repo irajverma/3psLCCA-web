@@ -12,6 +12,7 @@ import Logs from './gui/components/Logs'
 import MaintenanceAndRepair from './gui/components/maintenance_and_repair/MaintenanceAndRepair'
 import Recycling from './gui/components/recycling/Recycling'
 import Demolition from './gui/components/demolition/Demolition'
+import Outputs from './gui/components/outputs/Outputs'
 import { ProjectDataProvider } from './contexts/ProjectDataContext'
 import './App.css'
 
@@ -25,6 +26,8 @@ function App() {
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
   const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '')
+  const [isLocked, setIsLocked] = useState(false)
+  const [navTrigger, setNavTrigger] = useState(Date.now())
 
   useEffect(() => { localStorage.setItem('isLoggedIn', isLoggedIn); }, [isLoggedIn]);
   useEffect(() => { localStorage.setItem('isProjectOpen', isProjectOpen); }, [isProjectOpen]);
@@ -133,6 +136,14 @@ function App() {
     addLog(`Project '${projectName}' opened successfully.`)
   }
 
+  const handleNewProject = (projectDetails) => {
+    handleProjectOpen('new_project_' + Date.now(), projectDetails?.name || 'New Project');
+  }
+
+  const handleOpenProject = (projectData) => {
+    handleProjectOpen(projectData?.id || 'opened_project', projectData?.name || 'Opened Project');
+  }
+
   const handleSaveCheckpoint = (newCheckpoint) => {
     setCheckpoints(prev => [...prev, newCheckpoint])
     addLog(`Checkpoint '${newCheckpoint.label}' created.`)
@@ -207,13 +218,13 @@ function App() {
         isLocked={isLocked}
         setIsLocked={setIsLocked}
       >
-        {React.cloneElement(content, { 
+        {content ? React.cloneElement(content, { 
           checkpoints, 
           logs, 
           onClearLogs: handleClearLogs,
           isLocked: isLocked,
           navTrigger: navTrigger
-        })}
+        }) : null}
       </ProjectLayout>
       </ProjectDataProvider>
     )

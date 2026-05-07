@@ -5,7 +5,6 @@ import MaterialTable from '../MaterialTable';
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
-const emptyRow = () => ({ id: uid(), workName: '', rate: '', qty: '', source: '' });
 // calcTotal removed as it's in MaterialTable.jsx
 
 const DEFAULT_SECTIONS = [

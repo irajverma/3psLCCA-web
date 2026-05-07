@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 
 const ProjectDataContext = createContext();
 
@@ -21,10 +21,10 @@ export const ProjectDataProvider = ({ children, projectId = 'default' }) => {
             bridge_data: {},
             financial_data: {},
             traffic_data: {},
-            foundation_data: {},
-            substructure_data: {},
-            superstructure_data: {},
-            miscellaneous_data: {},
+            foundation_data: [],
+            substructure_data: [],
+            superstructure_data: [],
+            miscellaneous_data: [],
             carbon_emission_data: {},
             maintenance_repair_data: {},
             recycling_data: {},
@@ -37,30 +37,30 @@ export const ProjectDataProvider = ({ children, projectId = 'default' }) => {
         localStorage.setItem(storageKey, JSON.stringify(projectData));
     }, [projectData, storageKey]);
 
-    const updateProjectData = (chunkName, data) => {
+    const updateProjectData = useCallback((chunkName, data) => {
         setProjectData(prev => ({
             ...prev,
             [chunkName]: data
         }));
-    };
+    }, []);
 
-    const clearProjectData = () => {
+    const clearProjectData = useCallback(() => {
         setProjectData({
             general_info: {},
             bridge_data: {},
             financial_data: {},
             traffic_data: {},
-            foundation_data: {},
-            substructure_data: {},
-            superstructure_data: {},
-            miscellaneous_data: {},
+            foundation_data: [],
+            substructure_data: [],
+            superstructure_data: [],
+            miscellaneous_data: [],
             carbon_emission_data: {},
             maintenance_repair_data: {},
             recycling_data: {},
             demolition_data: {},
             outputs_data: {}
         });
-    };
+    }, []);
 
     return (
         <ProjectDataContext.Provider value={{ projectData, updateProjectData, clearProjectData }}>

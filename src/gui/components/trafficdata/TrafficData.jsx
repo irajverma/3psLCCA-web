@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './TrafficData.css';
 
@@ -235,12 +235,10 @@ const TrafficData = ({ controller }) => {
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
+    // Sync form to context whenever it changes
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
-        }
-    }, [data]);
+        updateProjectData('traffic_data', form);
+    }, [form, updateProjectData]);
 
     const clearErrors = useCallback((key) => {
         setErrors((prev) => {
@@ -251,28 +249,16 @@ const TrafficData = ({ controller }) => {
     }, []);
 
     const handleModeChange = (val) => {
-        setForm((prev) => {
-            const next = { ...prev, calculation_mode: val };
-            updateProjectData('traffic_data', next);
-            return next;
-        });
+        setForm(prev => ({ ...prev, calculation_mode: val }));
         clearErrors('calculation_mode');
     };
 
     const handleCostChange = (val) => {
-        setForm((prev) => {
-            const next = { ...prev, road_user_cost_per_day: val };
-            updateProjectData('traffic_data', next);
-            return next;
-        });
+        setForm(prev => ({ ...prev, road_user_cost_per_day: val }));
     };
 
     const handleRemarksChange = (html) => {
-        setForm((prev) => {
-            const next = { ...prev, remarks: html };
-            updateProjectData('traffic_data', next);
-            return next;
-        });
+        setForm(prev => ({ ...prev, remarks: html }));
     };
 
     const handleClearAll = () => {

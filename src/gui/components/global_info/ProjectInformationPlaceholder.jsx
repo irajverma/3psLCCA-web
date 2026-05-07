@@ -193,15 +193,17 @@ const ProjectInformationPlaceholder = ({ controller }) => {
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
+    // Sync form to context whenever it changes (updateProjectData is stable via useCallback)
     useEffect(() => {
         updateProjectData('general_info', form);
     }, [form, updateProjectData]);
 
+
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-        setErrors((prev) => {
+        setForm(prev => ({ ...prev, [key]: value }));
+        setErrors(prev => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
             next.delete(key);
@@ -213,13 +215,11 @@ const ProjectInformationPlaceholder = ({ controller }) => {
     const handleClearAll = () => {
         // Never clear locked or sor_database fields
         const skipKeys = new Set([...LOCKED_KEYS, 'sor_database']);
-        setForm((prev) => {
-            const next = { ...prev };
-            Object.keys(INITIAL_STATE).forEach((k) => {
-                if (!skipKeys.has(k)) next[k] = '';
-            });
-            return next;
+        const next = { ...form };
+        Object.keys(INITIAL_STATE).forEach((k) => {
+            if (!skipKeys.has(k)) next[k] = '';
         });
+        setForm(next);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('General Info: All fields cleared.');

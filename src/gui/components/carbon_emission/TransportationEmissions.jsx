@@ -9,6 +9,7 @@ const VEHICLE_PRESETS = [
 ];
 
 const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) => {
+    const { projectData } = useProjectData();
     const [vehicle, setVehicle] = useState(VEHICLE_PRESETS[0]);
     const [route, setRoute] = useState({ origin: '', distance_km: 0 });
     const [allMaterials, setAllMaterials] = useState([]);
