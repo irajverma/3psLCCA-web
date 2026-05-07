@@ -113,7 +113,8 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
             name: projectName,
             country: country.value,
             currency: currency.value,
-            unitSystem: unitSystem.value
+            unitSystem: unitSystem.value,
+            createdAt: new Date().toLocaleString()
         };
 
         setProjectName('');
@@ -133,7 +134,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
     const customSelectStyles = getCustomSelectStyles(isDarkMode, brandColor);
 
     return (
-        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false}>
+        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false} size="sm">
             {/* Wrapping Modal content to force styling */}
             <div style={{ backgroundColor: colors.modalBg, color: colors.text, borderRadius: '6px', overflow: 'hidden', transition: 'all 0.3s' }}>
                 <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: '0' }} className="custom-theme-modal-header pt-3 px-4">

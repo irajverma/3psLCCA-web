@@ -235,6 +235,13 @@ const TrafficData = ({ controller }) => {
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
+    // Sync local state if prop changes
+    useEffect(() => {
+        if (data && Object.keys(data).length > 0) {
+            setForm(data);
+        }
+    }, [data]);
+
     const clearErrors = useCallback((key) => {
         setErrors((prev) => {
             if (!prev.has(key)) return prev;

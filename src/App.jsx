@@ -20,6 +20,7 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true')
   const [isProjectOpen, setIsProjectOpen] = useState(() => localStorage.getItem('isProjectOpen') === 'true')
   const [activeProjectId, setActiveProjectId] = useState(() => localStorage.getItem('activeProjectId') || 'default_project')
+  const [projectData, setProjectData] = useState(null)
   const [activeNode, setActiveNode] = useState(() => localStorage.getItem('activeNode') || 'General Information')
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
@@ -148,6 +149,7 @@ function App() {
   }
 
   const handleSetActiveNode = (node) => {
+    setNavTrigger(Date.now())
     if (node !== activeNode) {
       setActiveNode(node)
       addLog(`Switched to ${node} view.`)
@@ -174,7 +176,7 @@ function App() {
     'Recycling': <Recycling />,
     'Demolition': <Demolition />,
     'Logs': <Logs />,
-    'Outputs': <CarbonEmissionContainer initialTab="SocialCost" />,
+    'Outputs': <Outputs addLog={addLog} />,
   }
 
   if (!isLoggedIn) {
@@ -199,12 +201,18 @@ function App() {
         checkpoints={checkpoints}
         onSaveCheckpoint={handleSaveCheckpoint}
         onDeleteCheckpoint={handleDeleteCheckpoint}
+        onNewProject={handleNewProject}
+        onOpenProject={handleOpenProject}
         addLog={addLog}
+        isLocked={isLocked}
+        setIsLocked={setIsLocked}
       >
-        {React.cloneElement(content, {
-          checkpoints,
-          logs,
-          onClearLogs: handleClearLogs
+        {React.cloneElement(content, { 
+          checkpoints, 
+          logs, 
+          onClearLogs: handleClearLogs,
+          isLocked: isLocked,
+          navTrigger: navTrigger
         })}
       </ProjectLayout>
       </ProjectDataProvider>
