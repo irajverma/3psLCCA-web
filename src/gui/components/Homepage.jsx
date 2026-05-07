@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { BsHouseDoorFill, BsFileEarmarkPlus, BsFolder2Open, BsGearFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { AiOutlineRedo } from 'react-icons/ai';
 import NewProject from './NewProject';
+import SettingsModal from './SettingsModal';
 
 // Base Imports
 import Logo3psLCCA from '../../assets/logo-3psLCCA.svg';
@@ -24,36 +25,11 @@ const AppLogo = () => (
 );
 
 
-const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
+const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings, setUserSettings }) => {
     const [showModal, setShowModal] = useState(false);
+    const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
-
-    // Auto-detect system theme preference
-    const [isDarkMode, setIsDarkMode] = useState(() => {
-        if (typeof window !== 'undefined') {
-            return window.matchMedia('(prefers-color-scheme: dark)').matches;
-        }
-        return false;
-    });
-
-    useEffect(() => {
-        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-        const handleChange = (e) => setIsDarkMode(e.matches);
-
-        if (mediaQuery.addEventListener) {
-            mediaQuery.addEventListener('change', handleChange);
-        } else {
-            mediaQuery.addListener(handleChange);
-        }
-
-        return () => {
-            if (mediaQuery.removeEventListener) {
-                mediaQuery.removeEventListener('change', handleChange);
-            } else {
-                mediaQuery.removeListener(handleChange);
-            }
-        };
-    }, []);
+    const [projects, setProjects] = useState([]);
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
@@ -62,8 +38,6 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
         setActiveTab('new');
         handleOpenModal();
     };
-
-    const [projects, setProjects] = useState([]);
 
     const handleProjectCreate = (newProjectData) => {
         const newProject = {
@@ -82,8 +56,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
         return 'Evening';
     };
 
-    // Theme Configuration
-    const theme = isDarkMode ? {
+    let theme = isDarkMode ? {
         bgMain: '#1e2023',
         bgSidebar: '#15171a',
         bgCard: '#24272b',
@@ -91,7 +64,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
         textSecondary: '#949ba4',
         border: '#2f3136',
         inputBg: '#2b2d31',
-        activeIconBg: '#2c3b1d', // Subtle dark lime accent
+        activeIconBg: '#2c3b1d',
         activeIconColor: '#8bc34a',
         logoIITB: IITBLogoDark,
         logoConstructSteel: ConstructSteelDark,
@@ -115,6 +88,41 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
         filterBtnUnselectedBg: '#f8f9fa'
     };
 
+    if (isDarkMode) {
+        if (userSettings?.darkTheme === 'Pink') {
+            theme.bgMain = '#2a1a21';
+            theme.bgSidebar = '#1c1015';
+            theme.activeIconColor = '#e84393';
+            theme.activeIconBg = '#3a1e28';
+        } else if (userSettings?.darkTheme === 'Blue') {
+            theme.bgMain = '#0f172a';
+            theme.bgSidebar = '#0b1120';
+            theme.activeIconColor = '#3b82f6';
+            theme.activeIconBg = '#172554';
+        } else if (userSettings?.darkTheme === 'Green') {
+            theme.bgMain = '#121e12';
+            theme.bgSidebar = '#0d160d';
+            theme.activeIconColor = '#9acd32';
+            theme.activeIconBg = '#1a2e1a';
+        }
+    } else {
+        if (userSettings?.lightTheme === 'Pink') {
+            theme.bgMain = '#fff0f5';
+            theme.bgSidebar = '#ffe4e1';
+            theme.activeIconColor = '#d63031';
+            theme.activeIconBg = '#ffdada';
+        } else if (userSettings?.lightTheme === 'Blue') {
+            theme.bgMain = '#f0f8ff';
+            theme.bgSidebar = '#e6f0fa';
+            theme.activeIconColor = '#0984e3';
+            theme.activeIconBg = '#d0e8ff';
+        } else if (userSettings?.lightTheme === 'Green') {
+            theme.bgMain = '#f4fbf0';
+            theme.bgSidebar = '#e8f5e9';
+            theme.activeIconColor = '#9acd32';
+            theme.activeIconBg = '#d4edda';
+        }
+    }
 
     return (
         <div className="d-flex" style={{ height: '100vh', backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>
@@ -159,6 +167,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
                     <div
                         className="d-flex flex-column align-items-center justify-content-center w-100 py-4"
                         style={{ cursor: 'pointer', backgroundColor: activeTab === 'settings' ? theme.activeIconBg : 'transparent', color: activeTab === 'settings' ? theme.activeIconColor : theme.textSecondary, transition: 'all 0.2s', borderTop: `1px solid ${theme.border}` }}
+                        onClick={() => { setActiveTab('settings'); setShowSettingsModal(true); }}
                     >
                         <BsGearFill size={20} className="mb-1" />
                         <span style={{ fontSize: '11px' }}>Settings</span>
@@ -254,6 +263,23 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!' }) => {
 
             {/* New Project Modal */}
             <NewProject show={showModal} handleClose={handleCloseModal} onProjectOpen={onProjectOpen} onProjectCreate={handleProjectCreate} isDarkMode={isDarkMode} theme={theme} />
+
+            {/* Settings Modal */}
+            <SettingsModal 
+                show={showSettingsModal} 
+                handleClose={() => setShowSettingsModal(false)} 
+                isDarkMode={isDarkMode} 
+                theme={theme} 
+                initialUserName={userName}
+                userSettings={userSettings}
+                onSaveSettings={(settings) => {
+                    setUserSettings({
+                        appearanceMode: settings.appearanceMode,
+                        lightTheme: settings.lightTheme,
+                        darkTheme: settings.darkTheme
+                    });
+                }}
+            />
         </div>
     );
 };
