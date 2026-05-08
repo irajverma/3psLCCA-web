@@ -19,7 +19,17 @@ import './App.css'
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [isProjectOpen, setIsProjectOpen] = useState(false)
-  const [projectData, setProjectData] = useState(null)
+  const [projectData, setProjectData] = useState({
+    name: 'Bridge_Assessment_01',
+    bridge_data: {},
+    financial_data: {},
+    traffic_data: {},
+    construction_work_data: { "Super Structure": { total: 0 }, "grand_total": 0 },
+    carbon_emission_data: {},
+    maintenance_data: {},
+    demolition_data: {},
+    recycling_data: {}
+  })
   const [activeNode, setActiveNode] = useState('General Information')
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
@@ -175,6 +185,13 @@ function App() {
     setLogs(prev => [...prev, `[${time}] ${message}`])
   }
 
+  const updateProjectData = (section, data) => {
+    setProjectData(prev => ({
+      ...prev,
+      [section]: data
+    }))
+  }
+
   const handleLogin = (isGuest = false, name = "Admin") => {
     setIsLoggedIn(true)
     setUserName(name)
@@ -182,14 +199,22 @@ function App() {
   }
 
   const handleProjectOpen = () => {
-    setProjectData({ name: 'Bridge_Assessment_01', country: 'India', currency: 'INR', unitSystem: 'Metric' })
     setIsProjectOpen(true)
     addLog("Project 'Bridge_Assessment_01' opened successfully.")
   }
 
   const handleNewProject = (data) => {
-    // Reset project state for a new project
-    setProjectData(data)
+    setProjectData({
+      ...data,
+      bridge_data: {},
+      financial_data: {},
+      traffic_data: {},
+      construction_work_data: { "Super Structure": { total: 0 }, "grand_total": 0 },
+      carbon_emission_data: {},
+      maintenance_data: {},
+      demolition_data: {},
+      recycling_data: {}
+    })
     setCheckpoints([])
     setLogs([])
     setIsLocked(false)
@@ -199,9 +224,8 @@ function App() {
   }
 
   const handleOpenProject = (data) => {
-    // Load existing project data
     setProjectData(data)
-    setCheckpoints([]) // In a real app, these would come from the loaded data
+    setCheckpoints([])
     setLogs([])
     setIsLocked(false)
     setActiveNode('General Information')
@@ -233,27 +257,64 @@ function App() {
   }
 
   const CONTENT_MAP = {
-    'General Information': <ProjectInformationPlaceholder />,
-    'Bridge Data': <BridgeData />,
-    'Financial Data': <FinancialData />,
-    'Traffic Data': <TrafficData />,
-    'Construction Work Data': <ConstructionWorkData setActiveNode={setActiveNode} />,
-    'Foundation': <ConstructionWorkData setActiveNode={setActiveNode} />,
-    'Sub Structure': <ConstructionWorkData initialTab="SubStructure" setActiveNode={setActiveNode} />,
-    'Super Structure': <ConstructionWorkData initialTab="SuperStructure" setActiveNode={setActiveNode} />,
-    'Miscellaneous': <ConstructionWorkData initialTab="Miscellaneous" setActiveNode={setActiveNode} />,
-    'Carbon Emission Data': <CarbonEmissionContainer />,
-    'Material Emissions': <CarbonEmissionContainer initialTab="Material" />,
-    'Transportation Emissions': <CarbonEmissionContainer initialTab="Transportation" />,
-    'Machinery Emissions': <CarbonEmissionContainer initialTab="Machinery" />,
-    'Traffic Diversion Emissions': <CarbonEmissionContainer initialTab="Traffic" />,
-    'Social Cost of Carbon': <CarbonEmissionContainer initialTab="SocialCost" />,
+    'General Information': <ProjectInformationPlaceholder data={projectData.bridge_data} onUpdate={(d) => updateProjectData('bridge_data', d)} />,
+    'Bridge Data': <BridgeData data={projectData.bridge_data} onUpdate={(d) => updateProjectData('bridge_data', d)} />,
+    'Financial Data': <FinancialData data={projectData.financial_data} onUpdate={(d) => updateProjectData('financial_data', d)} />,
+    'Traffic Data': <TrafficData data={projectData.traffic_data} onUpdate={(d) => updateProjectData('traffic_data', d)} />,
+    'Construction Work Data': <ConstructionWorkData data={projectData.construction_work_data} onUpdate={(d) => updateProjectData('construction_work_data', d)} setActiveNode={setActiveNode} />,
+    'Foundation': <ConstructionWorkData data={projectData.construction_work_data} onUpdate={(d) => updateProjectData('construction_work_data', d)} setActiveNode={setActiveNode} />,
+    'Sub Structure': <ConstructionWorkData data={projectData.construction_work_data} onUpdate={(d) => updateProjectData('construction_work_data', d)} initialTab="SubStructure" setActiveNode={setActiveNode} />,
+    'Super Structure': <ConstructionWorkData data={projectData.construction_work_data} onUpdate={(d) => updateProjectData('construction_work_data', d)} initialTab="SuperStructure" setActiveNode={setActiveNode} />,
+    'Miscellaneous': <ConstructionWorkData data={projectData.construction_work_data} onUpdate={(d) => updateProjectData('construction_work_data', d)} initialTab="Miscellaneous" setActiveNode={setActiveNode} />,
+    'Carbon Emission Data': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} />,
+    'Material Emissions': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} initialTab="Material" />,
+    'Transportation Emissions': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} initialTab="Transportation" />,
+    'Machinery Emissions': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} initialTab="Machinery" />,
+    'Traffic Diversion Emissions': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} initialTab="Traffic" />,
+    'Social Cost of Carbon': <CarbonEmissionContainer data={projectData.carbon_emission_data} onUpdate={(d) => updateProjectData('carbon_emission_data', d)} initialTab="SocialCost" />,
     'Maintenance and Repair': <MaintenanceAndRepair />,
     'Recycling': <Recycling />,
     'Demolition': <Demolition />,
     'Logs': <Logs />,
-    'Outputs': <Outputs addLog={addLog} />,
+    'Outputs': <Outputs addLog={addLog} projectInputs={projectData} />,
   }
+
+  const handleRenameProject = (newName) => {
+    if (projectData) {
+      setProjectData(prev => ({ ...prev, name: newName }))
+      addLog(`Project renamed to '${newName}'.`)
+    }
+  }
+
+  const handleExportProject = () => {
+    if (!projectData) return;
+    
+    const exportData = {
+        project: projectData,
+        checkpoints: checkpoints,
+        logs: logs,
+        exportedAt: new Date().toISOString()
+    };
+    
+    // 1. Save to browser localStorage (simulating a internal file manager storage)
+    const storageKey = `lcca_export_${projectData.name || 'unnamed'}`;
+    localStorage.setItem(storageKey, JSON.stringify(exportData));
+    
+    // 2. Trigger file download for external storage
+    const dataStr = JSON.stringify(exportData, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${projectData.name || 'project'}_export.json`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+    
+    addLog(`Project exported and saved to local storage as '${storageKey}'.`);
+  };
 
   if (!isLoggedIn) {
     const handleAdminLogin = (credentials) => {
@@ -281,6 +342,10 @@ function App() {
         addLog={addLog}
         isLocked={isLocked}
         setIsLocked={setIsLocked}
+        projectName={projectData?.name}
+        projectData={projectData}
+        onRenameProject={handleRenameProject}
+        onExportProject={handleExportProject}
       >
         {React.cloneElement(content, {
           checkpoints,
