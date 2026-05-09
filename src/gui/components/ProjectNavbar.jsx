@@ -139,7 +139,9 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                 .custom-project-nav .dropdown-toggle { color: var(--app-text-primary) !important; font-size: 14px; }
             `}</style>
             
-            <Nav className="me-auto align-items-center">
+            <Navbar.Toggle aria-controls="project-navbar-nav" className="border-0 shadow-none" style={{ filter: 'invert(0.5)' }} />
+            <Navbar.Collapse id="project-navbar-nav">
+                <Nav className="me-auto align-items-center flex-row flex-wrap gap-2 gap-lg-0">
                 <NavItemLink icon={FaHome} onClick={onBackToHome} />
                 
                 <CustomDropdown 
@@ -174,7 +176,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                 <NavItemLink href="#logs" onClick={() => setActiveNode('Logs')}>Logs</NavItemLink>
             </Nav>
 
-            <Nav className="ms-auto align-items-center column-gap-2">
+            <Nav className="ms-auto align-items-center column-gap-2 flex-row flex-wrap mt-2 mt-lg-0">
                 <div className="d-flex align-items-center me-2" style={{ color: 'var(--app-primary-accent)', fontSize: '12px', opacity: 0.9 }}>
                     <FaCheckCircle size={12} className="me-1" />
                     <span>All changes saved</span>
@@ -247,6 +249,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                     </Button>
                 </OverlayTrigger>
             </Nav>
+            </Navbar.Collapse>
 
             <SaveCheckpointModal 
                 show={showSaveModal} 
