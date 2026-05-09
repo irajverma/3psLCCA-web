@@ -1,7 +1,8 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './FinancialData.css';
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const BASE_DOCS_URL = 'https://yourdocs.com/financial/';
 
@@ -45,7 +46,7 @@ const FINANCIAL_FIELDS = [
     {
         key: 'investment_ratio',
         label: 'Investment Ratio',
-        hint: 'Proportion of total cost financed through investment (0–1). Example: 0.5 means 50%.',
+        hint: 'Proportion of total cost financed through investment (0ΓÇô1). Example: 0.5 means 50%.',
         type: 'float',
         min: 0.0,
         max: 1.0,
@@ -110,7 +111,7 @@ const REQUIRED_KEYS = new Set(
     FINANCIAL_FIELDS.filter((f) => f.required).map((f) => f.key)
 );
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Sub-components ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 function SectionHeader({ title }) {
     return (
@@ -157,43 +158,50 @@ function NumberField({ field, value, onChange, hasError }) {
     );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Main Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-const FinancialData = ({ data, onUpdate, controller }) => {
-    const [form, setForm] = useState(data || INITIAL_STATE);
+const FinancialData = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.financial_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
+    // Sync local state when projectData changes externally
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
+        const saved = projectData.financial_data;
+        if (saved && Object.keys(saved).length > 0) {
+            setForm(saved);
         }
-    }, [data]);
+    }, []);
 
-    // ── Handlers ─────────────────────────────────────────────────────────────
+    // Sync form to context whenever it changes
+    useEffect(() => {
+        updateProjectData('financial_data', form);
+    }, [form, updateProjectData]);
+
+    // ΓöÇΓöÇ Handlers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const handleChange = useCallback((key, value) => {
-        const nextForm = { ...form, [key]: value };
-        setForm(nextForm);
-        onUpdate(nextForm);
-        setErrors((prev) => {
+        setForm(prev => ({ ...prev, [key]: value }));
+        setErrors(prev => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
             next.delete(key);
             return next;
         });
         setValidationMsg('');
-    }, [form, onUpdate]);
+    }, []);
 
     const handleLoadSuggested = () => {
-        const nextForm = {
+        const next = {
             ...form, ...Object.fromEntries(
                 Object.entries(SUGGESTED_VALUES).map(([k, v]) => [k, String(v)])
             )
         };
-        setForm(nextForm);
-        onUpdate(nextForm);
+        setForm(next);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: Suggested values applied.');
@@ -201,13 +209,13 @@ const FinancialData = ({ data, onUpdate, controller }) => {
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
-        onUpdate(INITIAL_STATE);
+        updateProjectData('financial_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Financial: All fields cleared.');
     };
 
-    // ── Validation ────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Validation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const validate = () => {
         const newErrors = new Set();
@@ -238,7 +246,7 @@ const FinancialData = ({ data, onUpdate, controller }) => {
 
     const hasError = (key) => errors.has(key);
 
-    // ── Render ────────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Render ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     return (
         <div style={{ padding: '24px', color: 'var(--app-text-primary)' }}>
@@ -254,7 +262,7 @@ const FinancialData = ({ data, onUpdate, controller }) => {
                 />
             ))}
 
-            {/* ── Buttons ─────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Buttons ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <div className="d-flex gap-2 mt-4 mb-3">
                 <button
                     className="btn flex-grow-1"
@@ -279,7 +287,7 @@ const FinancialData = ({ data, onUpdate, controller }) => {
             {/* Validation message */}
             {validationMsg && (
                 <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">
-                    ⚠ {validationMsg}
+                    ΓÜá {validationMsg}
                 </div>
             )}
         </div>

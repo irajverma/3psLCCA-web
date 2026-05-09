@@ -1,7 +1,8 @@
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './TrafficData.css';
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const CALCULATION_MODES = ['GLOBAL', 'LOCAL'];
 
@@ -11,9 +12,9 @@ const INITIAL_STATE = {
     remarks: '',
 };
 
-// ── Custom Dropdown ───────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Custom Dropdown ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-function Dropdown({ id, options, value, onChange, placeholder = '— Select —' }) {
+function Dropdown({ id, options, value, onChange, placeholder = 'ΓÇö Select ΓÇö' }) {
     const [open, setOpen] = useState(false);
     const ref = useRef(null);
 
@@ -41,10 +42,10 @@ function Dropdown({ id, options, value, onChange, placeholder = '— Select —'
                 <span className={value ? '' : 'text-muted fst-italic'}>
                     {value || placeholder}
                 </span>
-                <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
+                <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>Γû╛</span>
             </button>
             {open && (
-                <ul className="dropdown-menu show w-100 p-1 shadow-sm" role="listbox" style={{ maxHeight: '250px', overflowY: 'auto', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
+                <ul className="dropdown-menu show w-100 p-1 shadow-sm overflow-y-auto" role="listbox" style={{ maxHeight: '250px', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
                     <li className="dropdown-item text-muted fst-italic" style={{ cursor: 'pointer', fontSize: '0.875rem' }} onClick={() => select('')}>
                         {placeholder}
                     </li>
@@ -73,7 +74,7 @@ function Dropdown({ id, options, value, onChange, placeholder = '— Select —'
     );
 }
 
-// ── Road User Cost Field ───────────────────────────────────────────────────────
+// ΓöÇΓöÇ Road User Cost Field ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 function RoadUserCostField({ value, onChange }) {
     return (
@@ -95,7 +96,7 @@ function RoadUserCostField({ value, onChange }) {
     );
 }
 
-// ── Rich Text Editor ──────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Rich Text Editor ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 function RichTextEditor({ value, onChange }) {
     const editorRef = useRef(null);
@@ -178,10 +179,10 @@ function RichTextEditor({ value, onChange }) {
         { label: 'Right',   title: 'Align Right',      action: () => exec('justifyRight') },
         { label: 'Justify', title: 'Justify',          action: () => exec('justifyFull') },
         null,
-        { label: '• List',  title: 'Bullet List',      action: () => exec('insertUnorderedList') },
+        { label: 'ΓÇó List',  title: 'Bullet List',      action: () => exec('insertUnorderedList') },
         { label: '1. List', title: 'Numbered List',    action: () => exec('insertOrderedList') },
         null,
-        { label: '+ Table', title: 'Insert 3×3 Table', action: insertTable },
+        { label: '+ Table', title: 'Insert 3├ù3 Table', action: insertTable },
         { label: '+ Row',   title: 'Insert Row Below', action: insertRow },
         { label: '+ Col',   title: 'Insert Column Right', action: insertCol },
         { label: 'Clear',   title: 'Clear Formatting', action: () => exec('removeFormat') },
@@ -223,19 +224,21 @@ function RichTextEditor({ value, onChange }) {
     );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Main Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-const TrafficData = ({ data, onUpdate, controller }) => {
-    const [form, setForm] = useState(data || INITIAL_STATE);
+const TrafficData = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.traffic_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
+    // Sync form to context whenever it changes
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
-        }
-    }, [data]);
+        updateProjectData('traffic_data', form);
+    }, [form, updateProjectData]);
 
     const clearErrors = useCallback((key) => {
         setErrors((prev) => {
@@ -246,33 +249,27 @@ const TrafficData = ({ data, onUpdate, controller }) => {
     }, []);
 
     const handleModeChange = (val) => {
-        const nextForm = { ...form, calculation_mode: val };
-        setForm(nextForm);
-        onUpdate(nextForm);
+        setForm(prev => ({ ...prev, calculation_mode: val }));
         clearErrors('calculation_mode');
     };
 
     const handleCostChange = (val) => {
-        const nextForm = { ...form, road_user_cost_per_day: val };
-        setForm(nextForm);
-        onUpdate(nextForm);
+        setForm(prev => ({ ...prev, road_user_cost_per_day: val }));
     };
 
     const handleRemarksChange = (html) => {
-        const nextForm = { ...form, remarks: html };
-        setForm(nextForm);
-        onUpdate(nextForm);
+        setForm(prev => ({ ...prev, remarks: html }));
     };
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
-        onUpdate(INITIAL_STATE);
+        updateProjectData('traffic_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Traffic: All fields cleared.');
     };
 
-    // ── Validation ────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Validation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const validate = () => {
         const newErrors = new Set();
@@ -294,7 +291,7 @@ const TrafficData = ({ data, onUpdate, controller }) => {
         return { valid: true, errors: [] };
     };
 
-    // ── Render ────────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Render ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     return (
         <div style={{ padding: '24px', color: 'var(--app-text-primary)' }}>
@@ -338,7 +335,7 @@ const TrafficData = ({ data, onUpdate, controller }) => {
             </div>
 
             {validationMsg && (
-                <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">⚠ {validationMsg}</div>
+                <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">ΓÜá {validationMsg}</div>
             )}
         </div>
     );

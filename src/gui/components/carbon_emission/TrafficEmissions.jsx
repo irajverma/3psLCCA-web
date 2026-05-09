@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const VEHICLE_TYPES = [
     { key: "small_cars",   label: "Small Car",       defaultEf: 0.1030 },
@@ -12,6 +13,7 @@ const VEHICLE_TYPES = [
 ];
 
 const TrafficEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [mode, setMode] = useState('calculate'); 
     const [rerouteKm, setRerouteKm] = useState(0);
     const [factors, setFactors] = useState(
@@ -24,18 +26,18 @@ const TrafficEmissions = ({ controller }) => {
     const [remarks, setRemarks] = useState('');
 
     useEffect(() => {
-        const trafficData = controller?.engine?.fetch_chunk('traffic_and_road_data') || {};
+        const trafficData = projectData.traffic_data || {};
         const vpd = trafficData.vehicles_per_day || {};
         setAadt(prev => ({ ...prev, ...vpd }));
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const diversionData = carbonData.diversion_emissions_data || {};
         if (diversionData.mode) setMode(diversionData.mode);
         if (diversionData.reroute_km) setRerouteKm(diversionData.reroute_km);
         if (diversionData.factors) setFactors(prev => ({ ...prev, ...diversionData.factors }));
         if (diversionData.direct_value) setDirectValue(diversionData.direct_value);
         if (diversionData.remarks) setRemarks(diversionData.remarks);
-    }, [controller]);
+    }, [projectData]);
 
     const handleUpdateFactor = (key, val) => {
         const updated = { ...factors, [key]: parseFloat(val) || 0 };
@@ -48,7 +50,8 @@ const TrafficEmissions = ({ controller }) => {
             VEHICLE_TYPES.reduce((sum, v) => sum + ((aadt[v.key] || 0) * km * (f[v.key] || 0)), 0) :
             direct;
 
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             diversion_emissions_data: {
                 mode: newMode,
@@ -58,7 +61,7 @@ const TrafficEmissions = ({ controller }) => {
                 remarks: rem,
                 total_kgCO2e_per_day: totalPerDay
             }
-        }));
+        });
     };
 
     const handleClearAll = () => {
@@ -107,7 +110,7 @@ const TrafficEmissions = ({ controller }) => {
                         }}
                         placeholder="0.000"
                     />
-                    <span className="position-absolute end-0 top-50 translate-middle-y pe-4 text-secondary">kgCO₂e/day</span>
+                    <span className="position-absolute end-0 top-50 translate-middle-y pe-4 text-secondary">kgCOΓéée/day</span>
                 </div>
             </div>
 
@@ -139,7 +142,7 @@ const TrafficEmissions = ({ controller }) => {
                                 <tr className="text-secondary">
                                     <th className="ps-3 py-2 border-0" style={{ width: '35%' }}>Vehicle Classification</th>
                                     <th className="text-end py-2 border-0">Source AADT</th>
-                                    <th className="text-end py-2 border-0" style={{ width: '25%' }}>EF (kgCO₂e/km)</th>
+                                    <th className="text-end py-2 border-0" style={{ width: '25%' }}>EF (kgCOΓéée/km)</th>
                                     <th className="text-end py-2 border-0 pe-4">Subtotal (kg/day)</th>
                                 </tr>
                             </thead>
@@ -185,7 +188,7 @@ const TrafficEmissions = ({ controller }) => {
                     <button className="remarks-btn">Right</button>
                     <button className="remarks-btn">Justify</button>
                     <div className="vr mx-1 bg-secondary opacity-25" style={{ height: '14px' }}></div>
-                    <button className="remarks-btn">• List</button>
+                    <button className="remarks-btn">ΓÇó List</button>
                     <button className="remarks-btn">1. List</button>
                     <div className="vr mx-1 bg-secondary opacity-25" style={{ height: '14px' }}></div>
                     <button className="remarks-btn">+ Table</button>
@@ -223,7 +226,7 @@ const TrafficEmissions = ({ controller }) => {
                             <span className="ms-2 fw-bold" style={{ color: '#9adc32', fontSize: '1.2rem' }}>
                                 {(mode === 'calculate' ? calculatedTotal : directValue).toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                             </span>
-                            <span className="text-secondary small ms-1">kgCO₂e/day</span>
+                            <span className="text-secondary small ms-1">kgCOΓéée/day</span>
                         </div>
                     </div>
                 </div>

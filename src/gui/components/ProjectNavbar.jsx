@@ -44,14 +44,12 @@ const CustomDropdown = ({ title, id, items, icon: Icon }) => {
         <NavDropdown 
             title={Icon ? <Icon size={16} className="me-1" /> : title} 
             id={id} 
-            className="px-1 custom-nav-dropdown"
+            className="px-1 custom-nav-dropdown d-flex align-items-center"
             style={{
                 color: hover ? 'var(--app-primary-accent)' : 'var(--app-text-primary)', 
                 backgroundColor: hover ? 'var(--app-bg-alt)' : 'transparent',
                 borderRadius: '4px',
-                transition: 'all 0.2s ease',
-                display: 'flex',
-                alignItems: 'center'
+                transition: 'all 0.2s ease'
             }}
             onMouseEnter={() => setHover(true)}
             onMouseLeave={() => setHover(false)}
@@ -83,7 +81,7 @@ const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, icon: I
     const [hover, setHover] = useState(false);
     const borderCol = hover ? 'var(--app-primary-accent)' : outlineColor;
     const bgCol = hover ? outlineHoverBg : 'transparent';
-    const textCol = hover ? '#000' : 'var(--app-text-secondary)';
+    const textCol = hover ? 'var(--app-bg-card)' : 'var(--app-text-secondary)';
     const finalOutlineHoverBg = hover ? 'var(--app-primary-accent)' : bgCol;
 
     return (
@@ -94,7 +92,7 @@ const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, icon: I
             style={{ 
                 borderColor: variant === 'outline-secondary' ? borderCol : 'transparent',
                 backgroundColor: variant === 'outline-secondary' ? (hover ? 'var(--app-primary-accent)' : 'transparent') : 'transparent',
-                color: variant === 'outline-secondary' ? (hover ? '#000' : 'var(--app-text-secondary)') : 'var(--app-text-secondary)',
+                color: variant === 'outline-secondary' ? (hover ? 'var(--app-bg-card)' : 'var(--app-text-secondary)') : 'var(--app-text-secondary)',
                 fontSize: '13px',
                 padding: Icon && !children ? '4px 8px' : '4px 12px',
                 transition: 'all 0.2s ease',
@@ -221,7 +219,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                         height: '32px',
                         borderRadius: '4px'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-primary-accent)'; e.currentTarget.style.borderColor = 'var(--app-primary-accent)'; e.currentTarget.style.color = '#000'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-primary-accent)'; e.currentTarget.style.borderColor = 'var(--app-primary-accent)'; e.currentTarget.style.color = 'var(--app-bg-card)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'var(--app-border-mid)'; e.currentTarget.style.color = 'var(--app-text-secondary)'; }}
                     onClick={() => {
                         addLog("Calculation request initiated...");

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Form, Button, Container, Row, Col, Modal } from 'react-bootstrap';
-import appLogo from '../../assets/logo-3psLCCA.svg';
+import { BsStars } from 'react-icons/bs';
 
 const Loginpage = ({ onLogin, onGuestLogin }) => {
     const [email, setEmail] = useState('');
@@ -29,32 +29,20 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
 
     return (
         <Container fluid className="p-0 m-0" style={{ height: '100vh', overflow: 'hidden' }}>
-            <style>
-                {`
-                @keyframes logo-spin-entrance {
-                    0% { transform: rotate(-360deg) scale(0.5); opacity: 0; }
-                    100% { transform: rotate(0deg) scale(1); opacity: 1; }
-                }
-                `}
-            </style>
             <Row className="g-0 m-0 w-100 h-100" style={{ backgroundColor: 'var(--app-bg-main)', transition: 'background-color 0.3s ease' }}>
 
                 {/* Left Side: Minimal Background */}
                 <Col md={6} className="d-flex flex-column p-4">
 
                     {/* Top Logo */}
-                    <div className="d-flex align-items-center mb-4" style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--app-text-primary)' }}>
-                        <img src={appLogo} alt="3psLCCA Logo" style={{ height: '32px', width: 'auto' }} className="me-2" />
-                        3psLCCA
+                    <div className="d-flex align-items-center mb-4" style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--app-logo-accent)' }}>
+                        <BsStars className="me-2" /> 3psLCCA
                     </div>
 
                     {/* Middle Text */}
                     <div className="d-flex flex-column justify-content-center align-items-center text-center flex-grow-1" style={{ paddingBottom: '5vh' }}>
-                        <div className="mb-4" style={{ filter: 'drop-shadow(0px 8px 16px rgba(0,0,0,0.15))', transition: 'transform 0.3s ease', animation: 'logo-spin-entrance 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
-                            <img src={appLogo} alt="3psLCCA Logo" style={{ height: '120px', width: 'auto' }} />
-                        </div>
-                        <h1 className="fw-bold mb-3" style={{ fontSize: '2.8rem', letterSpacing: '-0.5px', color: 'var(--app-text-primary)', transition: 'color 0.3s ease' }}>
-                            Welcome to 3psLCCA
+                        <h1 className="fw-bold mb-2" style={{ fontSize: '2.8rem', letterSpacing: '-0.5px', color: 'var(--app-text-primary)', transition: 'color 0.3s ease' }}>
+                            Welcome to...
                         </h1>
                         <p className="px-3 mb-0" style={{ fontSize: '1.1rem', lineHeight: '1.6', maxWidth: '90%', color: 'var(--app-text-secondary)', transition: 'color 0.3s ease' }}>
                             Your comprehensive platform for Life Cycle Cost Analysis.<br />
@@ -118,7 +106,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
                                 <Button
                                     type="submit"
                                     className="w-100 py-2 fw-bold mb-3 border-0"
-                                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
+                                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-main)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
                                 >
                                     LOGIN
                                 </Button>
@@ -170,7 +158,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
                             </Form.Group>
                             <div className="d-flex justify-content-end gap-2">
                                 <Button variant="secondary" onClick={() => setShowGuestPrompt(false)} style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-light)' }}>Cancel</Button>
-                                <Button type="submit" style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', border: 'none', fontWeight: 'bold' }}>Continue</Button>
+                                <Button type="submit" style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-main)', border: 'none', fontWeight: 'bold' }}>Continue</Button>
                             </div>
                         </Form>
                     </Modal.Body>

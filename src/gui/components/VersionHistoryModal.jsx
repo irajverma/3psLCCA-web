@@ -167,16 +167,10 @@ const VersionHistoryModal = ({ show, onHide }) => {
             <Modal.Header closeButton closeVariant="white">
                 <div className="d-flex flex-column">
                     <Modal.Title>
-                        <div style={{
-                            display: 'inline-flex',
-                            position: 'relative',
-                            width: '16px',
-                            height: '16px',
-                            marginRight: '10px'
-                        }}>
-                            <div style={{ position: 'absolute', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff6b35', top: 0, left: 0 }}></div>
-                            <div style={{ position: 'absolute', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#8bc34a', top: 0, right: 0 }}></div>
-                            <div style={{ position: 'absolute', width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#a9b0fc', bottom: 0, left: '3px' }}></div>
+                        <div className="d-inline-flex position-relative" style={{ width: '16px', height: '16px', marginRight: '10px' }}>
+                            <div className="position-absolute" style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#ff6b35', top: 0, left: 0 }}></div>
+                            <div className="position-absolute" style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#8bc34a', top: 0, right: 0 }}></div>
+                            <div className="position-absolute" style={{ width: '10px', height: '10px', borderRadius: '50%', backgroundColor: '#a9b0fc', bottom: 0, left: '3px' }}></div>
                         </div>
                         Version Rollback
                     </Modal.Title>
@@ -192,7 +186,7 @@ const VersionHistoryModal = ({ show, onHide }) => {
                 <Row>
                     <Col xs={5} style={{ borderRight: '1px solid var(--app-border-light)', paddingRight: '0', paddingBottom: '0.25rem' }}>
                         <div className="vh-column-title px-2">Chunks</div>
-                        <div className="vh-scrollable" style={{ maxHeight: '300px', overflowY: 'auto', overflowX: 'hidden', paddingRight: '4px' }}>
+                        <div className="vh-scrollable overflow-y-auto overflow-x-hidden" style={{ maxHeight: '300px', paddingRight: '4px' }}>
                             <ListGroup className="vh-list-group">
                                 {chunks.map((chunk) => (
                                     <ListGroup.Item 
@@ -208,7 +202,7 @@ const VersionHistoryModal = ({ show, onHide }) => {
                     </Col>
                     <Col xs={7} style={{ paddingLeft: '1.25rem' }}>
                         <div className="vh-column-title">Available Versions</div>
-                        <div className="vh-scrollable" style={{ maxHeight: '300px', overflowY: 'auto', overflowX: 'hidden' }}>
+                        <div className="vh-scrollable overflow-y-auto overflow-x-hidden" style={{ maxHeight: '300px' }}>
                             <div className="vh-version-item">
                                 Current - 2026-04-18 19:00:44
                             </div>

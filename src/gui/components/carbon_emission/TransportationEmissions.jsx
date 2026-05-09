@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { Modal, Button, Form, Table } from 'react-bootstrap';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const VEHICLE_PRESETS = [
     { name: "Light Commercial Vehicle (LCV)", capacity: 3.5, gross_weight: 7.5, empty_weight: 4.0, emission_factor: 0.8, class_label: "Small Truck" },
@@ -8,6 +9,7 @@ const VEHICLE_PRESETS = [
 ];
 
 const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) => {
+    const { projectData } = useProjectData();
     const [vehicle, setVehicle] = useState(VEHICLE_PRESETS[0]);
     const [route, setRoute] = useState({ origin: '', distance_km: 0 });
     const [allMaterials, setAllMaterials] = useState([]);
@@ -23,23 +25,19 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
 
         let mats = [];
         STRUCTURE_CHUNKS.forEach(([chunkId, category]) => {
-            const data = controller?.engine?.fetch_chunk(chunkId) || {};
-            Object.values(data).forEach(items => {
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (!item.state?.in_trash) {
-                            const val = item.values || {};
-                            mats.push({
-                                id: item.id,
-                                name: val.material_name || 'Unnamed',
-                                category: category,
-                                quantity: parseFloat(val.quantity || 0),
-                                unit: val.unit || '',
-                                kgFactor: parseFloat(val.conversion_factor || 1.0)
-                            });
-                        }
+            const sections = projectData[chunkId] || [];
+            sections.forEach(section => {
+                const items = section.rows || [];
+                items.forEach(item => {
+                    mats.push({
+                        id: item.id,
+                        name: item.workName || 'Unnamed',
+                        category: category,
+                        quantity: parseFloat(item.qty || 0),
+                        unit: item.unit || '',
+                        kgFactor: 1.0 // This could be inferred from the unit if needed
                     });
-                }
+                });
             });
         });
         setAllMaterials(mats);
@@ -49,7 +47,7 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
             setRoute(initialData.route || { origin: '', distance_km: 0 });
             setSelectedMaterialIds(new Set((initialData.selectedMaterials || []).map(m => m.id)));
         }
-    }, [isOpen, initialData, controller]);
+    }, [isOpen, initialData, projectData]);
 
     const handleSave = () => {
         const selectedMaterials = allMaterials.filter(m => selectedMaterialIds.has(m.id));
@@ -68,18 +66,18 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
     };
 
     return (
-        <Modal show={isOpen} onHide={onClose} size="lg" centered contentClassName="bg-dark text-light border-secondary">
-            <Modal.Header closeButton closeVariant="white" className="border-secondary">
+        <Modal show={isOpen} onHide={onClose} size="lg" centered contentClassName="border-0" style={{ '--bs-modal-bg': 'var(--app-bg-card)', color: 'var(--app-text-primary)' }}>
+            <Modal.Header closeButton className="border-0" style={{ borderBottom: '1px solid var(--app-border-light)' }}>
                 <Modal.Title style={{ fontSize: '1.1rem' }}>{initialData ? 'Edit Delivery' : 'Add New Delivery'}</Modal.Title>
             </Modal.Header>
-            <Modal.Body className="custom-scrollbar" style={{ maxHeight: '70vh', overflowY: 'auto' }}>
+            <Modal.Body className="custom-scrollbar overflow-y-auto" style={{ maxHeight: '70vh' }}>
                 <Form>
                     <div className="row g-3 mb-4">
                         <div className="col-md-6">
                             <Form.Group>
                                 <Form.Label className="small text-secondary fw-bold">Vehicle Type</Form.Label>
                                 <Form.Select 
-                                    className="bg-dark text-light border-secondary"
+                                    style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', borderColor: 'var(--app-border-mid)' }}
                                     value={vehicle.name}
                                     onChange={(e) => setVehicle(VEHICLE_PRESETS.find(v => v.name === e.target.value))}
                                 >
@@ -91,7 +89,7 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
                             <Form.Group>
                                 <Form.Label className="small text-secondary fw-bold">Origin</Form.Label>
                                 <Form.Control 
-                                    className="bg-dark text-light border-secondary"
+                                    style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', borderColor: 'var(--app-border-mid)' }}
                                     value={route.origin}
                                     onChange={(e) => setRoute({ ...route, origin: e.target.value })}
                                 />
@@ -102,7 +100,7 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
                                 <Form.Label className="small text-secondary fw-bold">Distance (km)</Form.Label>
                                 <Form.Control 
                                     type="number"
-                                    className="bg-dark text-light border-secondary"
+                                    style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', borderColor: 'var(--app-border-mid)' }}
                                     value={route.distance_km}
                                     onChange={(e) => setRoute({ ...route, distance_km: e.target.value })}
                                 />
@@ -133,10 +131,10 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
                     </div>
 
                     <div className="mb-2 small text-secondary fw-bold">Select Materials for this Delivery</div>
-                    <div className="border border-secondary rounded overflow-hidden">
-                        <Table hover variant="dark" className="mb-0" style={{ fontSize: '0.82rem' }}>
+                    <div className="border rounded overflow-hidden" style={{ borderColor: 'var(--app-border-mid)' }}>
+                        <Table hover variant="dark" className="mb-0" style={{ fontSize: '0.82rem', '--bs-table-bg': 'var(--app-bg-main)', '--bs-table-color': 'var(--app-text-primary)', '--bs-table-hover-bg': 'var(--app-surface-pressed)' }}>
                             <thead>
-                                <tr className="bg-secondary bg-opacity-10">
+                                <tr>
                                     <th style={{ width: '40px' }} className="text-center">#</th>
                                     <th>Material</th>
                                     <th>Category</th>
@@ -171,8 +169,9 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
                 <Button 
                     variant="primary" 
                     size="sm" 
+                    className="fw-bold"
                     onClick={handleSave} 
-                    style={{ backgroundColor: '#9adc32', color: '#000', border: 'none', fontWeight: 'bold' }}
+                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-card)', border: 'none' }}
                 >
                     Save Delivery
                 </Button>
@@ -182,15 +181,16 @@ const AddDeliveryModal = ({ isOpen, onClose, onSave, initialData, controller }) 
 };
 
 const TransportationEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [deliveries, setDeliveries] = useState([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [editingDelivery, setEditingDelivery] = useState(null);
 
     useEffect(() => {
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const transportData = carbonData.transport_emissions_data || {};
         setDeliveries(transportData.raw_ui_entries || []);
-    }, [controller]);
+    }, [projectData]);
 
     const handleAddDelivery = () => {
         setEditingDelivery(null);
@@ -223,13 +223,14 @@ const TransportationEmissions = ({ controller }) => {
 
     const saveToEngine = (updatedDeliveries) => {
         const computed = computeEmissions(updatedDeliveries);
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             transport_emissions_data: {
                 ...computed,
                 raw_ui_entries: updatedDeliveries
             }
-        }));
+        });
     };
 
     const computeEmissionsForSingle = (entry) => {
@@ -302,13 +303,13 @@ const TransportationEmissions = ({ controller }) => {
         <div className="transportation-emissions d-flex flex-column h-100" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)' }}>
             <style>{`
                 .btn-lime {
-                    background-color: #9adc32;
-                    color: #000;
+                    background-color: var(--app-primary-accent);
+                    color: var(--app-bg-card);
                     border: none;
                 }
                 .btn-lime:hover {
-                    background-color: #89c42a;
-                    color: #000;
+                    background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff);
+                    color: var(--app-bg-card);
                 }
                 .transportation-top-summary {
                     background-color: transparent;
@@ -322,9 +323,9 @@ const TransportationEmissions = ({ controller }) => {
                     background-color: var(--app-border-light);
                     margin: 0 16px;
                 }
-                .form-control:focus {
-                    border-color: #9adc32 !important;
-                    box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.25) !important;
+                .form-control:focus, .form-select:focus {
+                    border-color: var(--app-primary-accent) !important;
+                    box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-primary-accent) 25%, transparent) !important;
                     outline: none !important;
                 }
                 .custom-scrollbar::-webkit-scrollbar {
@@ -342,26 +343,26 @@ const TransportationEmissions = ({ controller }) => {
                 }
                 .transportation-card {
                     background-color: var(--app-bg-card);
-                    border: 1px solid #3d3d3d;
+                    border: 1px solid var(--app-border-mid);
                     border-radius: 4px;
                     overflow: hidden;
                     margin-bottom: 16px;
                 }
                 .transportation-card-header {
-                    background-color: #2a2a2a;
+                    background-color: var(--app-bg-alt);
                     padding: 6px 12px;
-                    border-bottom: 1px solid #3d3d3d;
+                    border-bottom: 1px solid var(--app-border-mid);
                 }
                 .transportation-table th {
-                    background-color: #2a2a2a !important;
-                    color: #d0d0d0 !important;
+                    background-color: var(--app-bg-alt) !important;
+                    color: var(--app-text-secondary) !important;
                     font-weight: 500;
                     padding: 4px 8px !important;
-                    border: 1px solid #3d3d3d !important;
+                    border: 1px solid var(--app-border-mid) !important;
                 }
                 .transportation-table td {
                     padding: 4px 8px !important;
-                    border: 1px solid #2d2d2d !important;
+                    border: 1px solid var(--app-border-mid) !important;
                 }
             `}</style>
 
@@ -369,7 +370,7 @@ const TransportationEmissions = ({ controller }) => {
             <div className="transportation-top-summary d-flex align-items-center justify-content-between">
                 <div className="d-flex align-items-center gap-4" style={{ fontSize: '0.82rem' }}>
                     <div className="text-light">
-                        Total: <span className="fw-bold">{totals.total.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCO₂e</span>
+                        Total: <span className="fw-bold">{totals.total.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCOΓéée</span>
                     </div>
                     
                     <div className="text-light">
@@ -388,27 +389,27 @@ const TransportationEmissions = ({ controller }) => {
                         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
                     }}
                 >
-                    {showDetails ? 'Hide Details ▲' : 'Show Details ▼'}
+                    {showDetails ? 'Hide Details Γû▓' : 'Show Details Γû╝'}
                 </button>
             </div>
 
             {/* Details Row (only if expanded) */}
             {showDetails && (
-                <div className="p-3 border-bottom animate-fade-in" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: '#3d3d3d' }}>
+                <div className="p-3 border-bottom animate-fade-in" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: 'var(--app-border-mid)' }}>
                     <table className="transportation-table w-100" style={{ fontSize: '0.78rem' }}>
                         <thead>
-                            <tr style={{ backgroundColor: '#2a2a2a' }}>
-                                <th className="ps-3" style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>Category</th>
-                                <th style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>kgCO₂e</th>
-                                <th style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>% of Total</th>
+                            <tr style={{ backgroundColor: 'var(--app-bg-alt)' }}>
+                                <th className="ps-3" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>Category</th>
+                                <th style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>kgCOΓéée</th>
+                                <th style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '8px', fontSize: '0.82rem', fontWeight: '600' }}>% of Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             {Object.entries(totals.categorical).map(([label, value]) => (
-                                <tr key={label} style={{ borderBottom: '1px solid #2d2d2d' }}>
-                                    <td className="ps-3" style={{ border: '1px solid #2d2d2d', color: '#a0a0a0', padding: '6px' }}>{label}</td>
-                                    <td style={{ border: '1px solid #2d2d2d', color: '#e0e0e0', padding: '6px' }}>{value.toFixed(3)}</td>
-                                    <td style={{ border: '1px solid #2d2d2d', color: '#9adc32', padding: '6px' }}>
+                                <tr key={label} style={{ borderBottom: '1px solid var(--app-border-light)' }}>
+                                    <td className="ps-3" style={{ border: '1px solid var(--app-border-light)', color: 'var(--app-text-secondary)', padding: '6px' }}>{label}</td>
+                                    <td style={{ border: '1px solid var(--app-border-light)', color: 'var(--app-text-primary)', padding: '6px' }}>{value.toFixed(3)}</td>
+                                    <td style={{ border: '1px solid var(--app-border-light)', color: 'var(--app-primary-accent)', padding: '6px' }}>
                                         {totals.total > 0 ? ((value / totals.total) * 100).toFixed(1) : 0}%
                                     </td>
                                 </tr>
@@ -426,7 +427,7 @@ const TransportationEmissions = ({ controller }) => {
                     style={{ 
                         fontSize: '0.85rem', 
                         fontWeight: 'bold',
-                        color: '#000',
+                        color: 'var(--app-bg-card)',
                         borderRadius: '4px'
                     }}
                 >
@@ -441,7 +442,7 @@ const TransportationEmissions = ({ controller }) => {
                         <div className="text-secondary mb-3" style={{ color: 'var(--app-text-secondary)' }}>No transportation deliveries configured</div>
                         <button 
                             className="btn btn-sm btn-lime px-3 py-2 fw-bold" 
-                            style={{ color: '#000' }} 
+                            style={{ color: 'var(--app-bg-card)' }} 
                             onClick={handleAddDelivery}
                         >
                             Configure First Delivery
@@ -459,7 +460,7 @@ const TransportationEmissions = ({ controller }) => {
                                             <div className="d-flex align-items-center gap-2">
                                                 <i className="bi bi-truck text-secondary" style={{ color: 'var(--app-text-muted)' }}></i>
                                                 <span className="fw-bold text-light" style={{ fontSize: '0.82rem' }}>
-                                                    {delivery.vehicle?.name} — {delivery.route?.origin} | {delivery.route?.distance_km} km | {singleEmission.toLocaleString(undefined, { maximumFractionDigits: 1 })} kgCO₂e
+                                                    {delivery.vehicle?.name} ΓÇö {delivery.route?.origin} | {delivery.route?.distance_km} km | {singleEmission.toLocaleString(undefined, { maximumFractionDigits: 1 })} kgCOΓéée
                                                 </span>
                                             </div>
                                             <div className="d-flex gap-1">
@@ -471,33 +472,33 @@ const TransportationEmissions = ({ controller }) => {
                                                 </button>
                                             </div>
                                         </div>
-                                        <div className="p-0" style={{ borderTop: '1px solid #3d3d3d' }}>
-                                            {/* Specs Row */}
-                                            <div className="d-flex flex-wrap gap-4 px-3 py-2 border-bottom" style={{ fontSize: '0.78rem', backgroundColor: 'var(--app-bg-card)', borderColor: '#3d3d3d' }}>
-                                                <div><span className="text-secondary opacity-75">Class:</span> <span className="fw-medium text-light">{delivery.vehicle?.class_label}</span></div>
-                                                <div><span className="text-secondary opacity-75">Capacity:</span> <span className="fw-medium text-light">{delivery.vehicle?.capacity} T</span></div>
-                                                <div><span className="text-secondary opacity-75">Gross Wt:</span> <span className="fw-medium text-light">{delivery.vehicle?.gross_weight} T</span></div>
-                                                <div><span className="text-secondary opacity-75">Empty Wt:</span> <span className="fw-medium text-light">{delivery.vehicle?.empty_weight} T</span></div>
-                                                <div><span className="text-secondary opacity-75">EF:</span> <span className="fw-medium text-light">{delivery.vehicle?.emission_factor} kg/km</span></div>
-                                            </div>
-                                            
-                                            {/* Material Table */}
-                                            <div className="table-responsive">
-                                                <table className="transportation-table table-sm mb-0 w-100" style={{ fontSize: '0.78rem' }}>
-                                                    <thead>
-                                                        <tr style={{ backgroundColor: '#2a2a2a' }}>
-                                                            <th className="ps-3" style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '6px' }}>Material</th>
-                                                            <th className="text-end" style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '6px' }}>Quantity</th>
-                                                            <th className="text-end pe-3" style={{ border: '1px solid #3d3d3d', color: '#d0d0d0', padding: '6px' }}>Weight (T)</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody>
-                                                        {delivery.selectedMaterials?.map((m, mIdx) => (
-                                                            <tr key={mIdx}>
-                                                                <td className="ps-3 py-1" style={{ border: '1px solid #2d2d2d', color: '#a0a0a0' }}>{m.name} <span className="text-secondary extra-small">({m.category})</span></td>
-                                                                <td className="text-end py-1 font-monospace" style={{ border: '1px solid #2d2d2d', color: '#e0e0e0' }}>{parseFloat(m.quantity || 0).toLocaleString()} {m.unit}</td>
-                                                                <td className="text-end py-1 pe-3 font-monospace" style={{ border: '1px solid #2d2d2d', color: '#e0e0e0' }}>
-                                                                    {(parseFloat(m.quantity || 0) * (m.kgFactor || 1) / 1000).toFixed(2)}
+                                            <div className="p-0" style={{ borderTop: '1px solid var(--app-border-mid)' }}>
+                                                {/* Specs Row */}
+                                                <div className="d-flex flex-wrap gap-4 px-3 py-2 border-bottom" style={{ fontSize: '0.78rem', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-border-mid)' }}>
+                                                    <div><span className="text-secondary opacity-75">Class:</span> <span className="fw-medium text-light">{delivery.vehicle?.class_label}</span></div>
+                                                    <div><span className="text-secondary opacity-75">Capacity:</span> <span className="fw-medium text-light">{delivery.vehicle?.capacity} T</span></div>
+                                                    <div><span className="text-secondary opacity-75">Gross Wt:</span> <span className="fw-medium text-light">{delivery.vehicle?.gross_weight} T</span></div>
+                                                    <div><span className="text-secondary opacity-75">Empty Wt:</span> <span className="fw-medium text-light">{delivery.vehicle?.empty_weight} T</span></div>
+                                                    <div><span className="text-secondary opacity-75">EF:</span> <span className="fw-medium text-light">{delivery.vehicle?.emission_factor} kg/km</span></div>
+                                                </div>
+                                                
+                                                {/* Material Table */}
+                                                <div className="table-responsive">
+                                                    <table className="transportation-table table-sm mb-0 w-100" style={{ fontSize: '0.78rem' }}>
+                                                        <thead>
+                                                            <tr style={{ backgroundColor: 'var(--app-bg-alt)' }}>
+                                                                <th className="ps-3" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '6px' }}>Material</th>
+                                                                <th className="text-end" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '6px' }}>Quantity</th>
+                                                                <th className="text-end pe-3" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)', padding: '6px' }}>Weight (T)</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            {delivery.selectedMaterials?.map((m, mIdx) => (
+                                                                <tr key={mIdx}>
+                                                                    <td className="ps-3 py-1" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-secondary)' }}>{m.name} <span className="text-secondary extra-small">({m.category})</span></td>
+                                                                    <td className="text-end py-1 font-monospace" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)' }}>{parseFloat(m.quantity || 0).toLocaleString()} {m.unit}</td>
+                                                                    <td className="text-end py-1 pe-3 font-monospace" style={{ border: '1px solid var(--app-border-mid)', color: 'var(--app-text-primary)' }}>
+                                                                        {(parseFloat(m.quantity || 0) * (m.kgFactor || 1) / 1000).toFixed(2)}
                                                                 </td>
                                                             </tr>
                                                         ))}

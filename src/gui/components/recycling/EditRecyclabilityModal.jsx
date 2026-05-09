@@ -103,7 +103,7 @@ const EditRecyclabilityModal = ({ show, onClose, item, onSave }) => {
             `}</style>
 
             <Modal.Header closeButton closeVariant={document.documentElement.style.getPropertyValue('--app-bg-main') === '#f5f6f8' ? undefined : "white"}>
-                <Modal.Title style={{ fontSize: '1rem', fontWeight: 'bold' }}>
+                <Modal.Title className="fw-bold" style={{ fontSize: '1rem' }}>
                     Edit Recyclability - {formData.materialName}
                 </Modal.Title>
             </Modal.Header>

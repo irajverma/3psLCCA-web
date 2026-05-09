@@ -13,25 +13,40 @@ import MaintenanceAndRepair from './gui/components/maintenance_and_repair/Mainte
 import Recycling from './gui/components/recycling/Recycling'
 import Demolition from './gui/components/demolition/Demolition'
 import Outputs from './gui/components/outputs/Outputs'
+import { ProjectDataProvider } from './contexts/ProjectDataContext'
 import './App.css'
 
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [isProjectOpen, setIsProjectOpen] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(() => localStorage.getItem('isLoggedIn') === 'true')
+  const [isProjectOpen, setIsProjectOpen] = useState(() => localStorage.getItem('isProjectOpen') === 'true')
+  const [activeProjectId, setActiveProjectId] = useState(() => localStorage.getItem('activeProjectId') || 'default_project')
   const [projectData, setProjectData] = useState(null)
-  const [activeNode, setActiveNode] = useState('General Information')
+  const [activeNode, setActiveNode] = useState(() => localStorage.getItem('activeNode') || 'General Information')
   const [checkpoints, setCheckpoints] = useState([])
   const [logs, setLogs] = useState([])
+  const [userName, setUserName] = useState(() => localStorage.getItem('userName') || '')
   const [isLocked, setIsLocked] = useState(false)
   const [navTrigger, setNavTrigger] = useState(Date.now())
-  const [userName, setUserName] = useState('')
 
-  const [userSettings, setUserSettings] = useState({
-    appearanceMode: 'Auto(follow os)',
-    lightTheme: 'standard light',
-    darkTheme: 'Dracula'
+  useEffect(() => { localStorage.setItem('isLoggedIn', isLoggedIn); }, [isLoggedIn]);
+  useEffect(() => { localStorage.setItem('isProjectOpen', isProjectOpen); }, [isProjectOpen]);
+  useEffect(() => { localStorage.setItem('activeProjectId', activeProjectId); }, [activeProjectId]);
+  useEffect(() => { localStorage.setItem('activeNode', activeNode); }, [activeNode]);
+  useEffect(() => { localStorage.setItem('userName', userName); }, [userName]);
+
+  const [userSettings, setUserSettings] = useState(() => {
+    const saved = localStorage.getItem('userSettings');
+    return saved ? JSON.parse(saved) : {
+      appearanceMode: 'Auto(follow os)',
+      lightTheme: 'standard light',
+      darkTheme: 'Dracula'
+    };
   });
+
+  useEffect(() => {
+    localStorage.setItem('userSettings', JSON.stringify(userSettings));
+  }, [userSettings]);
 
   const [isDarkMode, setIsDarkMode] = useState(() => {
     if (typeof window !== 'undefined') {
@@ -42,7 +57,7 @@ function App() {
 
   useEffect(() => {
     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-
+    
     const updateTheme = () => {
       if (userSettings.appearanceMode === 'dark') {
         setIsDarkMode(true);
@@ -181,32 +196,18 @@ function App() {
     addLog(isGuest ? `Guest user '${name}' logged in.` : `User '${name}' logged in.`)
   }
 
-  const handleProjectOpen = () => {
-    setProjectData({ name: 'Bridge_Assessment_01', country: 'India', currency: 'INR', unitSystem: 'Metric' })
+  const handleProjectOpen = (projectId = 'default_project', projectName = 'Default Project') => {
+    setActiveProjectId(projectId);
     setIsProjectOpen(true)
-    addLog("Project 'Bridge_Assessment_01' opened successfully.")
+    addLog(`Project '${projectName}' opened successfully.`)
   }
 
-  const handleNewProject = (data) => {
-    // Reset project state for a new project
-    setProjectData(data)
-    setCheckpoints([])
-    setLogs([])
-    setIsLocked(false)
-    setActiveNode('General Information')
-    setIsProjectOpen(true)
-    addLog(`New project '${data.name}' created.`)
+  const handleNewProject = (projectDetails) => {
+    handleProjectOpen('new_project_' + Date.now(), projectDetails?.name || 'New Project');
   }
 
-  const handleOpenProject = (data) => {
-    // Load existing project data
-    setProjectData(data)
-    setCheckpoints([]) // In a real app, these would come from the loaded data
-    setLogs([])
-    setIsLocked(false)
-    setActiveNode('General Information')
-    setIsProjectOpen(true)
-    addLog(`Project '${data.name}' opened successfully.`)
+  const handleOpenProject = (projectData) => {
+    handleProjectOpen(projectData?.id || 'opened_project', projectData?.name || 'Opened Project');
   }
 
   const handleSaveCheckpoint = (newCheckpoint) => {
@@ -266,8 +267,9 @@ function App() {
   if (isProjectOpen) {
     const content = CONTENT_MAP[activeNode] || null
     return (
-      <ProjectLayout
-        activeNode={activeNode}
+      <ProjectDataProvider key={activeProjectId} projectId={activeProjectId}>
+        <ProjectLayout
+          activeNode={activeNode}
         setActiveNode={handleSetActiveNode}
         onBackToHome={() => {
           setIsProjectOpen(false)
@@ -282,14 +284,15 @@ function App() {
         isLocked={isLocked}
         setIsLocked={setIsLocked}
       >
-        {React.cloneElement(content, {
-          checkpoints,
-          logs,
+        {content ? React.cloneElement(content, { 
+          checkpoints, 
+          logs, 
           onClearLogs: handleClearLogs,
           isLocked: isLocked,
           navTrigger: navTrigger
-        })}
+        }) : null}
       </ProjectLayout>
+      </ProjectDataProvider>
     )
   }
 

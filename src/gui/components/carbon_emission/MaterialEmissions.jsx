@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const MaterialEmissions = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [materials, setMaterials] = useState([]);
     const [excludedIds, setExcludedIds] = useState(new Set());
     const [searchTerm, setSearchTerm] = useState('');
@@ -16,36 +18,33 @@ const MaterialEmissions = ({ controller }) => {
 
         let allMats = [];
         STRUCTURE_CHUNKS.forEach(([chunkId, category]) => {
-            const data = controller?.engine?.fetch_chunk(chunkId) || {};
-            Object.entries(data).forEach(([compName, items]) => {
-                if (Array.isArray(items)) {
-                    items.forEach(item => {
-                        if (item.id && !item.state?.in_trash) {
-                            const val = item.values || {};
-                            allMats.push({
-                                id: item.id,
-                                name: val.material_name || 'Unnamed Material',
-                                category: category,
-                                component: compName,
-                                quantity: parseFloat(val.quantity || 0),
-                                unit: val.unit || '',
-                                cf: parseFloat(val.conversion_factor || 1.0) || 1.0,
-                                ef: parseFloat(val.carbon_emission || 0) || 0,
-                                chunkId: chunkId
-                            });
-                        }
+            const sections = projectData[chunkId] || [];
+            sections.forEach(section => {
+                const compName = section.name || '';
+                const items = section.rows || [];
+                items.forEach(item => {
+                    allMats.push({
+                        id: item.id,
+                        name: item.workName || 'Unnamed Material',
+                        category: category,
+                        component: compName,
+                        quantity: parseFloat(item.qty || 0),
+                        unit: item.unit || '',
+                        cf: 1.0,
+                        ef: item.carbonEmission ? parseFloat(item.carbonEmission.factor || 0) : 0,
+                        chunkId: chunkId
                     });
-                }
+                });
             });
         });
         setMaterials(allMats);
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const matData = carbonData.material_emissions_data || {};
         if (matData.excluded_ids) {
             setExcludedIds(new Set(matData.excluded_ids));
         }
-    }, [controller]);
+    }, [projectData]);
 
     const handleToggleInclusion = (id, include) => {
         const newSet = new Set(excludedIds);
@@ -60,13 +59,14 @@ const MaterialEmissions = ({ controller }) => {
 
     const saveToEngine = (newExcludedSet) => {
         const excludedList = Array.from(newExcludedSet);
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             material_emissions_data: {
-                ...prev.material_emissions_data,
+                ...(prev.material_emissions_data || {}),
                 excluded_ids: excludedList
             }
-        }));
+        });
     };
 
     const categoryTotals = useMemo(() => {
@@ -105,7 +105,7 @@ const MaterialEmissions = ({ controller }) => {
                         <th colSpan="2">Qty</th>
                         <th rowSpan="2" style={{ width: '10%' }}>Conv. Factor</th>
                         <th colSpan="2">Emission</th>
-                        <th rowSpan="2" className="text-end" style={{ width: '12%' }}>{isIncludedSection ? 'Total kgCO₂e' : 'Reason'}</th>
+                        <th rowSpan="2" className="text-end" style={{ width: '12%' }}>{isIncludedSection ? 'Total kgCOΓéée' : 'Reason'}</th>
                         {isIncludedSection && <th rowSpan="2" style={{ width: '8%' }}>Warning</th>}
                         <th rowSpan="2" style={{ width: '6%' }}>Action</th>
                     </tr>
@@ -160,7 +160,7 @@ const MaterialEmissions = ({ controller }) => {
             <div className="material-top-summary px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style={{ backgroundColor: 'transparent', borderColor: 'var(--app-border-light)' }}>
                 <div className="d-flex align-items-center gap-4 py-1" style={{ fontSize: '0.82rem' }}>
                     <div className="text-light">
-                        Total: <span className="fw-bold">{totalCarbon.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCO₂e</span>
+                        Total: <span className="fw-bold">{totalCarbon.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCOΓéée</span>
                     </div>
                     <div className="text-light">
                         Included: <span className="fw-bold">{materials.length - excludedIds.size} of {materials.length} items</span>
@@ -178,7 +178,7 @@ const MaterialEmissions = ({ controller }) => {
                         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
                     }}
                 >
-                    {isDetailsVisible ? 'Hide Details ▲' : 'Show Details ▼'}
+                    {isDetailsVisible ? 'Hide Details Γû▓' : 'Show Details Γû╝'}
                 </button>
             </div>
 

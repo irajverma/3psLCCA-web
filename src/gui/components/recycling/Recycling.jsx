@@ -70,7 +70,7 @@ const Recycling = () => {
     };
 
     return (
-        <div className="h-100 d-flex flex-column" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)', overflow: 'hidden' }}>
+        <div className="h-100 d-flex flex-column overflow-hidden" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)' }}>
             {/* Header Area */}
             <div className="d-flex align-items-center justify-content-between p-3 border-bottom" style={{ backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-border-light) !important' }}>
                 <div className="d-flex gap-4">

@@ -9,25 +9,17 @@ const Logs = ({ checkpoints, logs = [], onClearLogs }) => {
     };
 
     return (
-        <div style={{ 
+        <div className="d-flex flex-column h-100" style={{ 
             padding: '20px', 
-            height: '100%', 
-            display: 'flex', 
-            flexDirection: 'column',
             backgroundColor: 'var(--app-bg-main)',
             color: 'var(--app-text-primary)',
             fontFamily: '"Segoe UI", system-ui, sans-serif'
         }}>
-            <div style={{ 
-                display: 'flex', 
-                justifyContent: 'space-between', 
-                alignItems: 'center',
-                marginBottom: '15px' 
-            }}>
+            <div className="d-flex justify-content-between align-items-center" style={{ marginBottom: '15px' }}>
                 <h5 style={{ margin: 0, fontWeight: 500 }}>Engine Logs</h5>
                 
-                <div style={{ display: 'flex', alignItems: 'center', gap: '15px' }}>
-                    <div style={{ display: 'flex', gap: '10px', fontSize: '13px', color: 'var(--app-text-secondary)' }}>
+                <div className="d-flex align-items-center" style={{ gap: '15px' }}>
+                    <div className="d-flex" style={{ gap: '10px', fontSize: '13px', color: 'var(--app-text-secondary)' }}>
                         <span>Chunks: <span style={{ color: 'var(--app-text-primary)' }}>15</span></span>
                         <span style={{ color: 'var(--app-border-mid)' }}>|</span>
                         <span>Checkpoints: <span style={{ color: 'var(--app-text-primary)' }}>{checkpointCount}</span></span>
@@ -52,20 +44,18 @@ const Logs = ({ checkpoints, logs = [], onClearLogs }) => {
                 </div>
             </div>
 
-            <div style={{ 
-                flexGrow: 1, 
+            <div className="flex-grow-1 overflow-y-auto" style={{ 
                 backgroundColor: 'var(--app-bg-alt)', 
                 borderRadius: '6px',
                 border: '1px solid var(--app-border-light)',
                 padding: '15px',
-                overflowY: 'auto',
                 fontFamily: 'monospace',
                 fontSize: '13px',
                 lineHeight: '1.6',
                 boxShadow: 'inset 0 2px 4px rgba(0,0,0,0.2)'
             }}>
                 {logs.length === 0 ? (
-                    <div style={{ color: 'var(--app-text-muted)', textAlign: 'center', marginTop: '20px' }}>
+                    <div className="text-center" style={{ color: 'var(--app-text-muted)', marginTop: '20px' }}>
                         No logs to display
                     </div>
                 ) : (

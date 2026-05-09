@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
-const emptyRow = () => ({ id: uid(), workName: '', rate: '', qty: '', source: '' });
 // calcTotal removed as it's in MaterialTable.jsx
 
 const DEFAULT_SECTIONS = [
@@ -20,7 +20,15 @@ const DEFAULT_SECTIONS = [
 // MaterialTable imported from shared component
 
 const Miscellaneous = ({ controller }) => {
-    const [sections, setSections] = useState(DEFAULT_SECTIONS);
+    const { projectData, updateProjectData } = useProjectData();
+    const [sections, setSections] = useState(() => {
+        const saved = projectData.miscellaneous_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
+    });
+
+    useEffect(() => {
+        updateProjectData('miscellaneous_data', sections);
+    }, [sections, updateProjectData]);
     const handleRowChange = useCallback((sId, rId, field, val) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) })), []);
     const handleRowDelete = useCallback((sId, rId) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) })), []);
     const handleAddRow = useCallback((sId, newRowData) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] })), []);

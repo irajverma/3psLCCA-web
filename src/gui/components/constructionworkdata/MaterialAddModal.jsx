@@ -5,14 +5,14 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
     const [workName, setWorkName] = useState('');
     const [allowEditingDB, setAllowEditingDB] = useState(false);
     const [qty, setQty] = useState('');
-    const [unit, setUnit] = useState('m³ — Cubic Metre');
+    const [unit, setUnit] = useState('m┬│ ΓÇö Cubic Metre');
     const [rate, setRate] = useState('');
     const [source, setSource] = useState('');
 
     // Carbon Emission
     const [includeCarbon, setIncludeCarbon] = useState(true);
     const [emissionFactor, setEmissionFactor] = useState('');
-    const [emissionPerUnit, setEmissionPerUnit] = useState('m³ — Cubic Metre');
+    const [emissionPerUnit, setEmissionPerUnit] = useState('m┬│ ΓÇö Cubic Metre');
     const [emissionSource, setEmissionSource] = useState('');
 
     // Recyclability
@@ -53,25 +53,25 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                 role="dialog"
             >
                 <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '800px' }}>
-                    <div className="modal-content shadow-lg border-0" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div className="modal-content shadow-lg border-0 overflow-hidden" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', borderRadius: '8px' }}>
 
                         {/* Custom Window Header */}
                         <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: 'var(--app-border-mid)' }}>
                             <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.9rem' }}>
-                                <span style={{ color: 'var(--app-primary-accent)', fontSize: '1.2rem' }}>⛁</span>
-                                <span>Add Material — {sectionName}</span>
+                                <span style={{ color: 'var(--app-primary-accent)', fontSize: '1.2rem' }}>Γ¢ü</span>
+                                <span>Add Material ΓÇö {sectionName}</span>
                             </div>
                             <div className="d-flex gap-3 align-items-center" style={{ cursor: 'pointer', fontSize: '1.1rem' }}>
-                                <span className="opacity-75" onClick={onClose}>—</span>
-                                <span className="opacity-75" onClick={onClose}>□</span>
-                                <span onClick={onClose}>✕</span>
+                                <span className="opacity-75" onClick={onClose}>ΓÇö</span>
+                                <span className="opacity-75" onClick={onClose}>Γûí</span>
+                                <span onClick={onClose}>Γ£ò</span>
                             </div>
                         </div>
 
                         {/* Modal Body */}
                         <div className="modal-body px-4 py-2" style={{ fontSize: '0.9rem' }}>
                             <div className="mb-3 opacity-75" style={{ fontSize: '0.85rem' }}>
-                                Suggestions from: <span className="fst-italic">— not set (configure in Project Settings)</span>
+                                Suggestions from: <span className="fst-italic">ΓÇö not set (configure in Project Settings)</span>
                             </div>
 
                             {/* Material Name */}
@@ -120,10 +120,10 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                         value={unit}
                                         onChange={e => setUnit(e.target.value)}
                                     >
-                                        <option value="m³ — Cubic Metre">m³ — Cubic Metre</option>
-                                        <option value="kg — Kilogram">kg — Kilogram</option>
-                                        <option value="ton — Tonne">ton — Tonne</option>
-                                        <option value="sqm — Square Metre">sqm — Square Metre</option>
+                                        <option value="m┬│ ΓÇö Cubic Metre">m┬│ ΓÇö Cubic Metre</option>
+                                        <option value="kg ΓÇö Kilogram">kg ΓÇö Kilogram</option>
+                                        <option value="ton ΓÇö Tonne">ton ΓÇö Tonne</option>
+                                        <option value="sqm ΓÇö Square Metre">sqm ΓÇö Square Metre</option>
                                     </select>
                                 </div>
                             </div>
@@ -180,15 +180,15 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                         />
                                     </div>
                                     <div className="col-md-4">
-                                        <label className="form-label mb-1">Per Unit <span className="opacity-75">(kgCO₂e / ...)</span></label>
+                                        <label className="form-label mb-1">Per Unit <span className="opacity-75">(kgCOΓéée / ...)</span></label>
                                         <select
                                             className="form-select form-select-sm"
                                             value={emissionPerUnit}
                                             onChange={e => setEmissionPerUnit(e.target.value)}
                                         >
-                                            <option value="m³ — Cubic Metre">m³ — Cubic Metre</option>
-                                            <option value="kg — Kilogram">kg — Kilogram</option>
-                                            <option value="ton — Tonne">ton — Tonne</option>
+                                            <option value="m┬│ ΓÇö Cubic Metre">m┬│ ΓÇö Cubic Metre</option>
+                                            <option value="kg ΓÇö Kilogram">kg ΓÇö Kilogram</option>
+                                            <option value="ton ΓÇö Tonne">ton ΓÇö Tonne</option>
                                         </select>
                                     </div>
                                     <div className="col-md-4">

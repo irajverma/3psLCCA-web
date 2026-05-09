@@ -58,7 +58,7 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                 }
                 .checkpoint-table {
                     margin-bottom: 0;
-                    color: var(--app-text-primary);
+                    color: var(--app-text-secondary);
                     font-size: 14px;
                 }
                 .checkpoint-table th {
@@ -73,16 +73,16 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                 }
                 .checkpoint-table td {
                     padding: 10px 15px;
-                    border-bottom: 1px solid var(--app-border-light) !important;
+                    border-bottom: 1px solid var(--app-border-mid) !important;
                     vertical-align: middle;
                     cursor: pointer;
                 }
                 .checkpoint-table tr:hover td {
-                    background-color: var(--app-bg-alt);
+                    background-color: var(--app-surface-pressed);
                 }
                 .checkpoint-table tr.selected td {
-                    background-color: color-mix(in srgb, var(--app-primary-accent) 20%, transparent);
-                    color: var(--app-text-primary);
+                    background-color: var(--app-primary-accent);
+                    color: var(--app-bg-card);
                 }
                 .btn-green-plus {
                     background-color: var(--app-primary-accent) !important;
@@ -96,13 +96,13 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                     background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff) !important;
                 }
                 .btn-outline-danger-custom {
-                    border: 1px solid #dc3545 !important;
-                    color: #dc3545 !important;
+                    border: 1px solid var(--app-danger) !important;
+                    color: var(--app-danger) !important;
                     background: transparent !important;
                     padding: 8px 16px;
                 }
                 .btn-outline-danger-custom:hover:not(:disabled) {
-                    background-color: rgba(220, 53, 69, 0.1) !important;
+                    background-color: color-mix(in srgb, var(--app-danger) 10%, transparent) !important;
                 }
                 .btn-outline-secondary-custom {
                     border: 1px solid var(--app-border-mid) !important;
@@ -111,7 +111,7 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                     padding: 8px 16px;
                 }
                 .btn-outline-secondary-custom:hover:not(:disabled) {
-                    background-color: var(--app-bg-alt) !important;
+                    background-color: var(--app-surface-pressed) !important;
                     color: var(--app-text-primary) !important;
                 }
                 .restore-hint {
@@ -131,13 +131,13 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                     border-radius: 4px;
                 }
                 .checkpoint-table-container::-webkit-scrollbar-thumb:hover {
-                    background: var(--app-border-dark);
+                    background: var(--app-text-secondary);
                 }
             `}</style>
 
             <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
                 <Modal.Title className="d-flex align-items-center gap-2" style={{ fontSize: '18px' }}>
-                    <FaClock style={{ color: 'var(--app-text-secondary)' }} /> Checkpoint Manager
+                    <FaClock style={{ color: '#aaa' }} /> Checkpoint Manager
                 </Modal.Title>
             </Modal.Header>
 
@@ -170,7 +170,7 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
                                         className={selectedIndex === idx ? 'selected' : ''}
                                         onClick={() => setSelectedIndex(idx)}
                                     >
-                                        <td style={{ fontWeight: 'bold' }}>{cp.label}</td>
+                                        <td className="fw-bold">{cp.label}</td>
                                         <td>{formatDate(cp.timestamp)}</td>
                                         <td className="text-truncate" style={{ maxWidth: '100px' }}>
                                             {cp.notes || '-'}

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { BsHouseDoorFill, BsFileEarmarkPlus, BsFolder2Open, BsGearFill, BsThreeDotsVertical } from 'react-icons/bs';
 import { AiOutlineRedo } from 'react-icons/ai';
 import NewProject from './NewProject';
@@ -29,7 +29,14 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     const [showModal, setShowModal] = useState(false);
     const [showSettingsModal, setShowSettingsModal] = useState(false);
     const [activeTab, setActiveTab] = useState('home');
-    const [projects, setProjects] = useState([]);
+    const [projects, setProjects] = useState(() => {
+        const saved = localStorage.getItem('recentProjects');
+        return saved ? JSON.parse(saved) : [];
+    });
+
+    useEffect(() => {
+        localStorage.setItem('recentProjects', JSON.stringify(projects));
+    }, [projects]);
 
     const handleOpenModal = () => setShowModal(true);
     const handleCloseModal = () => setShowModal(false);
@@ -57,147 +64,32 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     };
 
     let theme = isDarkMode ? {
-        bgMain: '#1e2023',
-        bgSidebar: '#15171a',
-        bgCard: '#24272b',
-        textPrimary: '#e3e5e8',
-        textSecondary: '#949ba4',
-        border: '#2f3136',
-        inputBg: '#2b2d31',
-        activeIconBg: '#2c3b1d',
-        activeIconColor: '#8bc34a',
         logoIITB: IITBLogoDark,
         logoConstructSteel: ConstructSteelDark,
         logoMOS: MOSDark,
         logoINSDAG: InsdagDark,
-        filterBtnUnselectedBg: '#2b2d31'
+        inputBg: 'var(--app-bg-main)',
+        filterBtnUnselectedBg: 'var(--app-bg-main)'
     } : {
-        bgMain: '#f2f4f7',
-        bgSidebar: '#fbfcfd',
-        bgCard: '#ffffff',
-        textPrimary: '#495057',
-        textSecondary: '#8a91a5',
-        border: '#e2e5e9',
-        inputBg: '#ffffff',
-        activeIconBg: '#eef3e1',
-        activeIconColor: '#8bc34a',
         logoIITB: IITBLogoLight,
         logoConstructSteel: ConstructSteelLight,
         logoMOS: MOSLight,
         logoINSDAG: InsdagLight,
-        filterBtnUnselectedBg: '#f8f9fa'
+        inputBg: 'var(--app-bg-card)',
+        filterBtnUnselectedBg: 'var(--app-bg-card)'
     };
 
-    if (isDarkMode) {
-        if (userSettings?.darkTheme === 'Dracula') {
-            theme.bgMain = '#282A36';
-            theme.bgSidebar = '#21222C';
-            theme.activeIconBg = '#383A4A';
-            theme.activeIconColor = '#BD93F9';
-            theme.brand = '#90AF13';
-            theme.surfacePressed = '#565869';
-            theme.textPrimary = '#F8F8F2';
-            theme.textSecondary = '#CED4ED';
-            theme.textDisabled = '#94A1D3';
-            theme.border = '#44475A';
-            theme.cardBg = '#21222C';
-            theme.inputBg = '#383A4A';
-            theme.success = '#50FA7B';
-            theme.warning = '#FFB86C';
-            theme.danger = '#FF5555';
-            theme.info = '#8BE9FD';
-        } else if (userSettings?.darkTheme === 'Neon city standard dark') {
-            theme.bgMain = '#0C0F17';
-            theme.bgSidebar = '#121622';
-            theme.activeIconBg = '#1A2030';
-            theme.activeIconColor = '#E93CFF';
-            theme.brand = '#00D4FF';
-            theme.surfacePressed = '#2F3750';
-            theme.textPrimary = '#E8ECF8';
-            theme.textSecondary = '#CDD4E5';
-            theme.textDisabled = '#6B738A';
-            theme.border = '#242B3D';
-            theme.cardBg = '#121622';
-            theme.inputBg = '#1A2030';
-            theme.success = '#2EE6A6';
-            theme.warning = '#FFB020';
-            theme.danger = '#FF4D6D';
-            theme.info = '#3DA9FC';
-        } else { // standard dark
-            theme.bgMain = '#0F172A';
-            theme.bgSidebar = '#111827';
-            theme.activeIconBg = '#1F2937';
-            theme.activeIconColor = '#3B82F6';
-            theme.brand = '#2563EB';
-            theme.surfacePressed = '#4B5563';
-            theme.textPrimary = '#E5E7EB';
-            theme.textSecondary = '#D1D5DB';
-            theme.textDisabled = '#6B7280';
-            theme.border = '#374151';
-            theme.cardBg = '#111827';
-            theme.inputBg = '#1F2937';
-            theme.success = '#22C55E';
-            theme.warning = '#F59E0B';
-            theme.danger = '#EF4444';
-            theme.info = '#38BDF8';
-        }
-    } else {
-        if (userSettings?.lightTheme === 'soft pink') {
-            theme.bgMain = '#FDF2F8';
-            theme.bgSidebar = '#FFFFFF';
-            theme.activeIconBg = '#FCE7F3';
-            theme.activeIconColor = '#D94680';
-            theme.brand = '#EC4899';
-            theme.surfacePressed = '#F9A8D4';
-            theme.textPrimary = '#4A044E';
-            theme.textSecondary = '#6B2155';
-            theme.textDisabled = '#A78B9C';
-            theme.border = '#FBCFE8';
-            theme.cardBg = '#FFFFFF';
-            theme.inputBg = '#FCE7F3';
-            theme.success = '#22C55E';
-            theme.warning = '#F97316';
-            theme.danger = '#EF4444';
-            theme.info = '#3B82F6';
-        } else if (userSettings?.lightTheme === 'soft light') {
-            theme.bgMain = '#EFF1F5';
-            theme.bgSidebar = '#FFFFFF';
-            theme.activeIconBg = '#E6E9EF';
-            theme.activeIconColor = '#86A022';
-            theme.brand = '#90AF13';
-            theme.surfacePressed = '#DCE0E8';
-            theme.textPrimary = '#4C4F69';
-            theme.textSecondary = '#6C6F85';
-            theme.textDisabled = '#9CA0B0';
-            theme.border = '#CCD0DA';
-            theme.cardBg = '#FFFFFF';
-            theme.inputBg = '#E6E9EF';
-            theme.success = '#22C55E';
-            theme.warning = '#F97316';
-            theme.danger = '#EF4444';
-            theme.info = '#3B82F6';
-        } else { // standard light
-            theme.bgMain = '#F8FAFC';
-            theme.bgSidebar = '#FFFFFF';
-            theme.activeIconBg = '#F1F5F9';
-            theme.activeIconColor = '#2563EB';
-            theme.brand = '#1D4ED8';
-            theme.surfacePressed = '#CBD5E1';
-            theme.textPrimary = '#0F172A';
-            theme.textSecondary = '#475569';
-            theme.textDisabled = '#94A3B8';
-            theme.border = '#E2E8F0';
-            theme.cardBg = '#FFFFFF';
-            theme.inputBg = '#F1F5F9';
-            theme.success = '#16A34A';
-            theme.warning = '#F59E0B';
-            theme.danger = '#DC2626';
-            theme.info = '#0284C7';
-        }
-    }
+    theme.bgMain = 'var(--app-bg-main)';
+    theme.bgSidebar = 'var(--app-bg-card)';
+    theme.bgCard = 'var(--app-bg-card)';
+    theme.border = 'var(--app-border-mid)';
+    theme.textPrimary = 'var(--app-text-primary)';
+    theme.textSecondary = 'var(--app-text-secondary)';
+    theme.activeIconColor = 'var(--app-primary-accent)';
+    theme.activeIconBg = 'var(--app-surface-pressed)';
 
     return (
-        <div className="d-flex" style={{ height: '100vh', backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>
+        <div className="d-flex vh-100" style={{ backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>
 
             {/* Left Sidebar */}
             <div className="d-flex flex-column align-items-center" style={{ width: '85px', backgroundColor: theme.bgSidebar, borderRight: `1px solid ${theme.border}`, zIndex: 10, transition: 'background-color 0.3s ease' }}>
@@ -248,7 +140,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
             </div>
 
             {/* Main Area */}
-            <div className="flex-grow-1 d-flex flex-column" style={{ overflow: 'hidden' }}>
+            <div className="flex-grow-1 d-flex flex-column overflow-hidden">
 
                 {/* Header */}
                 <header className="d-flex justify-content-between align-items-center px-5 py-3" style={{ borderBottom: `1px solid ${theme.border}`, backgroundColor: theme.bgMain, transition: 'background-color 0.3s ease' }}>
@@ -259,7 +151,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
                 </header>
 
                 {/* Content */}
-                <main className="flex-grow-1 px-5 py-4 d-flex flex-column" style={{ overflowY: 'auto' }}>
+                <main className="flex-grow-1 px-5 py-4 d-flex flex-column overflow-y-auto">
 
                     {/* Projects Header & Filters */}
                     <div className="d-flex justify-content-between align-items-center mb-4 pb-2" style={{ borderBottom: `1px solid ${theme.border}` }}>
@@ -296,7 +188,7 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
                     <div className="row g-3">
                         {projects.map((proj) => (
                             <div key={proj.id} className="col-12 col-md-6 col-lg-6">
-                                <div className="p-3 d-flex justify-content-between align-items-start shadow-sm" style={{ backgroundColor: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', minHeight: '90px' }} onClick={() => onProjectOpen()}>
+                                <div className="p-3 d-flex justify-content-between align-items-start shadow-sm" style={{ backgroundColor: theme.bgCard, border: `1px solid ${theme.border}`, borderRadius: '8px', cursor: 'pointer', transition: 'all 0.2s', minHeight: '90px' }} onClick={() => onProjectOpen(proj.id, proj.name)}>
                                     <div className="d-flex flex-column justify-content-between h-100">
                                         <h6 className="mb-2" style={{ color: theme.textPrimary, fontSize: '0.95rem', fontWeight: '500' }}>{proj.name}</h6>
                                         <small style={{ color: theme.textSecondary, fontSize: '0.75rem' }}>{proj.date}</small>
@@ -337,11 +229,11 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
             <NewProject show={showModal} handleClose={handleCloseModal} onProjectOpen={onProjectOpen} onProjectCreate={handleProjectCreate} isDarkMode={isDarkMode} theme={theme} />
 
             {/* Settings Modal */}
-            <SettingsModal
-                show={showSettingsModal}
-                handleClose={() => setShowSettingsModal(false)}
-                isDarkMode={isDarkMode}
-                theme={theme}
+            <SettingsModal 
+                show={showSettingsModal} 
+                handleClose={() => setShowSettingsModal(false)} 
+                isDarkMode={isDarkMode} 
+                theme={theme} 
                 initialUserName={userName}
                 userSettings={userSettings}
                 onSaveSettings={(settings) => {

@@ -1,8 +1,9 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './BridgeData.css';
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const BASE_DOCS_URL = 'https://yourdocs.com/bridge/';
 
@@ -57,9 +58,9 @@ const REQUIRED_KEYS = new Set([
     'service_life',
 ]);
 
-// ── Styles are in BridgeData.css ─────────────────────────────────────────────
+// ΓöÇΓöÇ Styles are in BridgeData.css ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Sub-components ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 function SectionHeader({ title }) {
     return (
@@ -130,18 +131,18 @@ function SelectField({ id, label, hint, docSlug, required, options, value, onCha
                     aria-expanded={open}
                 >
                     <span className={value ? '' : 'text-muted fst-italic'}>
-                        {value || '— Select —'}
+                        {value || 'ΓÇö Select ΓÇö'}
                     </span>
-                    <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
+                    <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>Γû╛</span>
                 </button>
                 {open && (
-                    <ul className="dropdown-menu show w-100 p-1 shadow-sm" role="listbox" style={{ maxHeight: '250px', overflowY: 'auto', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
+                    <ul className="dropdown-menu show w-100 p-1 shadow-sm overflow-y-auto" role="listbox" style={{ maxHeight: '250px', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
                         <li
                             className="dropdown-item text-muted fst-italic"
                             style={{ cursor: 'pointer', fontSize: '0.875rem' }}
                             onClick={() => select('')}
                         >
-                            — Select —
+                            ΓÇö Select ΓÇö
                         </li>
                         {options.map((opt) => (
                             <li
@@ -197,28 +198,29 @@ function NumberField({ id, label, hint, required, min, max, step, unit, value, o
     );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Main Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-const BridgeData = ({ data, onUpdate, controller }) => {
-    const [form, setForm] = useState(data || INITIAL_STATE);
+const BridgeData = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.bridge_data;
+        return (saved && Object.keys(saved).length > 0) ? saved : INITIAL_STATE;
+    });
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
-    // Sync local state if prop changes
-    useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(data);
-        }
-    }, [data]);
 
-    // ── Handlers ────────────────────────────────────────────────────────────────
+    // Sync form to context whenever it changes (updateProjectData is stable via useCallback)
+    useEffect(() => {
+        updateProjectData('bridge_data', form);
+    }, [form, updateProjectData]);
+
+    // ΓöÇΓöÇ Handlers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const handleChange = useCallback((key, value) => {
-        const nextForm = { ...form, [key]: value };
-        setForm(nextForm);
-        onUpdate(nextForm);
+        setForm(prev => ({ ...prev, [key]: value }));
         // Clear error on edit
-        setErrors((prev) => {
+        setErrors(prev => {
             if (!prev.has(key)) return prev;
             const next = new Set(prev);
             next.delete(key);
@@ -229,12 +231,13 @@ const BridgeData = ({ data, onUpdate, controller }) => {
 
     const handleClearAll = () => {
         setForm(INITIAL_STATE);
+        updateProjectData('bridge_data', INITIAL_STATE);
         setErrors(new Set());
         setValidationMsg('');
         controller?.engine?._log('Bridge: All fields cleared.');
     };
 
-    // ── Validation ───────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Validation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const validate = () => {
         const newErrors = new Set();
@@ -263,11 +266,11 @@ const BridgeData = ({ data, onUpdate, controller }) => {
 
     const hasError = (key) => errors.has(key);
 
-    // ── Render ───────────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Render ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     return (
         <div style={{ padding: '24px', color: 'var(--app-text-primary)' }}>
-            {/* ── Bridge Identification ───────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Bridge Identification ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Bridge Identification" />
 
             <TextField
@@ -292,7 +295,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
                 hasError={hasError('user_agency')}
             />
 
-            {/* ── Location ───────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Location ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Location" />
 
             <SelectField
@@ -347,7 +350,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
                 hasError={hasError('location_to')}
             />
 
-            {/* ── Technical Specifications ────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Technical Specifications ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Technical Specifications" />
 
             <SelectField
@@ -429,7 +432,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
                 hasError={hasError('carriageway_width')}
             />
 
-            {/* ── Timeline ────────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Timeline ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Timeline" />
 
             <NumberField
@@ -469,7 +472,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
                 hasError={hasError('working_days_per_month')}
             />
 
-            {/* ── Life Cycle ──────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Life Cycle ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Life Cycle" />
 
             <NumberField
@@ -500,7 +503,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
                 hasError={hasError('service_life')}
             />
 
-            {/* ── Buttons ─────────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Buttons ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <div className="d-flex gap-2 mt-4 mb-3">
                 <button
                     className="btn w-100"
@@ -516,7 +519,7 @@ const BridgeData = ({ data, onUpdate, controller }) => {
             {/* Validation message */}
             {validationMsg && (
                 <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">
-                    ⚠ {validationMsg}
+                    ΓÜá {validationMsg}
                 </div>
             )}
         </div>

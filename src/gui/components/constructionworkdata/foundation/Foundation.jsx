@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
@@ -15,7 +16,7 @@ const emptyRow = () => ({
     source: '',
 });
 
-// ── Default sections for Foundation ──────────────────────────────────────────
+// ΓöÇΓöÇ Default sections for Foundation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const DEFAULT_SECTIONS = [
     { id: 'excavation', name: 'Excavation', rows: [] },
@@ -25,10 +26,18 @@ const DEFAULT_SECTIONS = [
 
 // (MaterialTable imported from shared component)
 
-// ── Foundation main component ─────────────────────────────────────────────────
+// ΓöÇΓöÇ Foundation main component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const Foundation = ({ controller }) => {
-    const [sections, setSections] = useState(DEFAULT_SECTIONS);
+    const { projectData, updateProjectData } = useProjectData();
+    const [sections, setSections] = useState(() => {
+        const saved = projectData.foundation_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
+    });
+
+    useEffect(() => {
+        updateProjectData('foundation_data', sections);
+    }, [sections, updateProjectData]);
 
     const handleRowChange = useCallback((sectionId, rowId, field, value) => {
         setSections((prev) =>
