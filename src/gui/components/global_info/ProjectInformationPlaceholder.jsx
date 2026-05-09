@@ -2,7 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
 import { useProjectData } from '../../../contexts/ProjectDataContext';
 
-// ── Constants ────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Constants ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const BASE_DOCS_URL = 'https://yourdocs.com/general/';
 
@@ -21,7 +21,7 @@ const INITIAL_STATE = {
     agency_country:      '',
     agency_email:        '',
     agency_phone:        '',
-    // Project Settings (read-only / locked — shown but not editable)
+    // Project Settings (read-only / locked ΓÇö shown but not editable)
     project_country:     '',
     project_currency:    '',
     unit_system:         '',
@@ -33,7 +33,7 @@ const REQUIRED_KEYS = new Set(['project_name']);
 // Fields that are display-only (locked)
 const LOCKED_KEYS = new Set(['project_country', 'project_currency', 'unit_system']);
 
-// ── Sub-components ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Sub-components ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 function SectionHeader({ title }) {
     return (
@@ -143,9 +143,9 @@ function SelectField({ id, label, hint, required, options, value, onChange, hasE
                     aria-expanded={open}
                 >
                     <span className={value ? '' : 'text-muted fst-italic'}>
-                        {value || '— Select —'}
+                        {value || 'ΓÇö Select ΓÇö'}
                     </span>
-                    <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
+                    <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>Γû╛</span>
                 </button>
                 {open && (
                     <ul className="dropdown-menu show w-100 p-1 shadow-sm overflow-y-auto" role="listbox" style={{ maxHeight: '250px', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
@@ -154,7 +154,7 @@ function SelectField({ id, label, hint, required, options, value, onChange, hasE
                             style={{ cursor: 'pointer', fontSize: '0.875rem' }}
                             onClick={() => select('')}
                         >
-                            — Select —
+                            ΓÇö Select ΓÇö
                         </li>
                         {options.map((opt) => (
                             <li
@@ -182,7 +182,7 @@ function SelectField({ id, label, hint, required, options, value, onChange, hasE
     );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Main Component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const ProjectInformationPlaceholder = ({ controller }) => {
     const { projectData, updateProjectData } = useProjectData();
@@ -199,7 +199,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
     }, [form, updateProjectData]);
 
 
-    // ── Handlers ─────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Handlers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const handleChange = useCallback((key, value) => {
         setForm(prev => ({ ...prev, [key]: value }));
@@ -225,7 +225,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
         controller?.engine?._log('General Info: All fields cleared.');
     };
 
-    // ── Validation ────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Validation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     const validate = () => {
         const newErrors = new Set();
@@ -253,12 +253,12 @@ const ProjectInformationPlaceholder = ({ controller }) => {
 
     const hasError = (key) => errors.has(key);
 
-    // ── Render ────────────────────────────────────────────────────────────────
+    // ΓöÇΓöÇ Render ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
     return (
         <div style={{ padding: '24px', color: 'var(--app-text-primary)' }}>
 
-            {/* ── Project Information ──────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Project Information ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Project Information" />
 
             <TextField
@@ -298,7 +298,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 hasError={hasError('remarks')}
             />
 
-            {/* ── Evaluating Agency ────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Evaluating Agency ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Evaluating Agency" />
 
             <TextField
@@ -356,7 +356,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 hasError={hasError('agency_phone')}
             />
 
-            {/* ── Project Settings (locked, read-only) ─────────────────────── */}
+            {/* ΓöÇΓöÇ Project Settings (locked, read-only) ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <SectionHeader title="Project Settings" />
 
             <TextField
@@ -392,7 +392,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 hasError={hasError('sor_database')}
             />
 
-            {/* ── Buttons ──────────────────────────────────────────────────── */}
+            {/* ΓöÇΓöÇ Buttons ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ */}
             <div className="d-flex gap-2 mt-4 mb-3">
                 <button
                     className="btn w-100"
@@ -408,7 +408,7 @@ const ProjectInformationPlaceholder = ({ controller }) => {
             {/* Validation message */}
             {validationMsg && (
                 <div className="alert alert-danger p-2" style={{ fontSize: '0.8rem' }} role="alert">
-                    ⚠ {validationMsg}
+                    ΓÜá {validationMsg}
                 </div>
             )}
         </div>

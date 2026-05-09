@@ -89,15 +89,15 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
     const brandColor = theme?.activeIconColor || '#8bc34a';
 
     const colors = {
-        modalBg: isDarkMode ? '#2f3136' : '#ffffff',
-        text: isDarkMode ? '#fff' : '#333',
-        textMuted: isDarkMode ? '#b9bbbe' : '#6c757d',
-        inputBg: isDarkMode ? '#36393f' : '#ffffff',
-        inputBorder: isDarkMode ? '#202225' : '#ced4da',
-        headerIconBg: isDarkMode ? '#8ea9a2' : brandColor,
-        cancelBtnBg: isDarkMode ? '#4f545c' : '#e9ecef',
-        cancelBtnColor: isDarkMode ? '#fff' : '#495057',
-        cancelBtnBorder: isDarkMode ? '#4f545c' : '#ced4da',
+        modalBg: 'var(--app-bg-card)',
+        text: 'var(--app-text-primary)',
+        textMuted: 'var(--app-text-secondary)',
+        inputBg: 'var(--app-bg-main)',
+        inputBorder: 'var(--app-border-mid)',
+        headerIconBg: brandColor,
+        cancelBtnBg: 'var(--app-bg-alt)',
+        cancelBtnColor: 'var(--app-text-primary)',
+        cancelBtnBorder: 'var(--app-border-mid)',
     };
 
     const closeModal = () => {
@@ -195,7 +195,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 options={countryOptions}
                                 value={country}
                                 onChange={setCountry}
-                                placeholder="— Select country —"
+                                placeholder="ΓÇö Select country ΓÇö"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
                                 menuPortalTarget={document.body}
@@ -220,7 +220,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 options={currencyOptions}
                                 value={currency}
                                 onChange={setCurrency}
-                                placeholder="— Select currency —"
+                                placeholder="ΓÇö Select currency ΓÇö"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
                                 menuPortalTarget={document.body}
@@ -245,7 +245,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 options={unitOptions}
                                 value={unitSystem}
                                 onChange={setUnitSystem}
-                                placeholder="— Select unit system —"
+                                placeholder="ΓÇö Select unit system ΓÇö"
                                 styles={customSelectStyles}
                                 menuPlacement="auto"
                                 menuPortalTarget={document.body}
@@ -271,7 +271,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
                                 style={{
                                     backgroundColor: brandColor,
                                     borderColor: brandColor,
-                                    color: '#000',
+                                    color: 'var(--app-bg-main)',
                                     fontWeight: 'bold',
                                     padding: '0.35rem 1.5rem',
                                     borderRadius: '4px',

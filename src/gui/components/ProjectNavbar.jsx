@@ -81,7 +81,7 @@ const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, icon: I
     const [hover, setHover] = useState(false);
     const borderCol = hover ? 'var(--app-primary-accent)' : outlineColor;
     const bgCol = hover ? outlineHoverBg : 'transparent';
-    const textCol = hover ? '#000' : 'var(--app-text-secondary)';
+    const textCol = hover ? 'var(--app-bg-card)' : 'var(--app-text-secondary)';
     const finalOutlineHoverBg = hover ? 'var(--app-primary-accent)' : bgCol;
 
     return (
@@ -92,7 +92,7 @@ const CustomNavBtn = ({ variant, outlineColor, outlineHoverBg, children, icon: I
             style={{ 
                 borderColor: variant === 'outline-secondary' ? borderCol : 'transparent',
                 backgroundColor: variant === 'outline-secondary' ? (hover ? 'var(--app-primary-accent)' : 'transparent') : 'transparent',
-                color: variant === 'outline-secondary' ? (hover ? '#000' : 'var(--app-text-secondary)') : 'var(--app-text-secondary)',
+                color: variant === 'outline-secondary' ? (hover ? 'var(--app-bg-card)' : 'var(--app-text-secondary)') : 'var(--app-text-secondary)',
                 fontSize: '13px',
                 padding: Icon && !children ? '4px 8px' : '4px 12px',
                 transition: 'all 0.2s ease',
@@ -134,7 +134,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
         }}>
             <style>{`
                 .custom-project-nav .nav-link { color: var(--app-text-primary) !important; font-size: 14px; }
-                .custom-dropdown-item:hover, .custom-dropdown-item:focus { background-color: var(--app-bg-main) !important; color: #9adc32 !important; }
+                .custom-dropdown-item:hover, .custom-dropdown-item:focus { background-color: var(--app-bg-main) !important; color: var(--app-primary-accent) !important; }
                 .custom-project-nav .dropdown-menu { background-color: var(--app-bg-card); border: 1px solid var(--app-border-mid); }
                 .custom-project-nav .dropdown-toggle { color: var(--app-text-primary) !important; font-size: 14px; }
             `}</style>
@@ -217,7 +217,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
                         height: '32px',
                         borderRadius: '4px'
                     }}
-                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-primary-accent)'; e.currentTarget.style.borderColor = 'var(--app-primary-accent)'; e.currentTarget.style.color = '#000'; }}
+                    onMouseEnter={(e) => { e.currentTarget.style.backgroundColor = 'var(--app-primary-accent)'; e.currentTarget.style.borderColor = 'var(--app-primary-accent)'; e.currentTarget.style.color = 'var(--app-bg-card)'; }}
                     onMouseLeave={(e) => { e.currentTarget.style.backgroundColor = 'transparent'; e.currentTarget.style.borderColor = 'var(--app-border-mid)'; e.currentTarget.style.color = 'var(--app-text-secondary)'; }}
                     onClick={() => {
                         addLog("Calculation request initiated...");

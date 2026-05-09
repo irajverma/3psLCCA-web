@@ -105,7 +105,7 @@ const MaterialEmissions = ({ controller }) => {
                         <th colSpan="2">Qty</th>
                         <th rowSpan="2" style={{ width: '10%' }}>Conv. Factor</th>
                         <th colSpan="2">Emission</th>
-                        <th rowSpan="2" className="text-end" style={{ width: '12%' }}>{isIncludedSection ? 'Total kgCO₂e' : 'Reason'}</th>
+                        <th rowSpan="2" className="text-end" style={{ width: '12%' }}>{isIncludedSection ? 'Total kgCOΓéée' : 'Reason'}</th>
                         {isIncludedSection && <th rowSpan="2" style={{ width: '8%' }}>Warning</th>}
                         <th rowSpan="2" style={{ width: '6%' }}>Action</th>
                     </tr>
@@ -160,7 +160,7 @@ const MaterialEmissions = ({ controller }) => {
             <div className="material-top-summary px-3 py-2 border-bottom d-flex align-items-center justify-content-between" style={{ backgroundColor: 'transparent', borderColor: 'var(--app-border-light)' }}>
                 <div className="d-flex align-items-center gap-4 py-1" style={{ fontSize: '0.82rem' }}>
                     <div className="text-light">
-                        Total: <span className="fw-bold">{totalCarbon.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCO₂e</span>
+                        Total: <span className="fw-bold">{totalCarbon.toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}</span> <span className="text-secondary opacity-75">kgCOΓéée</span>
                     </div>
                     <div className="text-light">
                         Included: <span className="fw-bold">{materials.length - excludedIds.size} of {materials.length} items</span>
@@ -178,7 +178,7 @@ const MaterialEmissions = ({ controller }) => {
                         boxShadow: 'inset 0 1px 0 rgba(255,255,255,0.05)'
                     }}
                 >
-                    {isDetailsVisible ? 'Hide Details ▲' : 'Show Details ▼'}
+                    {isDetailsVisible ? 'Hide Details Γû▓' : 'Show Details Γû╝'}
                 </button>
             </div>
 

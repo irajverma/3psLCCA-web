@@ -3,7 +3,7 @@ import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
@@ -16,7 +16,7 @@ const emptyRow = () => ({
     source: '',
 });
 
-// ── Default sections for Foundation ──────────────────────────────────────────
+// ΓöÇΓöÇ Default sections for Foundation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const DEFAULT_SECTIONS = [
     { id: 'excavation', name: 'Excavation', rows: [] },
@@ -26,7 +26,7 @@ const DEFAULT_SECTIONS = [
 
 // (MaterialTable imported from shared component)
 
-// ── Foundation main component ─────────────────────────────────────────────────
+// ΓöÇΓöÇ Foundation main component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const Foundation = ({ controller }) => {
     const { projectData, updateProjectData } = useProjectData();

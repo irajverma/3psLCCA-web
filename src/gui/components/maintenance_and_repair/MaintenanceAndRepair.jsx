@@ -385,7 +385,7 @@ const MaintenanceAndRepair = ({ controller, engine }) => {
             <div className="d-flex gap-2 mt-4 mb-3">
                 <button
                     className="btn flex-grow-1"
-                    style={{ backgroundColor: 'var(--app-primary-accent)', color: '#fff', border: '1px solid var(--app-primary-accent)' }}
+                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-card)', border: '1px solid var(--app-primary-accent)' }}
                     onClick={handleLoadSuggested}
                     onMouseEnter={(e) => { e.target.style.opacity = '0.9'; }}
                     onMouseLeave={(e) => { e.target.style.opacity = '1'; }}

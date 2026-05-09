@@ -20,60 +20,61 @@ const SaveCheckpointModal = ({ show, onHide, onSave }) => {
             onHide={onHide} 
             centered 
             className="custom-save-modal"
-            contentClassName="bg-dark text-light border-0"
+            contentClassName="border-0"
             style={{ fontFamily: '"Segoe UI", system-ui, sans-serif' }}
         >
             <style>{`
                 .custom-save-modal .modal-content {
-                    background-color: #1e1e1e !important;
+                    background-color: var(--app-bg-card) !important;
                     border-radius: 12px;
-                    border: 1px solid #333 !important;
+                    border: 1px solid var(--app-border-mid) !important;
+                    color: var(--app-text-primary) !important;
                 }
                 .custom-save-modal .form-control {
-                    background-color: #2d2d2d;
-                    border: 1px solid #444;
-                    color: #eee;
+                    background-color: var(--app-bg-alt);
+                    border: 1px solid var(--app-border-mid);
+                    color: var(--app-text-primary);
                     font-size: 14px;
                 }
                 .custom-save-modal .form-control:focus {
-                    background-color: #2d2d2d;
-                    border-color: #9acd32;
-                    box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.25);
-                    color: #fff;
+                    background-color: var(--app-bg-alt);
+                    border-color: var(--app-primary-accent);
+                    box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-primary-accent) 25%, transparent);
+                    color: var(--app-text-primary);
                 }
                 .custom-save-modal .form-label {
-                    color: #bbb;
+                    color: var(--app-text-secondary);
                     font-size: 14px;
                     margin-bottom: 8px;
                 }
                 .btn-green-save {
-                    background-color: #9acd32 !important;
-                    border-color: #9acd32 !important;
-                    color: #000 !important;
+                    background-color: var(--app-primary-accent) !important;
+                    border-color: var(--app-primary-accent) !important;
+                    color: var(--app-bg-card) !important;
                     font-weight: 600;
                     padding: 8px 24px;
                 }
                 .btn-green-save:hover {
-                    background-color: #a8d648 !important;
+                    background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff) !important;
                 }
                 .btn-cancel-dark {
-                    background-color: #333 !important;
-                    border-color: #444 !important;
-                    color: #ddd !important;
+                    background-color: var(--app-bg-alt) !important;
+                    border-color: var(--app-border-mid) !important;
+                    color: var(--app-text-primary) !important;
                 }
                 .btn-cancel-dark:hover {
-                    background-color: #444 !important;
+                    background-color: var(--app-border-mid) !important;
                 }
             `}</style>
 
             <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
                 <Modal.Title className="d-flex align-items-center gap-2" style={{ fontSize: '18px' }}>
-                    <FaSave style={{ color: '#9179c6' }} /> Save Checkpoint
+                    <FaSave style={{ color: 'var(--app-primary-accent)' }} /> Save Checkpoint
                 </Modal.Title>
             </Modal.Header>
 
             <Modal.Body className="pt-3">
-                <p style={{ color: '#aaa', fontSize: '14px', marginBottom: '20px' }}>
+                <p style={{ color: 'var(--app-text-secondary)', fontSize: '14px', marginBottom: '20px' }}>
                     A checkpoint is a full snapshot of your current project data. 
                     You can restore it at any time from the Checkpoint Manager.
                 </p>

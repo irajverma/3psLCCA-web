@@ -64,72 +64,29 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
     };
 
     let theme = isDarkMode ? {
-        bgMain: '#1e2023',
-        bgSidebar: '#15171a',
-        bgCard: '#24272b',
-        textPrimary: '#e3e5e8',
-        textSecondary: '#949ba4',
-        border: '#2f3136',
-        inputBg: '#2b2d31',
-        activeIconBg: '#2c3b1d',
-        activeIconColor: '#8bc34a',
         logoIITB: IITBLogoDark,
         logoConstructSteel: ConstructSteelDark,
         logoMOS: MOSDark,
         logoINSDAG: InsdagDark,
-        filterBtnUnselectedBg: '#2b2d31'
+        inputBg: 'var(--app-bg-main)',
+        filterBtnUnselectedBg: 'var(--app-bg-main)'
     } : {
-        bgMain: '#f2f4f7',
-        bgSidebar: '#fbfcfd',
-        bgCard: '#ffffff',
-        textPrimary: '#495057',
-        textSecondary: '#8a91a5',
-        border: '#e2e5e9',
-        inputBg: '#ffffff',
-        activeIconBg: '#eef3e1',
-        activeIconColor: '#8bc34a',
         logoIITB: IITBLogoLight,
         logoConstructSteel: ConstructSteelLight,
         logoMOS: MOSLight,
         logoINSDAG: InsdagLight,
-        filterBtnUnselectedBg: '#f8f9fa'
+        inputBg: 'var(--app-bg-card)',
+        filterBtnUnselectedBg: 'var(--app-bg-card)'
     };
 
-    if (isDarkMode) {
-        if (userSettings?.darkTheme === 'Pink') {
-            theme.bgMain = '#2a1a21';
-            theme.bgSidebar = '#1c1015';
-            theme.activeIconColor = '#e84393';
-            theme.activeIconBg = '#3a1e28';
-        } else if (userSettings?.darkTheme === 'Blue') {
-            theme.bgMain = '#0f172a';
-            theme.bgSidebar = '#0b1120';
-            theme.activeIconColor = '#3b82f6';
-            theme.activeIconBg = '#172554';
-        } else if (userSettings?.darkTheme === 'Green') {
-            theme.bgMain = '#121e12';
-            theme.bgSidebar = '#0d160d';
-            theme.activeIconColor = '#9acd32';
-            theme.activeIconBg = '#1a2e1a';
-        }
-    } else {
-        if (userSettings?.lightTheme === 'Pink') {
-            theme.bgMain = '#fff0f5';
-            theme.bgSidebar = '#ffe4e1';
-            theme.activeIconColor = '#d63031';
-            theme.activeIconBg = '#ffdada';
-        } else if (userSettings?.lightTheme === 'Blue') {
-            theme.bgMain = '#f0f8ff';
-            theme.bgSidebar = '#e6f0fa';
-            theme.activeIconColor = '#0984e3';
-            theme.activeIconBg = '#d0e8ff';
-        } else if (userSettings?.lightTheme === 'Green') {
-            theme.bgMain = '#f4fbf0';
-            theme.bgSidebar = '#e8f5e9';
-            theme.activeIconColor = '#9acd32';
-            theme.activeIconBg = '#d4edda';
-        }
-    }
+    theme.bgMain = 'var(--app-bg-main)';
+    theme.bgSidebar = 'var(--app-bg-card)';
+    theme.bgCard = 'var(--app-bg-card)';
+    theme.border = 'var(--app-border-mid)';
+    theme.textPrimary = 'var(--app-text-primary)';
+    theme.textSecondary = 'var(--app-text-secondary)';
+    theme.activeIconColor = 'var(--app-primary-accent)';
+    theme.activeIconBg = 'var(--app-surface-pressed)';
 
     return (
         <div className="d-flex vh-100" style={{ backgroundColor: theme.bgMain, color: theme.textPrimary, fontFamily: 'Inter, sans-serif', transition: 'background-color 0.3s ease' }}>

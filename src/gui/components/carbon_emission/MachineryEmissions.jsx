@@ -422,11 +422,11 @@ const MachineryEmissions = ({ controller }) => {
                             {/* Top Stats Row: Diesel, Electricity, Subtotal */}
                             <div className="d-flex justify-content-between mb-2 px-1" style={{ fontSize: '12px', color: 'var(--app-text-primary)' }}>
                                 <div className="d-flex gap-4">
-                                    <span>Diesel: <span className="fw-bold">{detailedDieselTotal.toFixed(3)} kg CO₂e</span></span>
-                                    <span>Electricity: <span className="fw-bold">{detailedElecTotal.toFixed(3)} kg CO₂e</span></span>
+                                    <span>Diesel: <span className="fw-bold">{detailedDieselTotal.toFixed(3)} kg COΓéée</span></span>
+                                    <span>Electricity: <span className="fw-bold">{detailedElecTotal.toFixed(3)} kg COΓéée</span></span>
                                 </div>
                                 <div className="fw-bold">
-                                    Subtotal: {detailedTotal.toFixed(3)} kg CO₂e
+                                    Subtotal: {detailedTotal.toFixed(3)} kg COΓéée
                                 </div>
                             </div>
 
@@ -490,7 +490,7 @@ const MachineryEmissions = ({ controller }) => {
 
                             <div className="mb-3">
                                 <div className="lump-sum-field-label">Emission Factor</div>
-                                <div className="lump-sum-field-subtext">Grid electricity emission factor (kg CO₂e per kWh).</div>
+                                <div className="lump-sum-field-subtext">Grid electricity emission factor (kg COΓéée per kWh).</div>
                                 <div className="position-relative" style={{ maxWidth: '400px' }}>
                                     <input 
                                         type="number" 
@@ -498,7 +498,7 @@ const MachineryEmissions = ({ controller }) => {
                                         value={lumpSum.elec_ef}
                                         onChange={e => handleUpdateLumpSum('elec_ef', e.target.value)}
                                     />
-                                    <span className="position-absolute end-0 top-50 translate-middle-y pe-2 text-secondary small">kg CO₂e/kWh</span>
+                                    <span className="position-absolute end-0 top-50 translate-middle-y pe-2 text-secondary small">kg COΓéée/kWh</span>
                                 </div>
                             </div>
                         </div>
@@ -538,7 +538,7 @@ const MachineryEmissions = ({ controller }) => {
 
                             <div className="mb-3">
                                 <div className="lump-sum-field-label">Emission Factor</div>
-                                <div className="lump-sum-field-subtext">Diesel emission factor (kg CO₂e per litre).</div>
+                                <div className="lump-sum-field-subtext">Diesel emission factor (kg COΓéée per litre).</div>
                                 <div className="position-relative" style={{ maxWidth: '400px' }}>
                                     <input 
                                         type="number" 
@@ -547,13 +547,13 @@ const MachineryEmissions = ({ controller }) => {
                                         value={lumpSum.fuel_ef}
                                         onChange={e => handleUpdateLumpSum('fuel_ef', e.target.value)}
                                     />
-                                    <span className="position-absolute end-0 top-50 translate-middle-y pe-2 text-secondary small">kg CO₂e/litre</span>
+                                    <span className="position-absolute end-0 top-50 translate-middle-y pe-2 text-secondary small">kg COΓéée/litre</span>
                                 </div>
                             </div>
                         </div>
 
                         <div className="text-end fw-bold mb-3" style={{ fontSize: '0.9rem' }}>
-                            Lump Sum Subtotal: <span style={{ color: '#9adc32' }}>{lumpSumTotal.toFixed(3)}</span> kg CO₂e
+                            Lump Sum Subtotal: <span style={{ color: '#9adc32' }}>{lumpSumTotal.toFixed(3)}</span> kg COΓéée
                         </div>
                     </div>
                 )}
@@ -563,7 +563,7 @@ const MachineryEmissions = ({ controller }) => {
             <div className="mx-3 mb-3">
                 <div className="p-2 px-3 rounded d-flex justify-content-end align-items-center" style={{ backgroundColor: 'var(--app-bg-card)', border: '1px solid var(--app-border-mid)' }}>
                     <div className="fw-bold" style={{ fontSize: '13px', color: 'var(--app-text-primary)' }}>
-                        Total Machinery Emissions: {(mode === 'detailed' ? detailedTotal : lumpSumTotal).toFixed(3)} kg CO₂e
+                        Total Machinery Emissions: {(mode === 'detailed' ? detailedTotal : lumpSumTotal).toFixed(3)} kg COΓéée
                     </div>
                 </div>
             </div>
@@ -582,7 +582,7 @@ const MachineryEmissions = ({ controller }) => {
                     <button className="remarks-btn">Right</button>
                     <button className="remarks-btn">Justify</button>
                     <div className="vr mx-1" style={{ height: '14px', alignSelf: 'center', backgroundColor: '#555' }}></div>
-                    <button className="remarks-btn">• List</button>
+                    <button className="remarks-btn">ΓÇó List</button>
                     <button className="remarks-btn">1. List</button>
                     <div className="vr mx-1" style={{ height: '14px', alignSelf: 'center', backgroundColor: '#555' }}></div>
                     <button className="remarks-btn">+ Table</button>

@@ -110,7 +110,7 @@ const TrafficEmissions = ({ controller }) => {
                         }}
                         placeholder="0.000"
                     />
-                    <span className="position-absolute end-0 top-50 translate-middle-y pe-4 text-secondary">kgCO₂e/day</span>
+                    <span className="position-absolute end-0 top-50 translate-middle-y pe-4 text-secondary">kgCOΓéée/day</span>
                 </div>
             </div>
 
@@ -142,7 +142,7 @@ const TrafficEmissions = ({ controller }) => {
                                 <tr className="text-secondary">
                                     <th className="ps-3 py-2 border-0" style={{ width: '35%' }}>Vehicle Classification</th>
                                     <th className="text-end py-2 border-0">Source AADT</th>
-                                    <th className="text-end py-2 border-0" style={{ width: '25%' }}>EF (kgCO₂e/km)</th>
+                                    <th className="text-end py-2 border-0" style={{ width: '25%' }}>EF (kgCOΓéée/km)</th>
                                     <th className="text-end py-2 border-0 pe-4">Subtotal (kg/day)</th>
                                 </tr>
                             </thead>
@@ -188,7 +188,7 @@ const TrafficEmissions = ({ controller }) => {
                     <button className="remarks-btn">Right</button>
                     <button className="remarks-btn">Justify</button>
                     <div className="vr mx-1 bg-secondary opacity-25" style={{ height: '14px' }}></div>
-                    <button className="remarks-btn">• List</button>
+                    <button className="remarks-btn">ΓÇó List</button>
                     <button className="remarks-btn">1. List</button>
                     <div className="vr mx-1 bg-secondary opacity-25" style={{ height: '14px' }}></div>
                     <button className="remarks-btn">+ Table</button>
@@ -226,7 +226,7 @@ const TrafficEmissions = ({ controller }) => {
                             <span className="ms-2 fw-bold" style={{ color: '#9adc32', fontSize: '1.2rem' }}>
                                 {(mode === 'calculate' ? calculatedTotal : directValue).toLocaleString(undefined, { minimumFractionDigits: 3, maximumFractionDigits: 3 })}
                             </span>
-                            <span className="text-secondary small ms-1">kgCO₂e/day</span>
+                            <span className="text-secondary small ms-1">kgCOΓéée/day</span>
                         </div>
                     </div>
                 </div>

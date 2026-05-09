@@ -104,7 +104,7 @@ export default function MaterialTable({ section, onRowChange, onRowDelete, onAdd
                                             onMouseEnter={(e) => { e.target.style.color = '#e74c3c'; e.target.style.backgroundColor = 'rgba(231, 76, 60, 0.1)'; }}
                                             onMouseLeave={(e) => { e.target.style.color = 'var(--app-text-muted)'; e.target.style.backgroundColor = 'transparent'; }}
                                         >
-                                            ✕
+                                            Γ£ò
                                         </button>
                                     </td>
                                 </tr>

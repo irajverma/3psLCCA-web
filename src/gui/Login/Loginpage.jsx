@@ -106,7 +106,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
                                 <Button
                                     type="submit"
                                     className="w-100 py-2 fw-bold mb-3 border-0"
-                                    style={{ backgroundColor: '#9ACD32', color: 'var(--app-btn-primary-text)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
+                                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-main)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
                                 >
                                     LOGIN
                                 </Button>
@@ -158,7 +158,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
                             </Form.Group>
                             <div className="d-flex justify-content-end gap-2">
                                 <Button variant="secondary" onClick={() => setShowGuestPrompt(false)} style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-light)' }}>Cancel</Button>
-                                <Button type="submit" style={{ backgroundColor: '#9ACD32', color: '#000', border: 'none', fontWeight: 'bold' }}>Continue</Button>
+                                <Button type="submit" style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-bg-main)', border: 'none', fontWeight: 'bold' }}>Continue</Button>
                             </div>
                         </Form>
                     </Modal.Body>
