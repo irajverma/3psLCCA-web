@@ -12,14 +12,14 @@ const TABS = [
     { key: 'Miscellaneous', label: 'Miscellaneous', component: Miscellaneous },
 ];
 
-const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', initialTab = 'Foundation', setActiveNode }) => {
+const ConstructionWorkData = ({ controller, projectData, data, onUpdate, projectName = 'Active Analysis', initialTab = 'Foundation', setActiveNode }) => {
     const [activeTab, setActiveTab] = useState(initialTab);
 
     useEffect(() => {
         setActiveTab(initialTab);
     }, [initialTab]);
 
-    const ActiveComponent = TABS.find((t) => t.key === activeTab)?.component ?? Foundation;
+    const ActiveComponent = TABS.find((t) => t.key === activeTab)?.component || Foundation;
 
     const handleUploadExcel = () => {
         controller?.engine?._log('Construction: Upload Excel clicked.');
@@ -28,6 +28,10 @@ const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', ini
     const handleTrash = () => {
         controller?.engine?._log('Construction: Trash clicked.');
     };
+
+    if (!projectData) {
+        return <div className="p-4 text-danger">Error: Project data missing. Please reload the application.</div>;
+    }
 
     return (
         <div className="d-flex flex-column h-100 overflow-hidden" style={{ backgroundColor: 'var(--app-bg-main)', color: 'var(--app-text-primary)' }}>
@@ -73,17 +77,13 @@ const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', ini
                                 color: isActive ? 'var(--app-primary-accent)' : 'var(--app-text-secondary)',
                                 borderBottom: isActive ? '2px solid var(--app-primary-accent)' : '2px solid transparent',
                                 fontSize: '0.82rem',
-                                whiteSpace: 'nowrap',
-                                backgroundColor: 'transparent'
+                                transition: 'all 0.2s',
+                                marginBottom: '-1px'
                             }}
                             onClick={() => {
                                 setActiveTab(tab.key);
-                                if (setActiveNode) {
-                                    setActiveNode(tab.label);
-                                }
+                                if (setActiveNode) setActiveNode(tab.label); // Link sidebar to tab selection
                             }}
-                            onMouseEnter={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-primary)'; }}
-                            onMouseLeave={(e) => { if (!isActive) e.target.style.color = 'var(--app-text-secondary)'; }}
                         >
                             {tab.label}
                         </button>
@@ -92,8 +92,13 @@ const ConstructionWorkData = ({ controller, projectName = 'Active Analysis', ini
             </div>
 
             {/* Active tab content */}
-            <div className="flex-grow-1 overflow-auto p-3 p-md-4">
-                <ActiveComponent controller={controller} />
+            <div className="flex-grow-1 p-4" style={{ backgroundColor: 'var(--app-bg-main)', overflowY: 'auto' }}>
+                <ActiveComponent 
+                    controller={controller} 
+                    projectData={projectData} 
+                    data={data} 
+                    onUpdate={onUpdate} 
+                />
             </div>
         </div>
     );

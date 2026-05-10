@@ -37,8 +37,8 @@ const CarbonEmissionContainer = ({ controller, initialTab = 'Material' }) => {
                             key={tab.key}
                             className={`btn rounded-0 px-3 py-2 border-0 fw-medium ${isActive ? 'fw-bold active-tab-btn' : ''}`}
                             style={{
-                                color: isActive ? '#9adc32' : 'var(--app-text-secondary)',
-                                borderBottom: isActive ? '2px solid #9adc32' : '2px solid transparent',
+                                color: isActive ? 'var(--app-primary-accent)' : 'var(--app-text-secondary)',
+                                borderBottom: isActive ? '2px solid var(--app-primary-accent)' : '2px solid transparent',
                                 fontSize: '0.82rem',
                                 whiteSpace: 'nowrap',
                                 backgroundColor: 'transparent',
@@ -93,7 +93,7 @@ const CarbonEmissionContainer = ({ controller, initialTab = 'Material' }) => {
                     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' fill='rgb(150,150,150)'><polygon points='0,0 100,0 50,100'/></svg>");
                 }
                 .active-tab-btn {
-                    color: #9adc32 !important;
+                    color: var(--app-primary-accent) !important;
                 }
                 button:hover {
                     color: var(--app-text-primary) !important;

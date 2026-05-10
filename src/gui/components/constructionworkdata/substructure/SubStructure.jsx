@@ -17,16 +17,50 @@ const DEFAULT_SECTIONS = [
 
 // MaterialTable imported from shared component
 
-const SubStructure = ({ controller }) => {
-    const [sections, setSections] = useState(DEFAULT_SECTIONS);
-    const handleRowChange = useCallback((sId, rId, field, val) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) })), []);
-    const handleRowDelete = useCallback((sId, rId) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) })), []);
-    const handleAddRow = useCallback((sId, newRowData) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] })), []);
-    const handleAddSection = () => setSections((prev) => [...prev, { id: uid(), name: `Section ${prev.length + 1}`, rows: [] }]);
+const SubStructure = ({ controller, projectData, data, onUpdate }) => {
+    const [sections, setSections] = useState(() => {
+        return data?.substructure || DEFAULT_SECTIONS;
+    });
+
+    const persist = useCallback((nextSections) => {
+        if (onUpdate) onUpdate({ ...data, substructure: nextSections });
+    }, [onUpdate, data]);
+
+    const handleRowChange = useCallback((sId, rId, field, val) => {
+        setSections((prev) => {
+            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) });
+            persist(next);
+            return next;
+        });
+    }, [persist]);
+
+    const handleRowDelete = useCallback((sId, rId) => {
+        setSections((prev) => {
+            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) });
+            persist(next);
+            return next;
+        });
+    }, [persist]);
+
+    const handleAddRow = useCallback((sId, newRowData) => {
+        setSections((prev) => {
+            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] });
+            persist(next);
+            return next;
+        });
+    }, [persist]);
+
+    const handleAddSection = () => {
+        setSections((prev) => {
+            const next = [...prev, { id: uid(), name: `Section ${prev.length + 1}`, rows: [] }];
+            persist(next);
+            return next;
+        });
+    };
 
     return (
         <div>
-            {sections.map((sec) => <MaterialTable key={sec.id} section={sec} onRowChange={handleRowChange} onRowDelete={handleRowDelete} onAddRow={handleAddRow} />)}
+            {sections.map((sec) => <MaterialTable key={sec.id} section={sec} onRowChange={handleRowChange} onRowDelete={handleRowDelete} onAddRow={handleAddRow} projectData={projectData} />)}
             <button
                 className="btn btn-sm mt-3"
                 style={{ backgroundColor: 'transparent', color: 'var(--app-text-primary)', border: '1px solid var(--app-border-mid)', transition: 'background-color 0.2s', fontWeight: 500 }}

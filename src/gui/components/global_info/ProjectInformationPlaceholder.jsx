@@ -1,5 +1,6 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import { data as countriesData } from '../utils/countriesdata';
+import { materialCatalog } from '../utils/materialCatalog';
 
 // ── Constants ────────────────────────────────────────────────────────────────
 
@@ -183,23 +184,46 @@ function SelectField({ id, label, hint, required, options, value, onChange, hasE
 
 // ── Main Component ────────────────────────────────────────────────────────────
 
-const ProjectInformationPlaceholder = ({ controller }) => {
-    const [form, setForm] = useState(INITIAL_STATE);
+const ProjectInformationPlaceholder = ({ data, onUpdate, controller }) => {
+    const [form, setForm] = useState(() => ({
+        ...INITIAL_STATE,
+        ...data
+    }));
+
+    // Sync local state when prop data changes (e.g. on navigation)
+    useEffect(() => {
+        if (data) {
+            setForm(prev => ({ ...prev, ...data }));
+        }
+    }, [data]);
+
     const [errors, setErrors] = useState(new Set());
     const [validationMsg, setValidationMsg] = useState('');
 
     // ── Handlers ─────────────────────────────────────────────────────────────
 
     const handleChange = useCallback((key, value) => {
-        setForm((prev) => ({ ...prev, [key]: value }));
-        setErrors((prev) => {
-            if (!prev.has(key)) return prev;
-            const next = new Set(prev);
-            next.delete(key);
+        setForm((prev) => {
+            const next = { ...prev, [key]: value };
+            
+            // Move onUpdate OUT of the setter to avoid React warning/crash
+            setTimeout(() => {
+                if (onUpdate) onUpdate(next);
+            }, 0);
+            
             return next;
         });
+
+        if (REQUIRED_KEYS.has(key)) {
+            setErrors((prev) => {
+                const next = new Set(prev);
+                if (!value || !value.toString().trim()) next.add(key);
+                else next.delete(key);
+                return next;
+            });
+        }
         setValidationMsg('');
-    }, []);
+    }, [onUpdate]);
 
     const handleClearAll = () => {
         // Never clear locked or sor_database fields
@@ -374,10 +398,11 @@ const ProjectInformationPlaceholder = ({ controller }) => {
                 disabled
             />
 
-            <TextField
+            <SelectField
                 id="sor_database"
                 label="Material Suggestions"
                 hint="Schedule of Rates database used to auto-suggest material names, rates, and emission factors."
+                options={Object.keys(materialCatalog)}
                 value={form.sor_database}
                 onChange={handleChange}
                 hasError={hasError('sor_database')}

@@ -7,7 +7,7 @@ const calcTotal = (row) => {
     return (r * q).toFixed(2);
 };
 
-export default function MaterialTable({ section, onRowChange, onRowDelete, onAddRow }) {
+export default function MaterialTable({ section, onRowChange, onRowDelete, onAddRow, projectData }) {
     const [isAddModalOpen, setIsAddModalOpen] = useState(false);
     return (
         <fieldset className="border rounded mb-4 p-3" style={{ borderColor: 'var(--app-border-mid)' }}>
@@ -125,6 +125,7 @@ export default function MaterialTable({ section, onRowChange, onRowDelete, onAdd
             {isAddModalOpen && (
                 <MaterialAddModal
                     sectionName={section.name}
+                    projectData={projectData}
                     onClose={() => setIsAddModalOpen(false)}
                     onAdd={(newRowData) => {
                         onAddRow(section.id, newRowData);

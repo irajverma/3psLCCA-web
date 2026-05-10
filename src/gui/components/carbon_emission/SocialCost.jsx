@@ -52,22 +52,22 @@ const CustomDropdown = ({ value, options, onChange }) => {
                 className="custom-select-box py-3 px-3 d-flex justify-content-between align-items-center"
                 onClick={() => setIsOpen(!isOpen)}
                 style={{ 
-                    borderColor: isOpen ? '#9adc32' : 'rgba(255,255,255,0.1)',
-                    boxShadow: isOpen ? '0 0 0 1px rgba(154, 205, 50, 0.5)' : 'none'
+                    borderColor: isOpen ? 'var(--app-primary-accent)' : 'var(--app-border-mid)',
+                    boxShadow: isOpen ? '0 0 10px var(--app-accent-bg, rgba(154, 205, 50, 0.1))' : 'none'
                 }}
             >
                 <span>{value}</span>
                 <svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' width="16" height="12">
-                    <path fill='none' stroke='#9adc32' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d={isOpen ? 'm2 11 6-6 6 6' : 'm2 5 6 6 6-6'}/>
+                    <path fill='none' stroke='var(--app-primary-accent)' strokeLinecap='round' strokeLinejoin='round' strokeWidth='2' d={isOpen ? 'm2 11 6-6 6 6' : 'm2 5 6 6 6-6'}/>
                 </svg>
             </div>
             {isOpen && (
                 <div 
                     className="position-absolute w-100 mt-1 rounded-3 shadow-lg overflow-hidden dropdown-menu-custom" 
                     style={{ 
-                        backgroundColor: 'var(--app-bg-main)', 
+                        backgroundColor: 'var(--app-bg-card)', 
                         zIndex: 1000, 
-                        border: '1px solid rgba(255,255,255,0.1)'
+                        border: '1px solid var(--app-border-mid)'
                     }}
                 >
                     {options.map(o => (
@@ -155,10 +155,10 @@ const SocialCost = ({ controller }) => {
     };
 
     return (
-        <div className="social-cost p-4 text-light" style={{ backgroundColor: 'transparent' }}>
+        <div className="social-cost p-4" style={{ backgroundColor: 'transparent', color: 'var(--app-text-primary)' }}>
             <div className="section-container mb-5">
                 <h5 className="fw-bold mb-3 mt-2" style={{ color: 'var(--app-text-primary)', fontSize: '1.25rem' }}>Economic Valuation Methodology</h5>
-                <hr className="bg-secondary opacity-25 mb-4" />
+                <hr style={{ borderColor: 'var(--app-border-light)', opacity: 0.5 }} className="mb-4" />
 
                 <div className="methodology-selection mb-4">
                     <div className="d-flex align-items-center gap-2 mb-2">
@@ -190,7 +190,7 @@ const SocialCost = ({ controller }) => {
                         
                         {mode === MODES.RICKE && (
                             <div className="mt-4 pt-2 mb-2" style={{ fontSize: '0.85rem' }}>
-                                <span className="fw-bold">Reference:</span> Ricke, K., Drouet, L., Caldeira, K. et al. <i>Country-level social cost of carbon.</i> Nature Clim Change 8, 895-900 (2018). <a href="https://doi.org/10.1038/s41558-018-0282-y" target="_blank" rel="noopener noreferrer" style={{color: '#9adc32', textDecoration: 'none'}}>doi:10.1038/s41558-018-0282-y</a>
+                                <span className="fw-bold">Reference:</span> Ricke, K., Drouet, L., Caldeira, K. et al. <i>Country-level social cost of carbon.</i> Nature Clim Change 8, 895-900 (2018). <a href="https://doi.org/10.1038/s41558-018-0282-y" target="_blank" rel="noopener noreferrer" style={{color: 'var(--app-primary-accent)', textDecoration: 'none'}}>doi:10.1038/s41558-018-0282-y</a>
                             </div>
                         )}
                         {mode === MODES.NITI && (
@@ -205,7 +205,7 @@ const SocialCost = ({ controller }) => {
             {mode === MODES.RICKE && (
                 <div className="section-container mt-5 mb-5">
                     <h5 className="fw-bold mb-3" style={{ color: 'var(--app-text-primary)', fontSize: '1.1rem' }}>Climate & Socioeconomic Scenarios</h5>
-                    <hr className="bg-secondary opacity-25 mb-4" />
+                    <hr style={{ borderColor: 'var(--app-border-light)', opacity: 0.5 }} className="mb-4" />
 
                     <div className="mb-4">
                         <div className="d-flex align-items-center gap-2 mb-2">
@@ -264,7 +264,7 @@ const SocialCost = ({ controller }) => {
             {mode === MODES.CUSTOM && (
                 <div className="section-container mt-5 mb-5">
                     <h5 className="fw-bold mb-3" style={{ color: 'var(--app-text-primary)', fontSize: '1.1rem' }}>Custom Parameters</h5>
-                    <hr className="bg-secondary opacity-25 mb-4" />
+                    <hr style={{ borderColor: 'var(--app-border-light)', opacity: 0.5 }} className="mb-4" />
 
                     <div className="mb-4">
                         <div className="d-flex align-items-center gap-2 mb-2">
@@ -283,7 +283,11 @@ const SocialCost = ({ controller }) => {
             <button 
                 className="btn w-100 py-3 mt-4 border-0 rounded-3 shadow-sm clear-all-btn"
                 onClick={handleClearAll}
-                style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-primary)' }}
+                style={{ 
+                    backgroundColor: 'var(--app-bg-alt)', 
+                    color: 'var(--app-text-primary)',
+                    border: '1px solid var(--app-border-mid)'
+                }}
             >
                 Clear All
             </button>
@@ -295,40 +299,62 @@ const SocialCost = ({ controller }) => {
                 .custom-select-box, .custom-input-box {
                     background-color: var(--app-bg-card) !important;
                     color: var(--app-text-primary) !important;
-                    border: 1px solid rgba(255,255,255,0.1) !important;
+                    border: 1px solid var(--app-border-mid) !important;
                     border-radius: 8px !important;
-                    transition: all 0.2s ease;
+                    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                .custom-select-box:hover, .custom-input-box:hover {
+                    border-color: var(--app-primary-accent) !important;
+                    background-color: var(--app-bg-alt) !important;
                 }
                 .custom-select-box {
                     cursor: pointer;
                     user-select: none;
                 }
                 .custom-select-box:focus, .custom-input-box:focus {
-                    border-color: #9adc32 !important;
-                    box-shadow: 0 0 0 1px rgba(154, 205, 50, 0.5) !important;
+                    border-color: var(--app-primary-accent) !important;
+                    box-shadow: 0 0 0 3px var(--app-accent-bg, rgba(154, 205, 50, 0.2)) !important;
                     outline: none !important;
                 }
                 .dropdown-item-custom {
                     cursor: pointer;
-                    transition: background-color 0.2s ease;
+                    transition: all 0.2s ease;
                     color: var(--app-text-primary);
                 }
                 .dropdown-item-custom:hover {
                     background-color: var(--app-bg-alt);
+                    padding-left: 1.25rem !important;
+                    color: var(--app-primary-accent);
                 }
                 .dropdown-item-custom.selected {
-                    background-color: rgba(255, 255, 255, 0.05);
+                    background-color: var(--app-accent-bg, rgba(154, 205, 50, 0.1));
+                    color: var(--app-primary-accent);
+                    font-weight: 600;
                 }
                 .clear-all-btn {
-                    background-color: var(--app-bg-alt);
-                    color: var(--app-text-primary);
-                    font-weight: 500;
+                    font-weight: 600;
                     letter-spacing: 0.5px;
-                    transition: all 0.2s ease;
+                    transition: all 0.3s ease;
                 }
                 .clear-all-btn:hover {
-                    background-color: var(--app-bg-card);
-                    color: #9adc32;
+                    background-color: var(--app-bg-card) !important;
+                    color: var(--app-primary-accent) !important;
+                    border-color: var(--app-primary-accent) !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 12px rgba(0,0,0,0.1) !important;
+                }
+                .section-container {
+                    background: var(--app-bg-card);
+                    border-radius: 12px;
+                    padding: 1.5rem;
+                    border: 1px solid var(--app-border-light);
+                    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+                }
+                .instruction-text {
+                    opacity: 0.85;
+                }
+                .fw-bold {
+                    color: var(--app-text-primary);
                 }
                 .extra-small { font-size: 0.7rem; }
             `}</style>

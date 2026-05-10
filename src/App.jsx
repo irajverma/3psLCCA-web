@@ -347,13 +347,14 @@ function App() {
         onRenameProject={handleRenameProject}
         onExportProject={handleExportProject}
       >
-        {React.cloneElement(content, {
+        {content ? React.cloneElement(content, {
           checkpoints,
           logs,
           onClearLogs: handleClearLogs,
           isLocked: isLocked,
-          navTrigger: navTrigger
-        })}
+          navTrigger: navTrigger,
+          projectData: projectData
+        }) : <div className="p-4 text-muted fst-italic">Select a section from the sidebar to begin.</div>}
       </ProjectLayout>
     )
   }

@@ -1,6 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
+import darbhangaData from '../utils/material_database/INDIA_Bihar_Darbhanga_2025.json';
+import mumbaiData from '../utils/material_database/INDIA_Maharashtra_Mumbai_2023.json';
 
-const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
+const DB_MAP = {
+    "INDIA/Bihar/Darbhanga-2025": darbhangaData,
+    "INDIA/Maharashtra/Mumbai-2023": mumbaiData
+};
+
+const MaterialAddModal = ({ sectionName, onClose, onAdd, projectData }) => {
+    // Robust resolution of the selected database key
+    const sorDbKey = projectData?.bridge_data?.sor_database || projectData?.sor_database || '';
+    const dbData = DB_MAP[sorDbKey];
+
     // Basic fields
     const [workName, setWorkName] = useState('');
     const [allowEditingDB, setAllowEditingDB] = useState(false);
@@ -20,15 +31,129 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
     const [grade, setGrade] = useState('');
     const [type, setType] = useState('');
 
+    // Search Suggestions
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(-1);
+    const suggestionRef = useRef(null);
+
+    const suggestions = useMemo(() => {
+        if (!dbData || !workName || workName.length < 2) return [];
+
+        // GUI-style normalization: Lowercase, replace special chars with spaces, collapse spaces
+        const normalize = (text) => {
+            if (!text) return "";
+            return text.toLowerCase()
+                .replace(/[(),\-/]/g, ' ')
+                .replace(/\s+/g, ' ')
+                .trim();
+        };
+
+        const tokenize = (text) => {
+            const norm = normalize(text);
+            return norm ? norm.split(' ') : [];
+        };
+
+        // GUI-style token matching: handles concatenated units like "500mm" -> ["500", "mm"]
+        const tokenMatches = (tok, itemNorm) => {
+            if (itemNorm.includes(tok)) return true;
+            const parts = tok.match(/[a-z]+|\d+/g);
+            if (parts && parts.length > 1) {
+                return parts.every(p => itemNorm.includes(p));
+            }
+            return false;
+        };
+
+        const queryTokens = tokenize(workName);
+        if (queryTokens.length === 0) return [];
+
+        const results = [];
+        const normSection = sectionName.toLowerCase();
+
+        dbData.forEach(sheet => {
+            const sheetNorm = sheet.sheetName.toLowerCase();
+            const typeNorm = sheet.type.toLowerCase();
+            
+            // Prioritize if section name matches sheet name or type (e.g. "Girders" vs "Girder")
+            const isRelevantSection = normSection.includes(sheetNorm) || sheetNorm.includes(normSection) ||
+                                     normSection.includes(typeNorm) || typeNorm.includes(normSection);
+            
+            sheet.data.forEach(item => {
+                const itemNorm = normalize(item.name);
+                const allTokensMatch = queryTokens.every(tok => tokenMatches(tok, itemNorm));
+                
+                if (allTokensMatch) {
+                    results.push({ 
+                        ...item, 
+                        sheetName: sheet.sheetName, 
+                        type: sheet.type,
+                        isRelevantSection
+                    });
+                }
+            });
+        });
+
+        // Sorting priority:
+        // 1. Matches in the current section/type
+        // 2. Starts with the query string
+        // 3. Shorter names first (usually more general/relevant)
+        // 4. Alphabetical
+        return results.sort((a, b) => {
+            if (a.isRelevantSection && !b.isRelevantSection) return -1;
+            if (!a.isRelevantSection && b.isRelevantSection) return 1;
+            
+            const aStarts = a.name.toLowerCase().startsWith(workName.toLowerCase());
+            const bStarts = b.name.toLowerCase().startsWith(workName.toLowerCase());
+            if (aStarts && !bStarts) return -1;
+            if (!aStarts && bStarts) return 1;
+            
+            if (a.name.length !== b.name.length) return a.name.length - b.name.length;
+            
+            return a.name.localeCompare(b.name);
+        }).slice(0, 50);
+    }, [dbData, workName, sectionName]);
+
+    const handleSelectMaterial = (item) => {
+        setWorkName(item.name);
+        setRate(item.rate);
+        setUnit(item.unit);
+        setSource(item.rate_src);
+        
+        if (item.carbon_emission !== 'not_available') {
+            setIncludeCarbon(true);
+            setEmissionFactor(item.carbon_emission);
+            setEmissionSource(item.carbon_emission_src);
+            // Units mapping might be needed if they don't match exactly
+            if (item.carbon_emission_units_den === 'cum') setEmissionPerUnit('m³ — Cubic Metre');
+            else if (item.carbon_emission_units_den === 'kg') setEmissionPerUnit('kg — Kilogram');
+            else if (item.carbon_emission_units_den === 'MT') setEmissionPerUnit('ton — Tonne');
+        }
+
+        setShowSuggestions(false);
+        setSelectedIndex(-1);
+    };
+
+    const handleKeyDown = (e) => {
+        if (!showSuggestions || suggestions.length === 0) return;
+
+        if (e.key === 'ArrowDown') {
+            setSelectedIndex(prev => (prev + 1) % suggestions.length);
+        } else if (e.key === 'ArrowUp') {
+            setSelectedIndex(prev => (prev - 1 + suggestions.length) % suggestions.length);
+        } else if (e.key === 'Enter' && selectedIndex >= 0) {
+            handleSelectMaterial(suggestions[selectedIndex]);
+            e.preventDefault();
+        } else if (e.key === 'Escape') {
+            setShowSuggestions(false);
+        }
+    };
+
     const handleAdd = () => {
-        // Map the modal fields to the table row structure
         const newRowData = {
             workName,
             qty: parseFloat(qty) || 0,
             unit,
             rate: parseFloat(rate) || 0,
             source,
-            // Extended fields (stored in row object even if table doesn't display them natively)
             allowEditingDB,
             carbonEmission: includeCarbon ? { factor: parseFloat(emissionFactor) || 0, perUnit: emissionPerUnit, source: emissionSource } : null,
             recyclability: includeRecyclability ? { grade, type } : null
@@ -38,24 +163,12 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
 
     return (
         <>
-            {/* Backdrop */}
-            <div
-                className="modal-backdrop fade show"
-                style={{ zIndex: 1040, backgroundColor: 'rgba(0,0,0,0.6)' }}
-                onClick={onClose}
-            ></div>
+            <div className="modal-backdrop fade show" style={{ zIndex: 1040, backgroundColor: 'rgba(0,0,0,0.6)' }} onClick={onClose}></div>
 
-            {/* Modal */}
-            <div
-                className="modal fade show d-block"
-                tabIndex="-1"
-                style={{ zIndex: 1050 }}
-                role="dialog"
-            >
+            <div className="modal fade show d-block" tabIndex="-1" style={{ zIndex: 1050 }} role="dialog">
                 <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '800px' }}>
                     <div className="modal-content shadow-lg border-0" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', borderRadius: '8px', overflow: 'hidden' }}>
 
-                        {/* Custom Window Header */}
                         <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: 'var(--app-border-mid)' }}>
                             <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.9rem' }}>
                                 <span style={{ color: 'var(--app-primary-accent)', fontSize: '1.2rem' }}>⛁</span>
@@ -68,25 +181,51 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                             </div>
                         </div>
 
-                        {/* Modal Body */}
                         <div className="modal-body px-4 py-2" style={{ fontSize: '0.9rem' }}>
                             <div className="mb-3 opacity-75" style={{ fontSize: '0.85rem' }}>
-                                Suggestions from: <span className="fst-italic">— not set (configure in Project Settings)</span>
+                                Suggestions from: <span className="fst-italic">{sorDbKey || '— not set (configure in Project Settings)'}</span>
                             </div>
 
-                            {/* Material Name */}
-                            <div className="mb-2">
+                            <div className="mb-2 position-relative">
                                 <label className="form-label fw-medium mb-1">Material Name <span className="text-danger">*</span></label>
                                 <input
                                     type="text"
                                     className="form-control form-control-sm"
-                                    placeholder="e.g. Ready-mix Concrete M25  (type ? to browse all)"
+                                    placeholder="e.g. Ready-mix Concrete M25  (type 2+ chars to search)"
                                     value={workName}
-                                    onChange={e => setWorkName(e.target.value)}
+                                    onChange={e => { setWorkName(e.target.value); setShowSuggestions(true); setSelectedIndex(-1); }}
+                                    onKeyDown={handleKeyDown}
+                                    onFocus={() => setShowSuggestions(true)}
                                 />
+                                {showSuggestions && suggestions.length > 0 && (
+                                    <ul 
+                                        ref={suggestionRef}
+                                        className="list-group position-absolute w-100 shadow-sm" 
+                                        style={{ zIndex: 1100, maxHeight: '250px', overflowY: 'auto', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-border-mid)' }}
+                                    >
+                                        {suggestions.map((item, index) => (
+                                            <li 
+                                                key={index}
+                                                className={`list-group-item list-group-item-action py-2 border-0 ${selectedIndex === index ? 'active' : ''}`}
+                                                style={{ 
+                                                    cursor: 'pointer', 
+                                                    fontSize: '0.85rem', 
+                                                    backgroundColor: selectedIndex === index ? 'var(--app-primary-accent)' : 'transparent',
+                                                    color: selectedIndex === index ? 'white' : 'var(--app-text-primary)'
+                                                }}
+                                                onClick={() => handleSelectMaterial(item)}
+                                                onMouseEnter={() => setSelectedIndex(index)}
+                                            >
+                                                <div className="d-flex justify-content-between align-items-center">
+                                                    <span>{item.name}</span>
+                                                    <span className="badge bg-secondary opacity-50" style={{ fontSize: '0.7rem' }}>{item.type}</span>
+                                                </div>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
                             </div>
 
-                            {/* Allow DB Toggle */}
                             <div className="mb-2 form-check d-flex align-items-center gap-2">
                                 <input
                                     className="form-check-input mt-0"
@@ -101,7 +240,6 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                 </label>
                             </div>
 
-                            {/* Quantity & Unit */}
                             <div className="row mb-2">
                                 <div className="col-md-6">
                                     <label className="form-label fw-medium mb-1">Quantity <span className="text-danger">*</span></label>
@@ -115,27 +253,22 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                 </div>
                                 <div className="col-md-6">
                                     <label className="form-label fw-medium mb-1">Unit <span className="text-danger">*</span></label>
-                                    <select
-                                        className="form-select form-select-sm"
+                                    <input
+                                        className="form-control form-control-sm"
                                         value={unit}
                                         onChange={e => setUnit(e.target.value)}
-                                    >
-                                        <option value="m³ — Cubic Metre">m³ — Cubic Metre</option>
-                                        <option value="kg — Kilogram">kg — Kilogram</option>
-                                        <option value="ton — Tonne">ton — Tonne</option>
-                                        <option value="sqm — Square Metre">sqm — Square Metre</option>
-                                    </select>
+                                        placeholder="e.g. cum, kg, MT"
+                                    />
                                 </div>
                             </div>
 
-                            {/* Rate & Rate Source */}
                             <div className="row mb-2 pb-2 border-bottom border-secondary" style={{ borderColor: 'var(--app-border-mid) !important' }}>
                                 <div className="col-md-6">
                                     <label className="form-label fw-medium mb-1">Rate (Cost)</label>
                                     <input
                                         type="number"
                                         className="form-control form-control-sm"
-                                        placeholder="e.g. 4500"
+                                        placeholder="0.00"
                                         value={rate}
                                         onChange={e => setRate(e.target.value)}
                                     />
@@ -145,14 +278,13 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                     <input
                                         type="text"
                                         className="form-control form-control-sm"
-                                        placeholder="e.g. DSR 2023, Market Rate"
+                                        placeholder="e.g. SOR, Market"
                                         value={source}
                                         onChange={e => setSource(e.target.value)}
                                     />
                                 </div>
                             </div>
 
-                            {/* Carbon Emission */}
                             <div className="mb-2 pb-2 border-bottom border-secondary" style={{ borderColor: 'var(--app-border-mid) !important' }}>
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <h6 className="m-0 fw-bold">Carbon Emission</h6>
@@ -174,29 +306,26 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                         <input
                                             type="text"
                                             className="form-control form-control-sm"
-                                            placeholder="e.g. 0.179"
+                                            placeholder="0.000"
                                             value={emissionFactor}
                                             onChange={e => setEmissionFactor(e.target.value)}
                                         />
                                     </div>
                                     <div className="col-md-4">
-                                        <label className="form-label mb-1">Per Unit <span className="opacity-75">(kgCO₂e / ...)</span></label>
-                                        <select
-                                            className="form-select form-select-sm"
+                                        <label className="form-label mb-1">Per Unit</label>
+                                        <input
+                                            className="form-control form-control-sm"
                                             value={emissionPerUnit}
                                             onChange={e => setEmissionPerUnit(e.target.value)}
-                                        >
-                                            <option value="m³ — Cubic Metre">m³ — Cubic Metre</option>
-                                            <option value="kg — Kilogram">kg — Kilogram</option>
-                                            <option value="ton — Tonne">ton — Tonne</option>
-                                        </select>
+                                            placeholder="e.g. kgCO2e/cum"
+                                        />
                                     </div>
                                     <div className="col-md-4">
-                                        <label className="form-label mb-1">Emission Factor Source</label>
+                                        <label className="form-label mb-1">Source</label>
                                         <input
                                             type="text"
                                             className="form-control form-control-sm"
-                                            placeholder="e.g. ICE v3.0, IPCC"
+                                            placeholder="e.g. ICE, IPCC"
                                             value={emissionSource}
                                             onChange={e => setEmissionSource(e.target.value)}
                                         />
@@ -204,7 +333,6 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                 </div>
                             </div>
 
-                            {/* Recyclability */}
                             <div className="mb-2">
                                 <div className="d-flex justify-content-between align-items-center mb-3">
                                     <h6 className="m-0 fw-bold">Recyclability</h6>
@@ -226,36 +354,27 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd }) => {
                                         <input
                                             type="text"
                                             className="form-control form-control-sm"
-                                            placeholder="e.g. M25, Fe500"
+                                            placeholder="e.g. M25"
                                             value={grade}
                                             onChange={e => setGrade(e.target.value)}
                                         />
                                     </div>
                                     <div className="col-md-6">
                                         <label className="form-label mb-1">Type</label>
-                                        <select
-                                            className="form-select form-select-sm"
+                                        <input
+                                            className="form-control form-control-sm"
                                             value={type}
                                             onChange={e => setType(e.target.value)}
-                                        >
-                                            <option value="">e.g. Concrete, Steel</option>
-                                            <option value="Concrete">Concrete</option>
-                                            <option value="Steel">Steel</option>
-                                        </select>
+                                            placeholder="e.g. Concrete"
+                                        />
                                     </div>
                                 </div>
                             </div>
 
                         </div>
 
-                        {/* Modal Footer */}
                         <div className="modal-footer d-flex justify-content-between border-top border-secondary pt-3 pb-3 px-4" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: 'var(--app-border-mid) !important' }}>
-                            <button
-                                className="btn px-4"
-                                style={{ backgroundColor: 'transparent', color: 'var(--app-text-primary)', border: '1px solid var(--app-primary-accent)' }}
-                            >
-                                Save to Custom DB...
-                            </button>
+                            <button className="btn px-4" style={{ backgroundColor: 'transparent', color: 'var(--app-text-primary)', border: '1px solid var(--app-primary-accent)' }}>Save to Custom DB...</button>
                             <div className="d-flex gap-2">
                                 <button className="btn px-4" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', border: '1px solid var(--app-border-mid)' }} onClick={onClose}>Cancel</button>
                                 <button className="btn px-4" style={{ backgroundColor: 'var(--app-primary-accent)', color: 'white', border: 'none' }} onClick={handleAdd}>Add to Table</button>
