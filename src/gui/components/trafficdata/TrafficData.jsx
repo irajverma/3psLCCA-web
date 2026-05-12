@@ -556,8 +556,24 @@ const TrafficData = ({ controller }) => {
             )}
             <RichTextEditor value={form.remarks} onChange={handleRemarksChange} />
             <div className="d-flex gap-3 mt-5 pb-5">
-                <button className="btn flex-grow-1 py-3 fw-bold" style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={handleClearAll}>Clear All</button>
-                <button className="btn py-3 fw-bold px-5" style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={() => validate()}>Validate this page</button>
+                <button
+                    className="btn flex-grow-1 py-3 fw-bold"
+                    style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px', transition: 'all 0.2s' }}
+                    onClick={handleClearAll}
+                    onMouseEnter={(e) => { e.target.style.backgroundColor = 'var(--app-border-light)'; e.target.style.color = 'var(--app-text-primary)'; }}
+                    onMouseLeave={(e) => { e.target.style.backgroundColor = 'var(--app-bg-alt)'; e.target.style.color = 'var(--app-text-secondary)'; }}
+                >
+                    Clear All
+                </button>
+                <button
+                    className="btn py-3 fw-bold px-5"
+                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', border: 'none', borderRadius: '8px', transition: 'all 0.2s' }}
+                    onClick={() => validate()}
+                    onMouseEnter={(e) => { e.target.style.opacity = '0.9'; e.target.style.transform = 'translateY(-1px)'; }}
+                    onMouseLeave={(e) => { e.target.style.opacity = '1'; e.target.style.transform = 'none'; }}
+                >
+                    Validate this page
+                </button>
             </div>
 
             {/* Custom Modals */}
@@ -575,6 +591,7 @@ const TrafficData = ({ controller }) => {
                             </div>
                         </div>
                         <div className="modal-footer">
+                            <button className="btn btn-outline-secondary me-2" onClick={() => setShowSaveAs(false)}>Cancel</button>
                             <button className="btn btn-primary" onClick={handleSaveAsSubmit}>OK</button>
                         </div>
                     </div>

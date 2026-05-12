@@ -256,12 +256,12 @@ const FinancialData = ({ controller }) => {
         return { valid: true, errors: [] };
     };
 
-    const hasError = (key) => errors.has(key);
+
 
     // ---- Render --------------------------------------------------------------
 
     return (
-        <div style={{ padding: '24px', maxWidth: '800px', color: 'var(--app-text-primary)' }}>
+        <div style={{ padding: '24px', maxWidth: '800px', color: 'var(--app-text-primary)', backgroundColor: 'var(--app-bg-card)' }}>
             <SectionHeader title="Economic Parameters" />
 
             {FINANCIAL_FIELDS.map((field) => (
@@ -286,7 +286,7 @@ const FinancialData = ({ controller }) => {
             <div className="d-flex gap-3 mt-4 mb-3">
                 <button
                     className="btn flex-grow-1 py-2 fw-bold"
-                    style={{ backgroundColor: 'var(--app-primary-accent)', color: '#fff', border: 'none', borderRadius: '8px', transition: 'all 0.2s' }}
+                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', border: 'none', borderRadius: '8px', transition: 'all 0.2s' }}
                     onClick={handleLoadSuggested}
                     onMouseEnter={(e) => { e.target.style.opacity = '0.9'; e.target.style.transform = 'translateY(-1px)'; }}
                     onMouseLeave={(e) => { e.target.style.opacity = '1'; e.target.style.transform = 'none'; }}
