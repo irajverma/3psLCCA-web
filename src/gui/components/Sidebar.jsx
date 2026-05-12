@@ -170,13 +170,10 @@ const Sidebar = ({ activeNode, setActiveNode }) => {
     };
 
     return (
-        <div className="position-relative" style={{ width: `${sidebarWidth}px`, height: '100%', flexShrink: 0 }}>
-            <div className="d-flex flex-column sidebar-scrollbar" style={{
-                width: '100%',
-                height: '100%',
+        <div className="position-relative flex-shrink-0 h-100" style={{ width: `${sidebarWidth}px` }}>
+            <div className="d-flex flex-column sidebar-scrollbar w-100 h-100 overflow-y-auto" style={{
                 backgroundColor: 'var(--app-bg-card)',
                 color: 'var(--app-text-primary)',
-                overflowY: 'auto',
                 borderRight: '1px solid var(--app-border-light)',
                 fontFamily: '"Segoe UI", system-ui, sans-serif',
                 fontSize: '14px',

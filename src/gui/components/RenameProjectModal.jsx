@@ -92,17 +92,11 @@ const RenameProjectModal = ({ show, onHide, onRename, currentName }) => {
                 }
             `}</style>
             <Modal.Header closeButton closeVariant="white">
-                <Modal.Title style={{ fontSize: '1.1rem', fontWeight: '600', display: 'flex', alignItems: 'center' }}>
-                    <div style={{
-                        display: 'inline-flex',
-                        position: 'relative',
-                        width: '20px',
-                        height: '20px',
-                        marginRight: '12px'
-                    }}>
-                        <div style={{ position: 'absolute', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ff6b35', top: 0, left: 0 }}></div>
-                        <div style={{ position: 'absolute', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#8bc34a', top: 0, right: 0 }}></div>
-                        <div style={{ position: 'absolute', width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#a9b0fc', bottom: 0, left: '4px' }}></div>
+                <Modal.Title className="d-flex align-items-center fw-semibold" style={{ fontSize: '1.1rem' }}>
+                    <div className="d-inline-flex position-relative" style={{ width: '20px', height: '20px', marginRight: '12px' }}>
+                        <div className="position-absolute" style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#ff6b35', top: 0, left: 0 }}></div>
+                        <div className="position-absolute" style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#8bc34a', top: 0, right: 0 }}></div>
+                        <div className="position-absolute" style={{ width: '12px', height: '12px', borderRadius: '50%', backgroundColor: '#a9b0fc', bottom: 0, left: '4px' }}></div>
                     </div>
                     Rename Project
                 </Modal.Title>

@@ -31,16 +31,16 @@ const SaveCheckpointModal = ({ show, onHide, onSave }) => {
                     color: var(--app-text-primary) !important;
                 }
                 .custom-save-modal .form-control {
-                    background-color: var(--app-input-bg);
-                    border: 1px solid var(--app-input-border);
-                    color: var(--app-input-text);
+                    background-color: var(--app-bg-alt);
+                    border: 1px solid var(--app-border-mid);
+                    color: var(--app-text-primary);
                     font-size: 14px;
                 }
                 .custom-save-modal .form-control:focus {
-                    background-color: var(--app-input-bg);
+                    background-color: var(--app-bg-alt);
                     border-color: var(--app-primary-accent);
                     box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-primary-accent) 25%, transparent);
-                    color: var(--app-input-text);
+                    color: var(--app-text-primary);
                 }
                 .custom-save-modal .form-label {
                     color: var(--app-text-secondary);

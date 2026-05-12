@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 import './TrafficData.css';
 import wpiDb from '../../../data/wpi_db.json';
 
@@ -86,10 +87,70 @@ const INITIAL_STATE = {
     remarks: '',
 };
 
-// ── Components ───────────────────────────────────────────────────────────────
+// ── Helper Components ────────────────────────────────────────────────────────
 
 function SectionHeader({ title }) {
     return <h5 className="section-title mb-4 fw-bold mt-4">{title}</h5>;
+}
+
+function Dropdown({ id, options, value, onChange, placeholder = '— Select —' }) {
+    const [open, setOpen] = useState(false);
+    const ref = useRef(null);
+
+    useEffect(() => {
+        if (!open) return;
+        const handler = (e) => {
+            if (ref.current && !ref.current.contains(e.target)) setOpen(false);
+        };
+        document.addEventListener('mousedown', handler);
+        return () => document.removeEventListener('mousedown', handler);
+    }, [open]);
+
+    const select = (opt) => { onChange(opt); setOpen(false); };
+
+    return (
+        <div className="position-relative" ref={ref}>
+            <button
+                type="button"
+                id={id}
+                className="form-control d-flex align-items-center justify-content-between text-start"
+                onClick={() => setOpen((o) => !o)}
+                aria-haspopup="listbox"
+                aria-expanded={open}
+            >
+                <span className={value ? '' : 'text-muted fst-italic'}>
+                    {value || placeholder}
+                </span>
+                <span className="text-muted ms-2" style={{ fontSize: '0.75rem', transform: open ? 'rotate(180deg)' : 'none', transition: 'transform 0.2s ease' }}>▾</span>
+            </button>
+            {open && (
+                <ul className="dropdown-menu show w-100 p-1 shadow-sm overflow-y-auto" role="listbox" style={{ maxHeight: '250px', backgroundColor: 'var(--app-bg-card)', borderColor: 'var(--app-input-border)' }}>
+                    <li className="dropdown-item text-muted fst-italic" style={{ cursor: 'pointer', fontSize: '0.875rem' }} onClick={() => select('')}>
+                        {placeholder}
+                    </li>
+                    {options.map((opt) => (
+                        <li
+                            key={opt}
+                            role="option"
+                            aria-selected={value === opt}
+                            className={`dropdown-item ${value === opt ? 'active fw-bold' : ''}`}
+                            style={{
+                                cursor: 'pointer',
+                                fontSize: '0.875rem',
+                                backgroundColor: value === opt ? 'var(--app-accent-bg, rgba(115, 165, 175, 0.15))' : 'transparent',
+                                color: value === opt ? 'var(--app-primary-accent)' : 'var(--app-text-primary)'
+                            }}
+                            onClick={() => select(opt)}
+                            onMouseEnter={(e) => { if (value !== opt) e.target.style.backgroundColor = 'var(--app-bg-alt)'; }}
+                            onMouseLeave={(e) => { if (value !== opt) e.target.style.backgroundColor = 'transparent'; }}
+                        >
+                            {opt}
+                        </li>
+                    ))}
+                </ul>
+            )}
+        </div>
+    );
 }
 
 function InputField({ label, hint, value, onChange, unit, required }) {
@@ -107,77 +168,196 @@ function InputField({ label, hint, value, onChange, unit, required }) {
     );
 }
 
-// ── Main Component ────────────────────────────────────────────────────────────
+function RoadUserCostField({ value, onChange }) {
+    return (
+        <div className="mb-4">
+            <label className="fw-bold mb-1 d-block small">Road User Cost per Day *</label>
+            <div className="input-group">
+                <input
+                    type="number"
+                    min={0}
+                    step={0.01}
+                    value={value || ''}
+                    onChange={(e) => onChange(e.target.value)}
+                    className="form-control"
+                    placeholder="0.00"
+                />
+                <span className="input-group-text border-start-0" style={{ fontSize: '0.8rem', backgroundColor: 'var(--app-input-bg)', borderColor: 'var(--app-input-border)' }}>/ day</span>
+            </div>
+        </div>
+    );
+}
 
-const TrafficData = ({ data, onUpdate, controller }) => {
-    const [form, setForm] = useState(data && Object.keys(data).length > 0 ? { ...INITIAL_STATE, ...data } : INITIAL_STATE);
-    
-    // Modal States
+function RichTextEditor({ value, onChange }) {
+    const editorRef = useRef(null);
+    const exec = (command, arg = null) => {
+        editorRef.current?.focus();
+        document.execCommand(command, false, arg);
+    };
+
+    const handleInput = () => {
+        onChange(editorRef.current?.innerHTML ?? '');
+    };
+
+    const insertTable = () => {
+        const rows = 3, cols = 3;
+        let html = '<table border="1" style="border-collapse:collapse;width:100%">';
+        for (let r = 0; r < rows; r++) {
+            html += '<tr>';
+            for (let c = 0; c < cols; c++) {
+                html += r === 0 ? '<th style="padding:4px 8px;background:var(--app-bg-alt)">&nbsp;</th>' : '<td style="padding:4px 8px">&nbsp;</td>';
+            }
+            html += '</tr>';
+        }
+        html += '</table><br>';
+        document.execCommand('insertHTML', false, html);
+    };
+
+    const insertRow = () => {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        const cell = sel.anchorNode?.parentElement?.closest('td, th');
+        const row = cell?.closest('tr');
+        if (!row) return;
+        const colCount = row.cells.length;
+        const newRow = document.createElement('tr');
+        for (let i = 0; i < colCount; i++) {
+            const td = document.createElement('td');
+            td.style.padding = '4px 8px';
+            td.innerHTML = '&nbsp;';
+            newRow.appendChild(td);
+        }
+        row.parentElement.insertBefore(newRow, row.nextSibling);
+        onChange(editorRef.current?.innerHTML ?? '');
+    };
+
+    const insertCol = () => {
+        const sel = window.getSelection();
+        if (!sel || sel.rangeCount === 0) return;
+        const cell = sel.anchorNode?.parentElement?.closest('td, th');
+        const row = cell?.closest('tr');
+        const table = row?.closest('table');
+        if (!table) return;
+        const cellIndex = cell ? Array.from(row.cells).indexOf(cell) + 1 : -1;
+        Array.from(table.rows).forEach((tr, rowIdx) => {
+            const newCell = rowIdx === 0 ? document.createElement('th') : document.createElement('td');
+            newCell.style.padding = '4px 8px';
+            if (rowIdx === 0) newCell.style.background = 'var(--app-bg-alt)';
+            newCell.innerHTML = '&nbsp;';
+            if (cellIndex >= 0 && cellIndex < tr.cells.length) {
+                tr.insertBefore(newCell, tr.cells[cellIndex]);
+            } else {
+                tr.appendChild(newCell);
+            }
+        });
+        onChange(editorRef.current?.innerHTML ?? '');
+    };
+
+    const TOOLBAR = [
+        { label: 'B', title: 'Bold', action: () => exec('bold'), style: { fontWeight: 'bold' } },
+        { label: 'I', title: 'Italic', action: () => exec('italic'), style: { fontStyle: 'italic' } },
+        { label: 'U', title: 'Underline', action: () => exec('underline'), style: { textDecoration: 'underline' } },
+        { label: 'S', title: 'Strikethrough', action: () => exec('strikeThrough'), style: { textDecoration: 'line-through' } },
+        null,
+        { label: 'Left', title: 'Align Left', action: () => exec('justifyLeft') },
+        { label: 'Center', title: 'Align Center', action: () => exec('justifyCenter') },
+        { label: 'Right', title: 'Align Right', action: () => exec('justifyRight') },
+        { label: 'Justify', title: 'Justify', action: () => exec('justifyFull') },
+        null,
+        { label: '• List', title: 'Bullet List', action: () => exec('insertUnorderedList') },
+        { label: '1. List', title: 'Numbered List', action: () => exec('insertOrderedList') },
+        null,
+        { label: '+ Table', title: 'Insert 3×3 Table', action: insertTable },
+        { label: '+ Row', title: 'Insert Row Below', action: insertRow },
+        { label: '+ Col', title: 'Insert Column Right', action: insertCol },
+        { label: 'Clear', title: 'Clear Formatting', action: () => exec('removeFormat') },
+    ];
+
+    return (
+        <div className="mb-4">
+            <label className="fw-bold mb-1 d-block" style={{ fontSize: '0.9rem', color: 'var(--app-text-secondary)' }}>Remarks / Notes</label>
+            <div className="border rounded" style={{ borderColor: 'var(--app-input-border)', backgroundColor: 'var(--app-input-bg)' }}>
+                <div className="d-flex flex-wrap align-items-center gap-1 p-2 border-bottom" style={{ borderColor: 'var(--app-input-border)', backgroundColor: 'var(--app-bg-alt)' }}>
+                    {TOOLBAR.map((btn, i) =>
+                        btn === null ? <div key={`div-${i}`} style={{ width: '1px', height: '16px', backgroundColor: 'var(--app-border-mid)', margin: '0 4px' }} /> : (
+                            <button key={btn.label} type="button" title={btn.title} className="btn btn-sm border-0 px-2 py-1" style={{ ...btn.style, fontSize: '0.8rem', backgroundColor: 'transparent' }} onMouseDown={(e) => { e.preventDefault(); btn.action(); }}>{btn.label}</button>
+                        )
+                    )}
+                </div>
+                <div ref={editorRef} className="p-2" style={{ minHeight: '120px', color: 'var(--app-text-primary)' }} contentEditable suppressContentEditableWarning data-placeholder="Add notes or remarks here..." onInput={handleInput} />
+            </div>
+        </div>
+    );
+}
+
+// ── Main Component ──────────────────────────────────────────────────────────
+
+const TrafficData = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
+    const [form, setForm] = useState(() => {
+        const saved = projectData.traffic_data;
+        return (saved && Object.keys(saved).length > 0) ? { ...INITIAL_STATE, ...saved } : INITIAL_STATE;
+    });
+
+    const [errors, setErrors] = useState(new Set());
+    const [validationMsg, setValidationMsg] = useState('');
     const [showSaveAs, setShowSaveAs] = useState(false);
     const [saveAsForm, setSaveAsForm] = useState({ name: '', year: '2024', remark: '' });
     const [showInfoModal, setShowInfoModal] = useState(false);
     const [infoMessage, setInfoMessage] = useState('');
     const [showImportModal, setShowImportModal] = useState(false);
     const [importSelected, setImportSelected] = useState('');
-
     const libraryProfiles = JSON.parse(localStorage.getItem('my_wpi_library') || '{}');
     const [localCustomProfiles, setLocalCustomProfiles] = useState({});
 
     useEffect(() => {
-        if (data && Object.keys(data).length > 0) {
-            setForm(prev => ({ ...prev, ...data }));
-        }
-    }, [data]);
+        updateProjectData('traffic_data', form);
+    }, [form, updateProjectData]);
 
-    const updateState = useCallback((nextForm) => {
-        setForm(nextForm);
-        setTimeout(() => { if (onUpdate) onUpdate(nextForm); }, 0);
-    }, [onUpdate]);
+    const handleModeChange = (val) => setForm(prev => ({ ...prev, calculation_mode: val }));
+    const handleCostChange = (val) => setForm(prev => ({ ...prev, road_user_cost_per_day: val }));
+    const handleRemarksChange = (html) => setForm(prev => ({ ...prev, remarks: html }));
 
-    // ── WPI Handlers ─────────────────────────────────────────────────────────
+    const handleClearAll = () => {
+        setForm(INITIAL_STATE);
+        setErrors(new Set());
+        setValidationMsg('');
+    };
 
     const handleWpiProfileChange = (profileName) => {
         let newData = {};
-        if (WPI_DATABASE[profileName]) {
-            newData = WPI_DATABASE[profileName].data;
-        } else if (localCustomProfiles[profileName]) {
-            newData = localCustomProfiles[profileName].data;
-        } else if (libraryProfiles[profileName]) {
-            newData = libraryProfiles[profileName].data;
-        }
-        updateState({ ...form, wpi_profile: profileName, wpi_data: newData });
+        if (WPI_DATABASE[profileName]) newData = WPI_DATABASE[profileName].data;
+        else if (localCustomProfiles[profileName]) newData = localCustomProfiles[profileName].data;
+        else if (libraryProfiles[profileName]) newData = libraryProfiles[profileName].data;
+        setForm(prev => ({ ...prev, wpi_profile: profileName, wpi_data: newData }));
     };
 
     const handleWpiCellChange = (vehicleKey, colKey, val) => {
-        const nextWpi = { ...form.wpi_data };
-        if (!nextWpi[vehicleKey]) nextWpi[vehicleKey] = {};
-        nextWpi[vehicleKey][colKey] = Number(val);
-        updateState({ ...form, wpi_data: nextWpi });
+        setForm(prev => {
+            const nextWpi = { ...prev.wpi_data };
+            if (!nextWpi[vehicleKey]) nextWpi[vehicleKey] = {};
+            nextWpi[vehicleKey][colKey] = Number(val);
+            return { ...prev, wpi_data: nextWpi };
+        });
     };
 
     const handleNewWpi = () => {
         const emptyData = Object.fromEntries(VEHICLES.map(v => [v.key, Object.fromEntries(WPI_COLUMNS.map(c => [c.key, 0]))]));
         const newName = 'Custom (New)';
         setLocalCustomProfiles(prev => ({ ...prev, [newName]: { metadata: { name: newName, year: new Date().getFullYear(), remark: 'New custom profile' }, data: emptyData } }));
-        updateState({ ...form, wpi_profile: newName, wpi_data: emptyData });
+        setForm(prev => ({ ...prev, wpi_profile: newName, wpi_data: emptyData }));
     };
 
     const handleSaveAsSubmit = () => {
         if (!saveAsForm.name) return;
-        const newProfile = {
-            metadata: { name: saveAsForm.name, year: saveAsForm.year, remark: saveAsForm.remark },
-            data: form.wpi_data
-        };
+        const newProfile = { metadata: { name: saveAsForm.name, year: saveAsForm.year, remark: saveAsForm.remark }, data: form.wpi_data };
         setLocalCustomProfiles(prev => ({ ...prev, [saveAsForm.name]: newProfile }));
-        updateState({ ...form, wpi_profile: saveAsForm.name });
+        setForm(prev => ({ ...prev, wpi_profile: saveAsForm.name }));
         setShowSaveAs(false);
     };
 
     const handleDeleteWpi = () => {
-        if (WPI_DATABASE[form.wpi_profile]) {
-            alert("Cannot delete official profiles.");
-            return;
-        }
+        if (WPI_DATABASE[form.wpi_profile]) return alert("Cannot delete official profiles.");
         if (window.confirm(`Delete profile "${form.wpi_profile}"?`)) {
             const nextCustom = { ...localCustomProfiles };
             delete nextCustom[form.wpi_profile];
@@ -189,20 +369,20 @@ const TrafficData = ({ data, onUpdate, controller }) => {
     const handleSaveToLibrary = () => {
         const currentData = { metadata: { name: form.wpi_profile, year: new Date().getFullYear(), remark: 'Saved from project' }, data: form.wpi_data };
         localStorage.setItem('my_wpi_library', JSON.stringify({ ...libraryProfiles, [form.wpi_profile]: currentData }));
-        setInfoMessage(`'${form.wpi_profile}' saved to your WPI library.\nImport it in any project via 'Import from Library'.`);
+        setInfoMessage(`'${form.wpi_profile}' saved to library.`);
         setShowInfoModal(true);
     };
 
     const handleImportSubmit = () => {
         if (importSelected && libraryProfiles[importSelected]) {
             setLocalCustomProfiles(prev => ({ ...prev, [importSelected]: libraryProfiles[importSelected] }));
-            updateState({ ...form, wpi_profile: importSelected, wpi_data: libraryProfiles[importSelected].data });
+            setForm(prev => ({ ...prev, wpi_profile: importSelected, wpi_data: libraryProfiles[importSelected].data }));
             setShowImportModal(false);
         }
     };
 
     const handleRemoveFromLibrary = () => {
-        if (importSelected && window.confirm(`Remove '${importSelected}' from library?`)) {
+        if (importSelected && window.confirm(`Remove '${importSelected}'?`)) {
             const lib = { ...libraryProfiles };
             delete lib[importSelected];
             localStorage.setItem('my_wpi_library', JSON.stringify(lib));
@@ -210,7 +390,14 @@ const TrafficData = ({ data, onUpdate, controller }) => {
         }
     };
 
-    // ── India Mode Render ────────────────────────────────────────────────────
+    const validate = () => {
+        if (!form.calculation_mode) {
+            setValidationMsg("Calculation mode is required.");
+            return false;
+        }
+        setValidationMsg('');
+        return true;
+    };
 
     const renderIndiaMode = () => (
         <div className="india-mode-container">
@@ -226,15 +413,15 @@ const TrafficData = ({ data, onUpdate, controller }) => {
                                 <td className="text-start ps-3 fw-bold">{v.label}</td>
                                 <td className="p-0"><input type="number" className="table-input" value={form.vehicles[v.key]?.vehicles_per_day || 0} onChange={(e) => {
                                     const nextVehicles = { ...form.vehicles, [v.key]: { ...form.vehicles[v.key], vehicles_per_day: Number(e.target.value) } };
-                                    updateState({ ...form, vehicles: nextVehicles });
+                                    setForm(prev => ({ ...prev, vehicles: nextVehicles }));
                                 }} /></td>
                                 <td className="p-0"><input type="number" step="0.01" className="table-input" value={(form.vehicles[v.key]?.accident_percentage || 0).toFixed(2)} onChange={(e) => {
                                     const nextVehicles = { ...form.vehicles, [v.key]: { ...form.vehicles[v.key], accident_percentage: Number(e.target.value) } };
-                                    updateState({ ...form, vehicles: nextVehicles });
+                                    setForm(prev => ({ ...prev, vehicles: nextVehicles }));
                                 }} /></td>
                                 <td className="p-0">{v.hasPwr ? <input type="number" step="0.01" className="table-input" value={(form.vehicles[v.key]?.pwr || 0).toFixed(2)} onChange={(e) => {
                                     const nextVehicles = { ...form.vehicles, [v.key]: { ...form.vehicles[v.key], pwr: Number(e.target.value) } };
-                                    updateState({ ...form, vehicles: nextVehicles });
+                                    setForm(prev => ({ ...prev, vehicles: nextVehicles }));
                                 }} /> : <div className="text-muted">-</div>}</td>
                             </tr>
                         ))}
@@ -243,59 +430,59 @@ const TrafficData = ({ data, onUpdate, controller }) => {
             </div>
 
             <div className="mb-4 d-flex align-items-center gap-3 custom-checkbox-row">
-                <input type="checkbox" id="force_free_flow" checked={form.force_free_flow} onChange={(e) => updateState({ ...form, force_free_flow: e.target.checked })} />
+                <input type="checkbox" id="force_free_flow" checked={form.force_free_flow} onChange={(e) => setForm(prev => ({ ...prev, force_free_flow: e.target.checked }))} />
                 <label htmlFor="force_free_flow" className="mb-0 fw-bold small">Force free-flow conditions off-peak</label>
             </div>
 
             <SectionHeader title="Alternate Road Configuration" />
             <div className="mb-4">
                 <label className="fw-bold mb-1 d-block small">Alternate Road Carriageway *</label>
-                <div className="text-muted mb-2" style={{ fontSize: '0.8rem' }}>Lane configuration of the alternate route - auto-fills capacity and width.</div>
+                <div className="text-muted mb-2" style={{ fontSize: '0.8rem' }}>Lane configuration of the alternate route.</div>
                 <select className="form-select" value={form.alternate_road.alternate_road_carriageway} onChange={(e) => {
                     const lane = LANE_TYPES.find(l => l.name === e.target.value);
-                    updateState({ ...form, alternate_road: { alternate_road_carriageway: e.target.value, carriage_width_in_m: lane ? lane.width : 0, hourly_capacity: lane ? lane.capacity : 0 } });
+                    setForm(prev => ({ ...prev, alternate_road: { alternate_road_carriageway: e.target.value, carriage_width_in_m: lane ? lane.width : 0, hourly_capacity: lane ? lane.capacity : 0 } }));
                 }}><option value="">- Select -</option>{LANE_TYPES.map(l => <option key={l.code} value={l.name}>{l.name}</option>)}</select>
             </div>
-            <InputField label="Carriageway Width" unit="(m)" required value={form.alternate_road.carriage_width_in_m} onChange={(v) => updateState({ ...form, alternate_road: { ...form.alternate_road, carriage_width_in_m: Number(v) } })} />
-            <InputField label="Hourly Capacity" unit="(veh/hr)" required value={form.alternate_road.hourly_capacity} onChange={(v) => updateState({ ...form, alternate_road: { ...form.alternate_road, hourly_capacity: Number(v) } })} />
+            <InputField label="Carriageway Width" unit="(m)" required value={form.alternate_road.carriage_width_in_m} onChange={(v) => setForm(prev => ({ ...prev, alternate_road: { ...prev.alternate_road, carriage_width_in_m: Number(v) } }))} />
+            <InputField label="Hourly Capacity" unit="(veh/hr)" required value={form.alternate_road.hourly_capacity} onChange={(v) => setForm(prev => ({ ...prev, alternate_road: { ...prev.alternate_road, hourly_capacity: Number(v) } }))} />
 
             <SectionHeader title="Accident Severity Distribution" />
-            <InputField label="Minor Injury" hint="Percentage of accidents resulting in minor injury" unit="(%)" value={form.severity.severity_minor} onChange={(v) => {
+            <InputField label="Minor Injury" unit="(%)" value={form.severity.severity_minor} onChange={(v) => {
                 const num = Number(v);
                 let next = { ...form.severity, severity_minor: num };
                 next.severity_major = Math.min(100 - num, next.severity_major);
                 next.severity_fatal = 100 - num - next.severity_major;
-                updateState({ ...form, severity: next });
+                setForm(prev => ({ ...prev, severity: next }));
             }} />
-            <InputField label="Major Injury" hint="Percentage of accidents resulting in major injury" unit="(%)" value={form.severity.severity_major} onChange={(v) => {
+            <InputField label="Major Injury" unit="(%)" value={form.severity.severity_major} onChange={(v) => {
                 const num = Number(v);
                 let next = { ...form.severity, severity_major: num };
                 next.severity_minor = Math.min(100 - num, next.severity_minor);
                 next.severity_fatal = 100 - num - next.severity_minor;
-                updateState({ ...form, severity: next });
+                setForm(prev => ({ ...prev, severity: next }));
             }} />
-            <InputField label="Fatal Accident" hint="Percentage of accidents resulting in fatal injury" unit="(%)" value={form.severity.severity_fatal} onChange={(v) => {
+            <InputField label="Fatal Accident" unit="(%)" value={form.severity.severity_fatal} onChange={(v) => {
                 const num = Number(v);
                 let next = { ...form.severity, severity_fatal: num };
                 next.severity_minor = Math.min(100 - num, next.severity_minor);
                 next.severity_major = 100 - num - next.severity_minor;
-                updateState({ ...form, severity: next });
+                setForm(prev => ({ ...prev, severity: next }));
             }} />
 
             <SectionHeader title="Road Parameters" />
-            <InputField label="Road Roughness" hint="Indicates the smoothness of the road surface; lower values mean smoother ride quality, higher values mean more unevenness measured in mm/km" unit="(mm/km)" value={form.road_params.road_roughness_mm_per_km} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, road_roughness_mm_per_km: Number(v) } })} />
-            <InputField label="Road Rise" hint="Upward gradient of the road, expressed as vertical increase in meters per kilometer (m/km)." unit="(m/km)" required value={form.road_params.road_rise_m_per_km} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, road_rise_m_per_km: Number(v) } })} />
-            <InputField label="Road Fall" hint="Downward gradient of the road, expressed as vertical decrease in meters per kilometer (m/km)." unit="(m/km)" required value={form.road_params.road_fall_m_per_km} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, road_fall_m_per_km: Number(v) } })} />
-            <InputField label="Additional Reroute Distance" hint="Additional travel distance incurred due to rerouting during construction." unit="(km)" value={form.road_params.additional_reroute_distance_km} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, additional_reroute_distance_km: Number(v) } })} />
-            <InputField label="Additional Travel Time" hint="Extra travel time incurred by road users due to rerouting during construction." unit="(min)" value={form.road_params.additional_travel_time_min} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, additional_travel_time_min: Number(v) } })} />
-            <InputField label="Crash Rate" hint="Number of accidents per million kilometers of road length per day." unit="(acc / M km)" required value={form.road_params.crash_rate_accidents_per_million_km} onChange={(v) => updateState({ ...form, road_params: { ...form.road_params, crash_rate_accidents_per_million_km: Number(v) } })} />
+            <InputField label="Road Roughness" unit="(mm/km)" value={form.road_params.road_roughness_mm_per_km} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, road_roughness_mm_per_km: Number(v) } }))} />
+            <InputField label="Road Rise" unit="(m/km)" required value={form.road_params.road_rise_m_per_km} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, road_rise_m_per_km: Number(v) } }))} />
+            <InputField label="Road Fall" unit="(m/km)" required value={form.road_params.road_fall_m_per_km} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, road_fall_m_per_km: Number(v) } }))} />
+            <InputField label="Additional Reroute Distance" unit="(km)" value={form.road_params.additional_reroute_distance_km} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, additional_reroute_distance_km: Number(v) } }))} />
+            <InputField label="Additional Travel Time" unit="(min)" value={form.road_params.additional_travel_time_min} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, additional_travel_time_min: Number(v) } }))} />
+            <InputField label="Crash Rate" unit="(acc / M km)" required value={form.road_params.crash_rate_accidents_per_million_km} onChange={(v) => setForm(prev => ({ ...prev, road_params: { ...prev.road_params, crash_rate_accidents_per_million_km: Number(v) } }))} />
 
             <SectionHeader title="Traffic Flow" />
-            <InputField label="Number of Peak Hours" hint="Total hours per day with peak traffic conditions." required value={form.num_peak_hours} onChange={(v) => {
+            <InputField label="Number of Peak Hours" required value={form.num_peak_hours} onChange={(v) => {
                 const count = Math.min(24, Math.max(0, Number(v)));
                 const nextDist = { ...form.peak_distribution };
                 for (let i = 1; i <= count; i++) if (!nextDist[`peak_hour_${i}`]) nextDist[`peak_hour_${i}`] = 0.04;
-                updateState({ ...form, num_peak_hours: count, peak_distribution: nextDist });
+                setForm(prev => ({ ...prev, num_peak_hours: count, peak_distribution: nextDist }));
             }} />
 
             <div className="mb-4">
@@ -306,34 +493,27 @@ const TrafficData = ({ data, onUpdate, controller }) => {
                         <tbody>
                             {[...Array(form.num_peak_hours || 1)].map((_, i) => (
                                 <tr key={i}><td className="text-start ps-3 fw-bold">{form.num_peak_hours > 0 ? `Peak Hour ${i + 1}` : 'Peak Hour 1'}</td><td className="p-0">
-                                    <input type="number" step="0.01" className="table-input" value={((form.peak_distribution[`peak_hour_${i + 1}`] || 0.04) * 100).toFixed(2)} onChange={(e) => updateState({ ...form, peak_distribution: { ...form.peak_distribution, [`peak_hour_${i + 1}`]: Number(e.target.value) / 100 } })} /></td></tr>
+                                    <input type="number" step="0.01" className="table-input" value={((form.peak_distribution[`peak_hour_${i + 1}`] || 0.04) * 100).toFixed(2)} onChange={(e) => setForm(prev => ({ ...prev, peak_distribution: { ...prev.peak_distribution, [`peak_hour_${i + 1}`]: Number(e.target.value) / 100 } }))} /></td></tr>
                             ))}
-                            <tr><td className="text-start ps-3 fw-bold">Other Hours (Average)</td><td className="p-3 text-end fw-bold" style={{ backgroundColor: 'var(--app-bg-alt)' }}>
-                                {(() => {
-                                    const totalPeak = Object.values(form.peak_distribution).reduce((a, b) => a + b, 0);
-                                    const count = form.num_peak_hours || 1;
-                                    return (24 - count > 0) ? (((1 - totalPeak) / (24 - count)) * 100).toFixed(2) : '0.00';
-                                })()} %</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
             <SectionHeader title="WPI Adjustment Factors" />
-            <div className="d-flex flex-wrap gap-3 mb-4 align-items-center wpi-controls-row">
+            <div className="d-flex flex-wrap gap-2 mb-3 align-items-center">
                 <label className="fw-bold mb-0">WPI Profile:</label>
-                <select className="form-select form-select-sm profile-select" value={form.wpi_profile} onChange={(e) => handleWpiProfileChange(e.target.value)}>
+                <select className="form-select w-auto" value={form.wpi_profile} onChange={(e) => handleWpiProfileChange(e.target.value)}>
                     {Object.keys(WPI_DATABASE).map(y => <option key={y} value={y}>{y}</option>)}
                     {Object.keys(localCustomProfiles).map(p => <option key={p} value={p}>{p}</option>)}
                 </select>
-                <div className="btn-group btn-group-sm outline-group">
-                    <button className="btn outline-btn" onClick={handleNewWpi}>+ New</button>
-                    <button className="btn outline-btn" onClick={() => setShowSaveAs(true)}>Save As</button>
-                    <button className="btn outline-btn" onClick={handleDeleteWpi}>Delete</button>
+                <div className="btn-group btn-group-sm">
+                    <button className="btn btn-outline-secondary" onClick={handleNewWpi}>+ New</button>
+                    <button className="btn btn-outline-secondary" onClick={() => setShowSaveAs(true)}>Save As</button>
                 </div>
                 <div className="ms-auto d-flex gap-2">
-                    <button className="btn btn-sm action-btn" onClick={handleSaveToLibrary}>Save to My Library</button>
-                    <button className="btn btn-sm action-btn" onClick={() => setShowImportModal(true)}>Import from Library</button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={handleSaveToLibrary}>Save to Library</button>
+                    <button className="btn btn-sm btn-outline-primary" onClick={() => setShowImportModal(true)}>Import</button>
                 </div>
             </div>
 
@@ -344,7 +524,7 @@ const TrafficData = ({ data, onUpdate, controller }) => {
                         <tr>{WPI_COLUMNS.map(col => <th key={col.key}>{col.label}</th>)}</tr>
                     </thead>
                     <tbody>
-                        {['Common to All', ...VEHICLES.map(v => v.label)].map((rowLabel, rIdx) => {
+                        {['Common', ...VEHICLES.map(v => v.label)].map((rowLabel, rIdx) => {
                             const vKey = rIdx === 0 ? 'small_cars' : VEHICLES[rIdx - 1].key;
                             return (
                                 <tr key={rowLabel}><td className="fw-bold text-start ps-3" style={{ whiteSpace: 'nowrap' }}>{rowLabel}</td>
@@ -359,30 +539,25 @@ const TrafficData = ({ data, onUpdate, controller }) => {
                     </tbody>
                 </table>
             </div>
-            <button className="btn btn-outline-secondary w-100 mb-4 py-2" onClick={() => window.print()}>Print WPI Data</button>
         </div>
     );
 
     return (
         <div className="traffic-data-page" style={{ padding: '24px', color: 'var(--app-text-primary)', maxWidth: '1400px' }}>
             <div className="mb-4"><label className="fw-bold mb-2 d-block small">Calculation Mode</label>
-                <select className="form-select" style={{ maxWidth: '300px' }} value={form.calculation_mode} onChange={(e) => updateState({ ...form, calculation_mode: e.target.value })}>
+                <select className="form-select" style={{ maxWidth: '300px' }} value={form.calculation_mode} onChange={(e) => handleModeChange(e.target.value)}>
                     <option value="INDIA">INDIA</option><option value="GLOBAL">GLOBAL</option>
                 </select>
             </div>
             {form.calculation_mode === 'INDIA' ? renderIndiaMode() : (
                 <div className="global-mode-container"><SectionHeader title="Global Parameters" />
-                    <InputField label="Road User Cost per Day" unit="/ day" value={form.road_user_cost_per_day} onChange={(v) => updateState({ ...form, road_user_cost_per_day: Number(v) })} />
+                    <RoadUserCostField value={form.road_user_cost_per_day} onChange={handleCostChange} />
                 </div>
             )}
-            <SectionHeader title="Remarks / Notes" />
-            <div className="remarks-editor-mock mb-4">
-                <div className="toolbar d-flex gap-2 p-2 border-bottom"><button className="btn btn-sm fw-bold">B</button><button className="btn btn-sm fst-italic">I</button><button className="btn btn-sm text-decoration-underline">U</button><button className="btn btn-sm text-decoration-line-through">S</button><div className="vr mx-1"></div><button className="btn btn-sm">Left</button><button className="btn btn-sm">Center</button><button className="btn btn-sm">Right</button><button className="btn btn-sm">Justify</button><div className="vr mx-1"></div><button className="btn btn-sm">• List</button><button className="btn btn-sm">1. List</button><div className="vr mx-1"></div><button className="btn btn-sm">+ Table</button><button className="btn btn-sm">+ Row</button><button className="btn btn-sm">+ Col</button><button className="btn btn-sm text-danger">Clear</button></div>
-                <textarea className="form-control border-0 p-3" rows="8" placeholder="Add notes or remarks here. These will appear in the generated report." value={form.remarks} onChange={(e) => updateState({ ...form, remarks: e.target.value })} style={{ backgroundColor: 'transparent' }} />
-            </div>
+            <RichTextEditor value={form.remarks} onChange={handleRemarksChange} />
             <div className="d-flex gap-3 mt-5 pb-5">
-                <button className="btn flex-grow-1 py-3 fw-bold" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={() => updateState(INITIAL_STATE)}>Clear All</button>
-                <button className="btn py-3 fw-bold px-5" style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={() => alert("Validation complete: No errors found.")}>Validate this page</button>
+                <button className="btn flex-grow-1 py-3 fw-bold" style={{ backgroundColor: 'var(--app-bg-alt)', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={handleClearAll}>Clear All</button>
+                <button className="btn py-3 fw-bold px-5" style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-mid)', borderRadius: '8px' }} onClick={() => validate()}>Validate this page</button>
             </div>
 
             {/* Custom Modals */}
@@ -390,28 +565,17 @@ const TrafficData = ({ data, onUpdate, controller }) => {
                 <div className="custom-modal-overlay">
                     <div className="custom-modal">
                         <div className="modal-header">
-                            <h6 className="m-0 fw-bold d-flex align-items-center gap-2">
-                                <span className="logo-dots"></span> Save Profile As
-                            </h6>
+                            <h6 className="m-0 fw-bold d-flex align-items-center gap-2">Save Profile As</h6>
                             <button className="close-btn" onClick={() => setShowSaveAs(false)}>×</button>
                         </div>
                         <div className="modal-body">
-                            <div className="mb-3 d-flex align-items-center">
-                                <label style={{ width: '100px' }}>Profile Name:</label>
-                                <input type="text" className="form-control" value={saveAsForm.name} onChange={e => setSaveAsForm({...saveAsForm, name: e.target.value})} placeholder="custom-user" />
-                            </div>
-                            <div className="mb-3 d-flex align-items-center">
-                                <label style={{ width: '100px' }}>Year:</label>
-                                <input type="number" className="form-control" value={saveAsForm.year} onChange={e => setSaveAsForm({...saveAsForm, year: e.target.value})} />
-                            </div>
-                            <div className="mb-3 d-flex align-items-start">
-                                <label style={{ width: '100px', paddingTop: '8px' }}>Remark:</label>
-                                <textarea className="form-control" rows="3" value={saveAsForm.remark} onChange={e => setSaveAsForm({...saveAsForm, remark: e.target.value})} placeholder="Optional remarks..." />
+                            <div className="mb-3">
+                                <label className="form-label">Profile Name</label>
+                                <input type="text" className="form-control" value={saveAsForm.name} onChange={e => setSaveAsForm({...saveAsForm, name: e.target.value})} />
                             </div>
                         </div>
-                        <div className="modal-footer justify-content-end gap-2">
+                        <div className="modal-footer">
                             <button className="btn btn-primary" onClick={handleSaveAsSubmit}>OK</button>
-                            <button className="btn btn-outline-secondary" onClick={() => setShowSaveAs(false)}>Cancel</button>
                         </div>
                     </div>
                 </div>
@@ -419,56 +583,33 @@ const TrafficData = ({ data, onUpdate, controller }) => {
 
             {showInfoModal && (
                 <div className="custom-modal-overlay">
-                    <div className="custom-modal info-modal">
-                        <div className="modal-header">
-                            <h6 className="m-0 fw-bold d-flex align-items-center gap-2">
-                                <span className="logo-dots"></span> Saved to Library
-                            </h6>
-                            <button className="close-btn" onClick={() => setShowInfoModal(false)}>×</button>
-                        </div>
-                        <div className="modal-body d-flex align-items-center gap-3">
-                            <div className="info-icon">i</div>
-                            <div style={{ whiteSpace: 'pre-line' }}>{infoMessage}</div>
-                        </div>
-                        <div className="modal-footer justify-content-end">
-                            <button className="btn btn-primary px-4" onClick={() => setShowInfoModal(false)}>OK</button>
-                        </div>
+                    <div className="custom-modal">
+                        <div className="modal-header"><h6>Info</h6><button className="close-btn" onClick={() => setShowInfoModal(false)}>×</button></div>
+                        <div className="modal-body">{infoMessage}</div>
+                        <div className="modal-footer"><button className="btn btn-primary" onClick={() => setShowInfoModal(false)}>OK</button></div>
                     </div>
                 </div>
             )}
 
             {showImportModal && (
                 <div className="custom-modal-overlay">
-                    <div className="custom-modal import-modal">
-                        <div className="modal-header">
-                            <h6 className="m-0 fw-bold d-flex align-items-center gap-2">
-                                <span className="logo-dots"></span> Import from My WPI Library
-                            </h6>
-                            <button className="close-btn" onClick={() => setShowImportModal(false)}>×</button>
-                        </div>
+                    <div className="custom-modal">
+                        <div className="modal-header"><h6>Import from Library</h6><button className="close-btn" onClick={() => setShowImportModal(false)}>×</button></div>
                         <div className="modal-body">
-                            <label className="mb-2">Select a saved profile:</label>
-                            <select className="form-select mb-2" value={importSelected} onChange={e => setImportSelected(e.target.value)}>
+                            <select className="form-select" value={importSelected} onChange={e => setImportSelected(e.target.value)}>
                                 <option value="">- Select Profile -</option>
-                                {Object.keys(libraryProfiles).map(k => (
-                                    <option key={k} value={k}>{k} ({libraryProfiles[k]?.metadata?.year || ''})</option>
-                                ))}
+                                {Object.keys(libraryProfiles).map(k => <option key={k} value={k}>{k}</option>)}
                             </select>
-                            {importSelected && libraryProfiles[importSelected] && (
-                                <div className="text-muted small mb-3">
-                                    Year: {libraryProfiles[importSelected].metadata.year} &nbsp; Remark: {libraryProfiles[importSelected].metadata.remark}
-                                </div>
-                            )}
-                            <button className="btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center gap-2" onClick={handleRemoveFromLibrary} disabled={!importSelected}>
-                                <span>🗑️</span> Remove from Library
-                            </button>
                         </div>
-                        <div className="modal-footer justify-content-end gap-2">
-                            <button className="btn btn-primary px-4" onClick={handleImportSubmit} disabled={!importSelected}>OK</button>
-                            <button className="btn btn-outline-secondary" onClick={() => setShowImportModal(false)}>Cancel</button>
+                        <div className="modal-footer">
+                            <button className="btn btn-primary" onClick={handleImportSubmit}>Import</button>
                         </div>
                     </div>
                 </div>
+            )}
+
+            {validationMsg && (
+                <div className="alert alert-danger p-2 mt-3" style={{ fontSize: '0.8rem' }} role="alert">⚠️ {validationMsg}</div>
             )}
         </div>
     );

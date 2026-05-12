@@ -111,7 +111,7 @@ const D3PieChart = ({ data }) => {
     }, [data]);
 
     return (
-        <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+        <div className="position-relative w-100 h-100">
             <svg ref={svgRef}></svg>
             <div 
                 ref={tooltipRef} 
@@ -445,7 +445,7 @@ const Outputs = ({ addLog, isLocked, navTrigger, projectInputs }) => {
                     <input 
                         type="file" 
                         ref={fileInputRef} 
-                        style={{ display: 'none' }} 
+                        className="d-none"
                         accept=".3psLCCA,.3psLCCAFile,.json"
                         onChange={handleFileUpload}
                     />
@@ -598,16 +598,16 @@ const Outputs = ({ addLog, isLocked, navTrigger, projectInputs }) => {
                                     <td style={{ padding: '15px', border: 'none', color: 'var(--app-text-primary)' }}>{(totals.economic / 1e6).toFixed(2)}</td>
                                     <td style={{ padding: '15px', border: 'none', color: 'var(--app-text-primary)' }}>{(totals.environmental / 1e6).toFixed(2)}</td>
                                     <td style={{ padding: '15px', border: 'none', color: 'var(--app-text-primary)' }}>{(totals.social / 1e6).toFixed(2)}</td>
-                                    <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>{(stageTotal / 1e6).toFixed(2)}</td>
+                                    <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>{(stageTotal / 1e6).toFixed(2)}</td>
                                 </tr>
                             );
                         })}
                         <tr style={{ backgroundColor: 'var(--app-bg-card)', fontSize: '0.9rem', borderTop: '2px solid var(--app-border-mid)' }}>
-                            <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>Grand Total</td>
-                            <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>{(pillar_totals.eco / 1e6).toFixed(2)}</td>
-                            <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>{(pillar_totals.env / 1e6).toFixed(2)}</td>
-                            <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>{(pillar_totals.social / 1e6).toFixed(2)}</td>
-                            <td style={{ padding: '15px', border: 'none', fontWeight: 'bold' }}>{(totalLcc / 1e6).toFixed(2)}</td>
+                            <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>Grand Total</td>
+                            <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>{(pillar_totals.eco / 1e6).toFixed(2)}</td>
+                            <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>{(pillar_totals.env / 1e6).toFixed(2)}</td>
+                            <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>{(pillar_totals.social / 1e6).toFixed(2)}</td>
+                            <td className="fw-bold" style={{ padding: '15px', border: 'none' }}>{(totalLcc / 1e6).toFixed(2)}</td>
                         </tr>
                     </tbody>
                 </Table>
@@ -690,7 +690,7 @@ const Outputs = ({ addLog, isLocked, navTrigger, projectInputs }) => {
             `}</style>
             {isLocked && (
                 <div className="lock-overlay">
-                    <div style={{ 
+                    <div className="d-flex align-items-center" style={{ 
                         backgroundColor: 'var(--app-bg-card)', 
                         border: '2px solid var(--app-primary-accent)', 
                         color: 'var(--app-primary-accent)', 
@@ -699,8 +699,6 @@ const Outputs = ({ addLog, isLocked, navTrigger, projectInputs }) => {
                         fontWeight: 'bold',
                         fontSize: '1rem',
                         boxShadow: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)',
-                        display: 'flex',
-                        alignItems: 'center',
                         gap: '10px'
                     }}>
                         <FaExclamationTriangle /> PROJECT LOCKED - READ ONLY MODE

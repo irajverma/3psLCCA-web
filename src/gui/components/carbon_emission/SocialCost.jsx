@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useProjectData } from '../../../contexts/ProjectDataContext';
 
 const MODES = {
     NITI: "NITI Aayog",
@@ -86,6 +87,7 @@ const CustomDropdown = ({ value, options, onChange }) => {
 };
 
 const SocialCost = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [mode, setMode] = useState(MODES.NITI);
     const [currency, setCurrency] = useState('INR');
     
@@ -96,10 +98,10 @@ const SocialCost = ({ controller }) => {
     const [customScc, setCustomScc] = useState(0.05);
 
     useEffect(() => {
-        const genInfo = controller?.engine?.fetch_chunk('general_info') || {};
+        const genInfo = projectData.general_info || {};
         if (genInfo.project_currency) setCurrency(genInfo.project_currency);
 
-        const carbonData = controller?.engine?.fetch_chunk('carbon_emission_data') || {};
+        const carbonData = projectData.carbon_emission_data || {};
         const socialData = carbonData.social_cost_data || {};
         
         if (socialData.mode) setMode(socialData.mode);
@@ -108,7 +110,7 @@ const SocialCost = ({ controller }) => {
         if (socialData.ssp) setSsp(socialData.ssp);
         if (socialData.rcp) setRcp(socialData.rcp);
         if (socialData.custom_scc) setCustomScc(socialData.custom_scc);
-    }, [controller]);
+    }, [projectData]);
 
     const currentScc = useMemo(() => {
         if (mode === MODES.NITI) return NITI_SCC_INR * inrRate;
@@ -121,7 +123,8 @@ const SocialCost = ({ controller }) => {
     }, [mode, inrRate, usdRate, ssp, rcp, customScc]);
 
     const saveChanges = (updates) => {
-        controller?.engine?.update_chunk('carbon_emission_data', (prev) => ({
+        const prev = projectData.carbon_emission_data || {};
+        updateProjectData('carbon_emission_data', {
             ...prev,
             social_cost_data: {
                 mode,
@@ -134,7 +137,7 @@ const SocialCost = ({ controller }) => {
                 currency,
                 ...updates
             }
-        }));
+        });
     };
 
     const handleClearAll = () => {
@@ -179,13 +182,13 @@ const SocialCost = ({ controller }) => {
                             <span className="fw-bold">Selected Mode:</span> {mode}
                         </div>
                         <div className="d-block mb-1">
-                            <span className="fw-bold">Base Price:</span> {mode === MODES.NITI ? NITI_SCC_INR.toFixed(3) : (currentScc / (mode === MODES.RICKE ? usdRate : 1)).toFixed(3)} {mode === MODES.RICKE ? 'USD' : 'INR'}/kgCO₂e
+                            <span className="fw-bold">Base Price:</span> {mode === MODES.NITI ? NITI_SCC_INR.toFixed(3) : (currentScc / (mode === MODES.RICKE ? usdRate : 1)).toFixed(3)} {mode === MODES.RICKE ? 'USD' : 'INR'}/kgCOΓéée
                         </div>
                         <div className="d-block mb-1">
                             <span className="fw-bold">Conversion Rate:</span> {mode === MODES.RICKE ? usdRate.toFixed(3) + ' INR/USD' : inrRate.toFixed(3) + ' INR/INR'}
                         </div>
                         <div className="d-block mb-3">
-                            <span className="fw-bold">Effective SCC:</span> {currentScc.toFixed(3)} INR/kgCO₂e
+                            <span className="fw-bold">Effective SCC:</span> {currentScc.toFixed(3)} INR/kgCOΓéée
                         </div>
                         
                         {mode === MODES.RICKE && (
@@ -195,7 +198,7 @@ const SocialCost = ({ controller }) => {
                         )}
                         {mode === MODES.NITI && (
                             <div className="mt-4 pt-2 mb-2" style={{ color: 'var(--app-text-secondary)', fontSize: '0.85rem' }}>
-                                Base Value: <span className="fw-bold">{NITI_SCC_INR.toFixed(4)} INR/kgCO₂e</span> ({mode}, 2023)
+                                Base Value: <span className="fw-bold">{NITI_SCC_INR.toFixed(4)} INR/kgCOΓéée</span> ({mode}, 2023)
                             </div>
                         )}
                     </div>
@@ -252,10 +255,10 @@ const SocialCost = ({ controller }) => {
 
                     <div className="adjustment-details mt-4 mb-2" style={{ fontSize: '0.9rem', lineHeight: '1.8' }}>
                         <div className="d-block">
-                            Scenario Baseline: <span className="fw-bold">${(currentScc / usdRate).toFixed(3)} USD/kgCO₂e</span>
+                            Scenario Baseline: <span className="fw-bold">${(currentScc / usdRate).toFixed(3)} USD/kgCOΓéée</span>
                         </div>
                         <div className="d-block">
-                            Adjusted Local Cost: <span className="fw-bold">{currentScc.toFixed(3)} INR/kgCO₂e</span>
+                            Adjusted Local Cost: <span className="fw-bold">{currentScc.toFixed(3)} INR/kgCOΓéée</span>
                         </div>
                     </div>
                 </div>
@@ -268,7 +271,7 @@ const SocialCost = ({ controller }) => {
 
                     <div className="mb-4">
                         <div className="d-flex align-items-center gap-2 mb-2">
-                            <span className="fw-bold" style={{ fontSize: '0.9rem' }}>Custom Shadow Price ({currency}/kgCO₂e)</span>
+                            <span className="fw-bold" style={{ fontSize: '0.9rem' }}>Custom Shadow Price ({currency}/kgCOΓéée)</span>
                         </div>
                         <input 
                             type="number" 

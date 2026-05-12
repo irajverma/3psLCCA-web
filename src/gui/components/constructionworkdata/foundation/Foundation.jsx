@@ -1,8 +1,9 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
-// ── Helpers ───────────────────────────────────────────────────────────────────
+// ΓöÇΓöÇ Helpers ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
@@ -15,7 +16,7 @@ const emptyRow = () => ({
     source: '',
 });
 
-// ── Default sections for Foundation ──────────────────────────────────────────
+// ΓöÇΓöÇ Default sections for Foundation ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
 const DEFAULT_SECTIONS = [
     { id: 'excavation', name: 'Excavation', rows: [] },
@@ -25,19 +26,18 @@ const DEFAULT_SECTIONS = [
 
 // (MaterialTable imported from shared component)
 
-// ── Foundation main component ─────────────────────────────────────────────────
+// ΓöÇΓöÇ Foundation main component ΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇΓöÇ
 
-const Foundation = ({ controller, projectData, data, onUpdate }) => {
+const Foundation = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [sections, setSections] = useState(() => {
-        return data?.foundation || DEFAULT_SECTIONS;
+        const saved = projectData.foundation_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
     });
 
-    // Persist changes to parent
-    const persist = useCallback((nextSections) => {
-        if (onUpdate) {
-            onUpdate({ ...data, foundation: nextSections });
-        }
-    }, [onUpdate, data]);
+    useEffect(() => {
+        updateProjectData('foundation_data', sections);
+    }, [sections, updateProjectData]);
 
     const handleRowChange = useCallback((sectionId, rowId, field, value) => {
         setSections((prev) => {
@@ -49,10 +49,9 @@ const Foundation = ({ controller, projectData, data, onUpdate }) => {
                     ),
                 }
             );
-            persist(next);
             return next;
         });
-    }, [persist]);
+    }, []);
 
     const handleRowDelete = useCallback((sectionId, rowId) => {
         setSections((prev) => {
@@ -62,10 +61,9 @@ const Foundation = ({ controller, projectData, data, onUpdate }) => {
                     rows: sec.rows.filter((r) => r.id !== rowId),
                 }
             );
-            persist(next);
             return next;
         });
-    }, [persist]);
+    }, []);
 
     const handleAddRow = useCallback((sectionId, newRowData) => {
         setSections((prev) => {
@@ -75,10 +73,9 @@ const Foundation = ({ controller, projectData, data, onUpdate }) => {
                     rows: [...sec.rows, { id: uid(), ...newRowData }],
                 }
             );
-            persist(next);
             return next;
         });
-    }, [persist]);
+    }, []);
 
     const handleAddSection = () => {
         const name = `Section ${sections.length + 1}`;
@@ -87,7 +84,6 @@ const Foundation = ({ controller, projectData, data, onUpdate }) => {
                 ...prev,
                 { id: uid(), name, rows: [] },
             ];
-            persist(next);
             return next;
         });
     };

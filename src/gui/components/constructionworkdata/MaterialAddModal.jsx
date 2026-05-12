@@ -16,14 +16,14 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd, projectData }) => {
     const [workName, setWorkName] = useState('');
     const [allowEditingDB, setAllowEditingDB] = useState(false);
     const [qty, setQty] = useState('');
-    const [unit, setUnit] = useState('m³ — Cubic Metre');
+    const [unit, setUnit] = useState('m┬│ ΓÇö Cubic Metre');
     const [rate, setRate] = useState('');
     const [source, setSource] = useState('');
 
     // Carbon Emission
     const [includeCarbon, setIncludeCarbon] = useState(true);
     const [emissionFactor, setEmissionFactor] = useState('');
-    const [emissionPerUnit, setEmissionPerUnit] = useState('m³ — Cubic Metre');
+    const [emissionPerUnit, setEmissionPerUnit] = useState('m┬│ ΓÇö Cubic Metre');
     const [emissionSource, setEmissionSource] = useState('');
 
     // Recyclability
@@ -167,17 +167,17 @@ const MaterialAddModal = ({ sectionName, onClose, onAdd, projectData }) => {
 
             <div className="modal fade show d-block" tabIndex="-1" style={{ zIndex: 1050 }} role="dialog">
                 <div className="modal-dialog modal-dialog-centered" style={{ maxWidth: '800px' }}>
-                    <div className="modal-content shadow-lg border-0" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', borderRadius: '8px', overflow: 'hidden' }}>
+                    <div className="modal-content shadow-lg border-0 overflow-hidden" style={{ backgroundColor: 'var(--app-bg-card)', color: 'var(--app-text-primary)', borderRadius: '8px' }}>
 
                         <div className="d-flex justify-content-between align-items-center px-3 py-2 border-bottom" style={{ backgroundColor: 'var(--app-bg-alt)', borderColor: 'var(--app-border-mid)' }}>
                             <div className="d-flex align-items-center gap-2" style={{ fontSize: '0.9rem' }}>
-                                <span style={{ color: 'var(--app-primary-accent)', fontSize: '1.2rem' }}>⛁</span>
-                                <span>Add Material — {sectionName}</span>
+                                <span style={{ color: 'var(--app-primary-accent)', fontSize: '1.2rem' }}>Γ¢ü</span>
+                                <span>Add Material ΓÇö {sectionName}</span>
                             </div>
                             <div className="d-flex gap-3 align-items-center" style={{ cursor: 'pointer', fontSize: '1.1rem' }}>
-                                <span className="opacity-75" onClick={onClose}>—</span>
-                                <span className="opacity-75" onClick={onClose}>□</span>
-                                <span onClick={onClose}>✕</span>
+                                <span className="opacity-75" onClick={onClose}>ΓÇö</span>
+                                <span className="opacity-75" onClick={onClose}>Γûí</span>
+                                <span onClick={onClose}>Γ£ò</span>
                             </div>
                         </div>
 

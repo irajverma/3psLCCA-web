@@ -1,10 +1,10 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
+import { useProjectData } from '../../../../contexts/ProjectDataContext';
 import '../ConstructionWorkData.css';
 import MaterialTable from '../MaterialTable';
 
 let _uid = 0;
 const uid = () => `row-${++_uid}`;
-const emptyRow = () => ({ id: uid(), workName: '', rate: '', qty: '', source: '' });
 // calcTotal removed as it's in MaterialTable.jsx
 
 const DEFAULT_SECTIONS = [
@@ -19,46 +19,20 @@ const DEFAULT_SECTIONS = [
 
 // MaterialTable imported from shared component
 
-const SuperStructure = ({ controller, projectData, data, onUpdate }) => {
+const SuperStructure = ({ controller }) => {
+    const { projectData, updateProjectData } = useProjectData();
     const [sections, setSections] = useState(() => {
-        return data?.superstructure || DEFAULT_SECTIONS;
+        const saved = projectData.superstructure_data;
+        return (saved && saved.length > 0) ? saved : DEFAULT_SECTIONS;
     });
 
-    const persist = useCallback((nextSections) => {
-        if (onUpdate) onUpdate({ ...data, superstructure: nextSections });
-    }, [onUpdate, data]);
-
-    const handleRowChange = useCallback((sId, rId, field, val) => {
-        setSections((prev) => {
-            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) });
-            persist(next);
-            return next;
-        });
-    }, [persist]);
-
-    const handleRowDelete = useCallback((sId, rId) => {
-        setSections((prev) => {
-            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) });
-            persist(next);
-            return next;
-        });
-    }, [persist]);
-
-    const handleAddRow = useCallback((sId, newRowData) => {
-        setSections((prev) => {
-            const next = prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] });
-            persist(next);
-            return next;
-        });
-    }, [persist]);
-
-    const handleAddSection = () => {
-        setSections((prev) => {
-            const next = [...prev, { id: uid(), name: `Section ${prev.length + 1}`, rows: [] }];
-            persist(next);
-            return next;
-        });
-    };
+    useEffect(() => {
+        updateProjectData('superstructure_data', sections);
+    }, [sections, updateProjectData]);
+    const handleRowChange = useCallback((sId, rId, field, val) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.map((r) => r.id !== rId ? r : { ...r, [field]: val }) })), []);
+    const handleRowDelete = useCallback((sId, rId) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: s.rows.filter((r) => r.id !== rId) })), []);
+    const handleAddRow = useCallback((sId, newRowData) => setSections((prev) => prev.map((s) => s.id !== sId ? s : { ...s, rows: [...s.rows, { id: uid(), ...newRowData }] })), []);
+    const handleAddSection = () => setSections((prev) => [...prev, { id: uid(), name: `Section ${prev.length + 1}`, rows: [] }]);
 
     return (
         <div>

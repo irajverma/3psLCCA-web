@@ -1,0 +1,1734 @@
+From caabed5a9b7e91c8a7051a209effd5b2e1d13e72 Mon Sep 17 00:00:00 2001
+From: Ritik Kumar <ritikkr274@gmail.com>
+Date: Fri, 8 May 2026 01:16:54 +0530
+Subject: [PATCH] colourtheme implemented with proper colour codes and settings
+ modified
+
+---
+ package-lock.json                             | 652 ++++++++++++++++++
+ package.json                                  |   5 +
+ src/App.jsx                                   | 135 +++-
+ src/gui/Login/Loginpage.jsx                   |  26 +-
+ src/gui/components/CheckpointManagerModal.jsx |  51 +-
+ src/gui/components/Homepage.jsx               | 142 +++-
+ src/gui/components/NewProject.jsx             |   2 +-
+ src/gui/components/ProjectNavbar.jsx          |   9 +-
+ src/gui/components/SaveCheckpointModal.jsx    |  43 +-
+ src/gui/components/SettingsModal.jsx          |  34 +-
+ 10 files changed, 956 insertions(+), 143 deletions(-)
+
+diff --git a/package-lock.json b/package-lock.json
+index 77328ce..4898a39 100644
+--- a/package-lock.json
++++ b/package-lock.json
+@@ -9,6 +9,11 @@
+       "version": "0.0.0",
+       "dependencies": {
+         "bootstrap": "^5.3.8",
++        "d3": "^7.9.0",
++        "html2canvas": "^1.4.1",
++        "jspdf": "^4.2.1",
++        "jspdf-autotable": "^5.0.7",
++        "jszip": "^3.10.1",
+         "react": "^19.2.4",
+         "react-bootstrap": "^2.10.10",
+         "react-dom": "^19.2.4",
+@@ -1224,6 +1229,12 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/@types/pako": {
++      "version": "2.0.4",
++      "resolved": "https://registry.npmjs.org/@types/pako/-/pako-2.0.4.tgz",
++      "integrity": "sha512-VWDCbrLeVXJM9fihYodcLiIv0ku+AlOa/TQ1SvYOaBuyrSKgEcro95LJyIsJ4vSo6BXIxOKxiJAat04CmST9Fw==",
++      "license": "MIT"
++    },
+     "node_modules/@types/parse-json": {
+       "version": "4.0.2",
+       "resolved": "https://registry.npmjs.org/@types/parse-json/-/parse-json-4.0.2.tgz",
+@@ -1236,6 +1247,13 @@
+       "integrity": "sha512-F6bEyamV9jKGAFBEmlQnesRPGOQqS2+Uwi0Em15xenOxHaf2hv6L8YCVn3rPdPJOiJfPiCnLIRyvwVaqMY3MIw==",
+       "license": "MIT"
+     },
++    "node_modules/@types/raf": {
++      "version": "3.4.3",
++      "resolved": "https://registry.npmjs.org/@types/raf/-/raf-3.4.3.tgz",
++      "integrity": "sha512-c4YAvMedbPZ5tEyxzQdMoOhhJ4RD3rngZIdwC2/qDN3d7JpEhB6fiBRKVY1lg5B7Wk+uPBjn5f39j1/2MY1oOw==",
++      "license": "MIT",
++      "optional": true
++    },
+     "node_modules/@types/react": {
+       "version": "19.2.14",
+       "resolved": "https://registry.npmjs.org/@types/react/-/react-19.2.14.tgz",
+@@ -1264,6 +1282,13 @@
+         "@types/react": "*"
+       }
+     },
++    "node_modules/@types/trusted-types": {
++      "version": "2.0.7",
++      "resolved": "https://registry.npmjs.org/@types/trusted-types/-/trusted-types-2.0.7.tgz",
++      "integrity": "sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==",
++      "license": "MIT",
++      "optional": true
++    },
+     "node_modules/@types/use-sync-external-store": {
+       "version": "0.0.6",
+       "resolved": "https://registry.npmjs.org/@types/use-sync-external-store/-/use-sync-external-store-0.0.6.tgz",
+@@ -1387,6 +1412,15 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/base64-arraybuffer": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/base64-arraybuffer/-/base64-arraybuffer-1.0.2.tgz",
++      "integrity": "sha512-I3yl4r9QB5ZRY3XuJVEPfc2XhZO6YweFPI+UovAzn+8/hb3oJ6lnysaFcjVpkCPfVWFUDvoZ8kmVDP7WyRtYtQ==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 0.6.0"
++      }
++    },
+     "node_modules/baseline-browser-mapping": {
+       "version": "2.10.7",
+       "resolved": "https://registry.npmjs.org/baseline-browser-mapping/-/baseline-browser-mapping-2.10.7.tgz",
+@@ -1494,6 +1528,26 @@
+       ],
+       "license": "CC-BY-4.0"
+     },
++    "node_modules/canvg": {
++      "version": "3.0.11",
++      "resolved": "https://registry.npmjs.org/canvg/-/canvg-3.0.11.tgz",
++      "integrity": "sha512-5ON+q7jCTgMp9cjpu4Jo6XbvfYwSB2Ow3kzHKfIyJfaCAOHLbdKPQqGKgfED/R5B+3TFFfe8pegYA+b423SRyA==",
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "@babel/runtime": "^7.12.5",
++        "@types/raf": "^3.4.0",
++        "core-js": "^3.8.3",
++        "raf": "^3.4.1",
++        "regenerator-runtime": "^0.13.7",
++        "rgbcolor": "^1.0.1",
++        "stackblur-canvas": "^2.0.0",
++        "svg-pathdata": "^6.0.3"
++      },
++      "engines": {
++        "node": ">=10.0.0"
++      }
++    },
+     "node_modules/chalk": {
+       "version": "4.1.2",
+       "resolved": "https://registry.npmjs.org/chalk/-/chalk-4.1.2.tgz",
+@@ -1546,6 +1600,15 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/commander": {
++      "version": "7.2.0",
++      "resolved": "https://registry.npmjs.org/commander/-/commander-7.2.0.tgz",
++      "integrity": "sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==",
++      "license": "MIT",
++      "engines": {
++        "node": ">= 10"
++      }
++    },
+     "node_modules/concat-map": {
+       "version": "0.0.1",
+       "resolved": "https://registry.npmjs.org/concat-map/-/concat-map-0.0.1.tgz",
+@@ -1560,6 +1623,24 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/core-js": {
++      "version": "3.49.0",
++      "resolved": "https://registry.npmjs.org/core-js/-/core-js-3.49.0.tgz",
++      "integrity": "sha512-es1U2+YTtzpwkxVLwAFdSpaIMyQaq0PBgm3YD1W3Qpsn1NAmO3KSgZfu+oGSWVu6NvLHoHCV/aYcsE5wiB7ALg==",
++      "hasInstallScript": true,
++      "license": "MIT",
++      "optional": true,
++      "funding": {
++        "type": "opencollective",
++        "url": "https://opencollective.com/core-js"
++      }
++    },
++    "node_modules/core-util-is": {
++      "version": "1.0.3",
++      "resolved": "https://registry.npmjs.org/core-util-is/-/core-util-is-1.0.3.tgz",
++      "integrity": "sha512-ZQBvi1DcpJ4GDqanjucZ2Hj3wEO5pZDS89BWbkcrvdxksJorwUDDZamX9ldFkp9aw2lmBDLgkObEA4DWNJ9FYQ==",
++      "license": "MIT"
++    },
+     "node_modules/cosmiconfig": {
+       "version": "7.1.0",
+       "resolved": "https://registry.npmjs.org/cosmiconfig/-/cosmiconfig-7.1.0.tgz",
+@@ -1600,12 +1681,62 @@
+         "node": ">= 8"
+       }
+     },
++    "node_modules/css-line-break": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/css-line-break/-/css-line-break-2.1.0.tgz",
++      "integrity": "sha512-FHcKFCZcAha3LwfVBhCQbW2nCNbkZXn7KVUJcsT5/P8YmfsVja0FMPJr0B903j/E69HUphKiV9iQArX8SDYA4w==",
++      "license": "MIT",
++      "dependencies": {
++        "utrie": "^1.0.2"
++      }
++    },
+     "node_modules/csstype": {
+       "version": "3.2.3",
+       "resolved": "https://registry.npmjs.org/csstype/-/csstype-3.2.3.tgz",
+       "integrity": "sha512-z1HGKcYy2xA8AGQfwrn0PAy+PB7X/GSj3UVJW9qKyn43xWa+gl5nXmU4qqLMRzWVLFC8KusUX8T/0kCiOYpAIQ==",
+       "license": "MIT"
+     },
++    "node_modules/d3": {
++      "version": "7.9.0",
++      "resolved": "https://registry.npmjs.org/d3/-/d3-7.9.0.tgz",
++      "integrity": "sha512-e1U46jVP+w7Iut8Jt8ri1YsPOvFpg46k+K8TpCb0P+zjCkjkPnV7WzfDJzMHy1LnA+wj5pLT1wjO901gLXeEhA==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-array": "3",
++        "d3-axis": "3",
++        "d3-brush": "3",
++        "d3-chord": "3",
++        "d3-color": "3",
++        "d3-contour": "4",
++        "d3-delaunay": "6",
++        "d3-dispatch": "3",
++        "d3-drag": "3",
++        "d3-dsv": "3",
++        "d3-ease": "3",
++        "d3-fetch": "3",
++        "d3-force": "3",
++        "d3-format": "3",
++        "d3-geo": "3",
++        "d3-hierarchy": "3",
++        "d3-interpolate": "3",
++        "d3-path": "3",
++        "d3-polygon": "3",
++        "d3-quadtree": "3",
++        "d3-random": "3",
++        "d3-scale": "4",
++        "d3-scale-chromatic": "3",
++        "d3-selection": "3",
++        "d3-shape": "3",
++        "d3-time": "3",
++        "d3-time-format": "4",
++        "d3-timer": "3",
++        "d3-transition": "3",
++        "d3-zoom": "3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-array": {
+       "version": "3.2.4",
+       "resolved": "https://registry.npmjs.org/d3-array/-/d3-array-3.2.4.tgz",
+@@ -1618,6 +1749,43 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-axis": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-axis/-/d3-axis-3.0.0.tgz",
++      "integrity": "sha512-IH5tgjV4jE/GhHkRV0HiVYPDtvfjHQlQfJHs0usq7M30XcSBvOotpmH1IgkcXsO/5gEQZD43B//fc7SRT5S+xw==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-brush": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-brush/-/d3-brush-3.0.0.tgz",
++      "integrity": "sha512-ALnjWlVYkXsVIGlOsuWH1+3udkYFI48Ljihfnh8FZPF2QS9o+PzGLBslO0PjzVoHLZ2KCVgAM8NVkXPJB2aNnQ==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-dispatch": "1 - 3",
++        "d3-drag": "2 - 3",
++        "d3-interpolate": "1 - 3",
++        "d3-selection": "3",
++        "d3-transition": "3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-chord": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-chord/-/d3-chord-3.0.1.tgz",
++      "integrity": "sha512-VE5S6TNa+j8msksl7HwjxMHDM2yNK3XCkusIlpX5kwauBfXuyLAtNg9jCp/iHH61tgI4sb6R/EIMWCqEIdjT/g==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-path": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-color": {
+       "version": "3.1.0",
+       "resolved": "https://registry.npmjs.org/d3-color/-/d3-color-3.1.0.tgz",
+@@ -1627,6 +1795,77 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-contour": {
++      "version": "4.0.2",
++      "resolved": "https://registry.npmjs.org/d3-contour/-/d3-contour-4.0.2.tgz",
++      "integrity": "sha512-4EzFTRIikzs47RGmdxbeUvLWtGedDUNkTcmzoeyg4sP/dvCexO47AaQL7VKy/gul85TOxw+IBgA8US2xwbToNA==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-array": "^3.2.0"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-delaunay": {
++      "version": "6.0.4",
++      "resolved": "https://registry.npmjs.org/d3-delaunay/-/d3-delaunay-6.0.4.tgz",
++      "integrity": "sha512-mdjtIZ1XLAM8bm/hx3WwjfHt6Sggek7qH043O8KEjDXN40xi3vx/6pYSVTwLjEgiXQTbvaouWKynLBiUZ6SK6A==",
++      "license": "ISC",
++      "dependencies": {
++        "delaunator": "5"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-dispatch": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-dispatch/-/d3-dispatch-3.0.1.tgz",
++      "integrity": "sha512-rzUyPU/S7rwUflMyLc1ETDeBj0NRuHKKAcvukozwhshr6g6c5d8zh4c2gQjY2bZ0dXeGLWc1PF174P2tVvKhfg==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-drag": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-drag/-/d3-drag-3.0.0.tgz",
++      "integrity": "sha512-pWbUJLdETVA8lQNJecMxoXfH6x+mO2UQo8rSmZ+QqxcbyA3hfeprFgIT//HW2nlHChWeIIMwS2Fq+gEARkhTkg==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-dispatch": "1 - 3",
++        "d3-selection": "3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-dsv": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-dsv/-/d3-dsv-3.0.1.tgz",
++      "integrity": "sha512-UG6OvdI5afDIFP9w4G0mNq50dSOsXHJaRE8arAS5o9ApWnIElp8GZw1Dun8vP8OyHOZ/QJUKUJwxiiCCnUwm+Q==",
++      "license": "ISC",
++      "dependencies": {
++        "commander": "7",
++        "iconv-lite": "0.6",
++        "rw": "1"
++      },
++      "bin": {
++        "csv2json": "bin/dsv2json.js",
++        "csv2tsv": "bin/dsv2dsv.js",
++        "dsv2dsv": "bin/dsv2dsv.js",
++        "dsv2json": "bin/dsv2json.js",
++        "json2csv": "bin/json2dsv.js",
++        "json2dsv": "bin/json2dsv.js",
++        "json2tsv": "bin/json2dsv.js",
++        "tsv2csv": "bin/dsv2dsv.js",
++        "tsv2json": "bin/dsv2json.js"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-ease": {
+       "version": "3.0.1",
+       "resolved": "https://registry.npmjs.org/d3-ease/-/d3-ease-3.0.1.tgz",
+@@ -1636,6 +1875,32 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-fetch": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-fetch/-/d3-fetch-3.0.1.tgz",
++      "integrity": "sha512-kpkQIM20n3oLVBKGg6oHrUchHM3xODkTzjMoj7aWQFq5QEM+R6E4WkzT5+tojDY7yjez8KgCBRoj4aEr99Fdqw==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-dsv": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-force": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-force/-/d3-force-3.0.0.tgz",
++      "integrity": "sha512-zxV/SsA+U4yte8051P4ECydjD/S+qeYtnaIyAs9tgHCqfguma/aAQDjo85A9Z6EKhBirHRJHXIgJUlffT4wdLg==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-dispatch": "1 - 3",
++        "d3-quadtree": "1 - 3",
++        "d3-timer": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-format": {
+       "version": "3.1.2",
+       "resolved": "https://registry.npmjs.org/d3-format/-/d3-format-3.1.2.tgz",
+@@ -1645,6 +1910,27 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-geo": {
++      "version": "3.1.1",
++      "resolved": "https://registry.npmjs.org/d3-geo/-/d3-geo-3.1.1.tgz",
++      "integrity": "sha512-637ln3gXKXOwhalDzinUgY83KzNWZRKbYubaG+fGVuc/dxO64RRljtCTnf5ecMyE1RIdtqpkVcq0IbtU2S8j2Q==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-array": "2.5.0 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-hierarchy": {
++      "version": "3.1.2",
++      "resolved": "https://registry.npmjs.org/d3-hierarchy/-/d3-hierarchy-3.1.2.tgz",
++      "integrity": "sha512-FX/9frcub54beBdugHjDCdikxThEqjnR93Qt7PvQTOHxyiNCAlvMrHhclk3cD5VeAaq9fxmfRp+CnWw9rEMBuA==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-interpolate": {
+       "version": "3.0.1",
+       "resolved": "https://registry.npmjs.org/d3-interpolate/-/d3-interpolate-3.0.1.tgz",
+@@ -1666,6 +1952,33 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-polygon": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-polygon/-/d3-polygon-3.0.1.tgz",
++      "integrity": "sha512-3vbA7vXYwfe1SYhED++fPUQlWSYTTGmFmQiany/gdbiWgU/iEyQzyymwL9SkJjFFuCS4902BSzewVGsHHmHtXg==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-quadtree": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-quadtree/-/d3-quadtree-3.0.1.tgz",
++      "integrity": "sha512-04xDrxQTDTCFwP5H6hRhsRcb9xxv2RzkcsygFzmkSIOJy3PeRJP7sNk3VRIbKXcog561P9oU0/rVH6vDROAgUw==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-random": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-random/-/d3-random-3.0.1.tgz",
++      "integrity": "sha512-FXMe9GfxTxqd5D6jFsQ+DJ8BJS4E/fT5mqqdjovykEB2oFbTMDVdg1MGFxfQW+FBOGoB++k8swBrgwSHT1cUXQ==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-scale": {
+       "version": "4.0.2",
+       "resolved": "https://registry.npmjs.org/d3-scale/-/d3-scale-4.0.2.tgz",
+@@ -1682,6 +1995,28 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-scale-chromatic": {
++      "version": "3.1.0",
++      "resolved": "https://registry.npmjs.org/d3-scale-chromatic/-/d3-scale-chromatic-3.1.0.tgz",
++      "integrity": "sha512-A3s5PWiZ9YCXFye1o246KoscMWqf8BsD9eRiJ3He7C9OBaxKhAd5TFCdEx/7VbKtxxTsu//1mMJFrEt572cEyQ==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-color": "1 - 3",
++        "d3-interpolate": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
++    "node_modules/d3-selection": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-selection/-/d3-selection-3.0.0.tgz",
++      "integrity": "sha512-fmTRWbNMmsmWq6xJV8D19U/gw/bwrHfNXxrIN+HfZgnzqTHp9jOmKMhsTUjXOJnZOdZY9Q28y4yebKzqDKlxlQ==",
++      "license": "ISC",
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/d3-shape": {
+       "version": "3.2.0",
+       "resolved": "https://registry.npmjs.org/d3-shape/-/d3-shape-3.2.0.tgz",
+@@ -1727,6 +2062,41 @@
+         "node": ">=12"
+       }
+     },
++    "node_modules/d3-transition": {
++      "version": "3.0.1",
++      "resolved": "https://registry.npmjs.org/d3-transition/-/d3-transition-3.0.1.tgz",
++      "integrity": "sha512-ApKvfjsSR6tg06xrL434C0WydLr7JewBB3V+/39RMHsaXTOG0zmt/OAXeng5M5LBm0ojmxJrpomQVZ1aPvBL4w==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-color": "1 - 3",
++        "d3-dispatch": "1 - 3",
++        "d3-ease": "1 - 3",
++        "d3-interpolate": "1 - 3",
++        "d3-timer": "1 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      },
++      "peerDependencies": {
++        "d3-selection": "2 - 3"
++      }
++    },
++    "node_modules/d3-zoom": {
++      "version": "3.0.0",
++      "resolved": "https://registry.npmjs.org/d3-zoom/-/d3-zoom-3.0.0.tgz",
++      "integrity": "sha512-b8AmV3kfQaqWAuacbPuNbL6vahnOJflOhexLzMMNLga62+/nh0JzvJ0aO/5a5MVgUFGS7Hu1P9P03o3fJkDCyw==",
++      "license": "ISC",
++      "dependencies": {
++        "d3-dispatch": "1 - 3",
++        "d3-drag": "2 - 3",
++        "d3-interpolate": "1 - 3",
++        "d3-selection": "2 - 3",
++        "d3-transition": "2 - 3"
++      },
++      "engines": {
++        "node": ">=12"
++      }
++    },
+     "node_modules/debug": {
+       "version": "4.4.3",
+       "resolved": "https://registry.npmjs.org/debug/-/debug-4.4.3.tgz",
+@@ -1757,6 +2127,15 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/delaunator": {
++      "version": "5.1.0",
++      "resolved": "https://registry.npmjs.org/delaunator/-/delaunator-5.1.0.tgz",
++      "integrity": "sha512-AGrQ4QSgssa1NGmWmLPqN5NY2KajF5MqxetNEO+o0n3ZwZZeTmt7bBnvzHWrmkZFxGgr4HdyFgelzgi06otLuQ==",
++      "license": "ISC",
++      "dependencies": {
++        "robust-predicates": "^3.0.2"
++      }
++    },
+     "node_modules/dequal": {
+       "version": "2.0.3",
+       "resolved": "https://registry.npmjs.org/dequal/-/dequal-2.0.3.tgz",
+@@ -1786,6 +2165,16 @@
+         "csstype": "^3.0.2"
+       }
+     },
++    "node_modules/dompurify": {
++      "version": "3.4.2",
++      "resolved": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.2.tgz",
++      "integrity": "sha512-lHeS9SA/IKeIFFyYciHBr2n0v1VMPlSj843HdLOwjb2OxNwdq9Xykxqhk+FE42MzAdHvInbAolSE4mhahPpjXA==",
++      "license": "(MPL-2.0 OR Apache-2.0)",
++      "optional": true,
++      "optionalDependencies": {
++        "@types/trusted-types": "^2.0.7"
++      }
++    },
+     "node_modules/electron-to-chromium": {
+       "version": "1.5.313",
+       "resolved": "https://registry.npmjs.org/electron-to-chromium/-/electron-to-chromium-1.5.313.tgz",
+@@ -2045,6 +2434,17 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/fast-png": {
++      "version": "6.4.0",
++      "resolved": "https://registry.npmjs.org/fast-png/-/fast-png-6.4.0.tgz",
++      "integrity": "sha512-kAqZq1TlgBjZcLr5mcN6NP5Rv4V2f22z00c3g8vRrwkcqjerx7BEhPbOnWCPqaHUl2XWQBJQvOT/FQhdMT7X/Q==",
++      "license": "MIT",
++      "dependencies": {
++        "@types/pako": "^2.0.3",
++        "iobuffer": "^5.3.2",
++        "pako": "^2.1.0"
++      }
++    },
+     "node_modules/fdir": {
+       "version": "6.5.0",
+       "resolved": "https://registry.npmjs.org/fdir/-/fdir-6.5.0.tgz",
+@@ -2063,6 +2463,12 @@
+         }
+       }
+     },
++    "node_modules/fflate": {
++      "version": "0.8.2",
++      "resolved": "https://registry.npmjs.org/fflate/-/fflate-0.8.2.tgz",
++      "integrity": "sha512-cPJU47OaAoCbg0pBvzsgpTPhmhqI5eJjh/JIu8tPj5q+T7iLvW/JAYUqmE7KOB4R1ZyEhzBaIQpQpardBF5z8A==",
++      "license": "MIT"
++    },
+     "node_modules/file-entry-cache": {
+       "version": "8.0.0",
+       "resolved": "https://registry.npmjs.org/file-entry-cache/-/file-entry-cache-8.0.0.tgz",
+@@ -2228,6 +2634,31 @@
+         "react-is": "^16.7.0"
+       }
+     },
++    "node_modules/html2canvas": {
++      "version": "1.4.1",
++      "resolved": "https://registry.npmjs.org/html2canvas/-/html2canvas-1.4.1.tgz",
++      "integrity": "sha512-fPU6BHNpsyIhr8yyMpTLLxAbkaK8ArIBcmZIRiBLiDhjeqvXolaEmDGmELFuX9I4xDcaKKcJl+TKZLqruBbmWA==",
++      "license": "MIT",
++      "dependencies": {
++        "css-line-break": "^2.1.0",
++        "text-segmentation": "^1.0.3"
++      },
++      "engines": {
++        "node": ">=8.0.0"
++      }
++    },
++    "node_modules/iconv-lite": {
++      "version": "0.6.3",
++      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.6.3.tgz",
++      "integrity": "sha512-4fCk79wshMdzMp2rH06qWrJE4iolqLhCUH+OiuIgU++RB0+94NlDL81atO7GX55uUKueo0txHNtvEyI6D7WdMw==",
++      "license": "MIT",
++      "dependencies": {
++        "safer-buffer": ">= 2.1.2 < 3.0.0"
++      },
++      "engines": {
++        "node": ">=0.10.0"
++      }
++    },
+     "node_modules/ignore": {
+       "version": "5.3.2",
+       "resolved": "https://registry.npmjs.org/ignore/-/ignore-5.3.2.tgz",
+@@ -2238,6 +2669,12 @@
+         "node": ">= 4"
+       }
+     },
++    "node_modules/immediate": {
++      "version": "3.0.6",
++      "resolved": "https://registry.npmjs.org/immediate/-/immediate-3.0.6.tgz",
++      "integrity": "sha512-XXOFtyqDjNDAQxVfYxuF7g9Il/IbWmmlQg2MYKOH8ExIT1qg6xc4zyS3HaEEATgs1btfzxq15ciUiY7gjSXRGQ==",
++      "license": "MIT"
++    },
+     "node_modules/immer": {
+       "version": "10.2.0",
+       "resolved": "https://registry.npmjs.org/immer/-/immer-10.2.0.tgz",
+@@ -2274,6 +2711,12 @@
+         "node": ">=0.8.19"
+       }
+     },
++    "node_modules/inherits": {
++      "version": "2.0.4",
++      "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.4.tgz",
++      "integrity": "sha512-k/vGaX4/Yla3WzyMCvTQOXYeIHvqOKtnqBduzTHpzpQZzAskKMhZ2K+EnBiSM9zGSoIFeMpXKxa4dYeZIQqewQ==",
++      "license": "ISC"
++    },
+     "node_modules/internmap": {
+       "version": "2.0.3",
+       "resolved": "https://registry.npmjs.org/internmap/-/internmap-2.0.3.tgz",
+@@ -2292,6 +2735,12 @@
+         "loose-envify": "^1.0.0"
+       }
+     },
++    "node_modules/iobuffer": {
++      "version": "5.4.0",
++      "resolved": "https://registry.npmjs.org/iobuffer/-/iobuffer-5.4.0.tgz",
++      "integrity": "sha512-DRebOWuqDvxunfkNJAlc3IzWIPD5xVxwUNbHr7xKB8E6aLJxIPfNX3CoMJghcFjpv6RWQsrcJbghtEwSPoJqMA==",
++      "license": "MIT"
++    },
+     "node_modules/is-arrayish": {
+       "version": "0.2.1",
+       "resolved": "https://registry.npmjs.org/is-arrayish/-/is-arrayish-0.2.1.tgz",
+@@ -2336,6 +2785,12 @@
+         "node": ">=0.10.0"
+       }
+     },
++    "node_modules/isarray": {
++      "version": "1.0.0",
++      "resolved": "https://registry.npmjs.org/isarray/-/isarray-1.0.0.tgz",
++      "integrity": "sha512-VLghIWNM6ELQzo7zwmcg0NmTVyWKYjvIeM83yjp0wRDTmUnrM678fQbcKBo6n2CJEF0szoG//ytg+TKla89ALQ==",
++      "license": "MIT"
++    },
+     "node_modules/isexe": {
+       "version": "2.0.0",
+       "resolved": "https://registry.npmjs.org/isexe/-/isexe-2.0.0.tgz",
+@@ -2414,6 +2869,50 @@
+         "node": ">=6"
+       }
+     },
++    "node_modules/jspdf": {
++      "version": "4.2.1",
++      "resolved": "https://registry.npmjs.org/jspdf/-/jspdf-4.2.1.tgz",
++      "integrity": "sha512-YyAXyvnmjTbR4bHQRLzex3CuINCDlQnBqoSYyjJwTP2x9jDLuKDzy7aKUl0hgx3uhcl7xzg32agn5vlie6HIlQ==",
++      "license": "MIT",
++      "dependencies": {
++        "@babel/runtime": "^7.28.6",
++        "fast-png": "^6.2.0",
++        "fflate": "^0.8.1"
++      },
++      "optionalDependencies": {
++        "canvg": "^3.0.11",
++        "core-js": "^3.6.0",
++        "dompurify": "^3.3.1",
++        "html2canvas": "^1.0.0-rc.5"
++      }
++    },
++    "node_modules/jspdf-autotable": {
++      "version": "5.0.7",
++      "resolved": "https://registry.npmjs.org/jspdf-autotable/-/jspdf-autotable-5.0.7.tgz",
++      "integrity": "sha512-2wr7H6liNDBYNwt25hMQwXkEWFOEopgKIvR1Eukuw6Zmprm/ZcnmLTQEjW7Xx3FCbD3v7pflLcnMAv/h1jFDQw==",
++      "license": "MIT",
++      "peerDependencies": {
++        "jspdf": "^2 || ^3 || ^4"
++      }
++    },
++    "node_modules/jszip": {
++      "version": "3.10.1",
++      "resolved": "https://registry.npmjs.org/jszip/-/jszip-3.10.1.tgz",
++      "integrity": "sha512-xXDvecyTpGLrqFrvkrUSoxxfJI5AH7U8zxxtVclpsUtMCq4JQ290LY8AW5c7Ggnr/Y/oK+bQMbqK2qmtk3pN4g==",
++      "license": "(MIT OR GPL-3.0-or-later)",
++      "dependencies": {
++        "lie": "~3.3.0",
++        "pako": "~1.0.2",
++        "readable-stream": "~2.3.6",
++        "setimmediate": "^1.0.5"
++      }
++    },
++    "node_modules/jszip/node_modules/pako": {
++      "version": "1.0.11",
++      "resolved": "https://registry.npmjs.org/pako/-/pako-1.0.11.tgz",
++      "integrity": "sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==",
++      "license": "(MIT AND Zlib)"
++    },
+     "node_modules/keyv": {
+       "version": "4.5.4",
+       "resolved": "https://registry.npmjs.org/keyv/-/keyv-4.5.4.tgz",
+@@ -2438,6 +2937,15 @@
+         "node": ">= 0.8.0"
+       }
+     },
++    "node_modules/lie": {
++      "version": "3.3.0",
++      "resolved": "https://registry.npmjs.org/lie/-/lie-3.3.0.tgz",
++      "integrity": "sha512-UaiMJzeWRlEujzAuw5LokY1L5ecNQYZKfmyZ9L7wDHb/p5etKaxXhohBcrw0EYby+G/NA52vRSN4N39dxHAIwQ==",
++      "license": "MIT",
++      "dependencies": {
++        "immediate": "~3.0.5"
++      }
++    },
+     "node_modules/lightningcss": {
+       "version": "1.32.0",
+       "resolved": "https://registry.npmjs.org/lightningcss/-/lightningcss-1.32.0.tgz",
+@@ -2867,6 +3375,12 @@
+         "url": "https://github.com/sponsors/sindresorhus"
+       }
+     },
++    "node_modules/pako": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/pako/-/pako-2.1.0.tgz",
++      "integrity": "sha512-w+eufiZ1WuJYgPXbV/PO3NCMEc3xqylkKHzp8bxp1uW4qaSNQUkwmLLEc3kKsfz8lpV1F8Ht3U1Cm+9Srog2ug==",
++      "license": "(MIT AND Zlib)"
++    },
+     "node_modules/parent-module": {
+       "version": "1.0.1",
+       "resolved": "https://registry.npmjs.org/parent-module/-/parent-module-1.0.1.tgz",
+@@ -2932,6 +3446,13 @@
+         "node": ">=8"
+       }
+     },
++    "node_modules/performance-now": {
++      "version": "2.1.0",
++      "resolved": "https://registry.npmjs.org/performance-now/-/performance-now-2.1.0.tgz",
++      "integrity": "sha512-7EAHlyLHI56VEIdK57uwHdHKIaAGbnXPiw0yWbarQZOKaKpvUIgW0jWRVLiatnM+XXlSwsanIBH/hzGMJulMow==",
++      "license": "MIT",
++      "optional": true
++    },
+     "node_modules/picocolors": {
+       "version": "1.1.1",
+       "resolved": "https://registry.npmjs.org/picocolors/-/picocolors-1.1.1.tgz",
+@@ -2990,6 +3511,12 @@
+         "node": ">= 0.8.0"
+       }
+     },
++    "node_modules/process-nextick-args": {
++      "version": "2.0.1",
++      "resolved": "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-2.0.1.tgz",
++      "integrity": "sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag==",
++      "license": "MIT"
++    },
+     "node_modules/prop-types": {
+       "version": "15.8.1",
+       "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.8.1.tgz",
+@@ -3024,6 +3551,16 @@
+         "node": ">=6"
+       }
+     },
++    "node_modules/raf": {
++      "version": "3.4.1",
++      "resolved": "https://registry.npmjs.org/raf/-/raf-3.4.1.tgz",
++      "integrity": "sha512-Sq4CW4QhwOHE8ucn6J34MqtZCeWFP2aQSmrlroYgqAV1PjStIhJXxYuTgUIfkEk7zTLjmIjLmU5q+fbD1NnOJA==",
++      "license": "MIT",
++      "optional": true,
++      "dependencies": {
++        "performance-now": "^2.1.0"
++      }
++    },
+     "node_modules/react": {
+       "version": "19.2.4",
+       "resolved": "https://registry.npmjs.org/react/-/react-19.2.4.tgz",
+@@ -3157,6 +3694,21 @@
+         "react-dom": ">=16.6.0"
+       }
+     },
++    "node_modules/readable-stream": {
++      "version": "2.3.8",
++      "resolved": "https://registry.npmjs.org/readable-stream/-/readable-stream-2.3.8.tgz",
++      "integrity": "sha512-8p0AUk4XODgIewSi0l8Epjs+EVnWiK7NoDIEGU0HhE7+ZyY8D1IMY7odu5lRrFXGg71L15KG8QrPmum45RTtdA==",
++      "license": "MIT",
++      "dependencies": {
++        "core-util-is": "~1.0.0",
++        "inherits": "~2.0.3",
++        "isarray": "~1.0.0",
++        "process-nextick-args": "~2.0.0",
++        "safe-buffer": "~5.1.1",
++        "string_decoder": "~1.1.1",
++        "util-deprecate": "~1.0.1"
++      }
++    },
+     "node_modules/recharts": {
+       "version": "3.8.1",
+       "resolved": "https://registry.npmjs.org/recharts/-/recharts-3.8.1.tgz",
+@@ -3202,6 +3754,13 @@
+         "redux": "^5.0.0"
+       }
+     },
++    "node_modules/regenerator-runtime": {
++      "version": "0.13.11",
++      "resolved": "https://registry.npmjs.org/regenerator-runtime/-/regenerator-runtime-0.13.11.tgz",
++      "integrity": "sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==",
++      "license": "MIT",
++      "optional": true
++    },
+     "node_modules/reselect": {
+       "version": "5.1.1",
+       "resolved": "https://registry.npmjs.org/reselect/-/reselect-5.1.1.tgz",
+@@ -3237,6 +3796,22 @@
+         "node": ">=4"
+       }
+     },
++    "node_modules/rgbcolor": {
++      "version": "1.0.1",
++      "resolved": "https://registry.npmjs.org/rgbcolor/-/rgbcolor-1.0.1.tgz",
++      "integrity": "sha512-9aZLIrhRaD97sgVhtJOW6ckOEh6/GnvQtdVNfdZ6s67+3/XwLS9lBcQYzEEhYVeUowN7pRzMLsyGhK2i/xvWbw==",
++      "license": "MIT OR SEE LICENSE IN FEEL-FREE.md",
++      "optional": true,
++      "engines": {
++        "node": ">= 0.8.15"
++      }
++    },
++    "node_modules/robust-predicates": {
++      "version": "3.0.3",
++      "resolved": "https://registry.npmjs.org/robust-predicates/-/robust-predicates-3.0.3.tgz",
++      "integrity": "sha512-NS3levdsRIUOmiJ8FZWCP7LG3QpJyrs/TE0Zpf1yvZu8cAJJ6QMW92H1c7kWpdIHo8RvmLxN/o2JXTKHp74lUA==",
++      "license": "Unlicense"
++    },
+     "node_modules/rolldown": {
+       "version": "1.0.0-rc.9",
+       "resolved": "https://registry.npmjs.org/rolldown/-/rolldown-1.0.0-rc.9.tgz",
+@@ -3278,6 +3853,24 @@
+       "dev": true,
+       "license": "MIT"
+     },
++    "node_modules/rw": {
++      "version": "1.3.3",
++      "resolved": "https://registry.npmjs.org/rw/-/rw-1.3.3.tgz",
++      "integrity": "sha512-PdhdWy89SiZogBLaw42zdeqtRJ//zFd2PgQavcICDUgJT5oW10QCRKbJ6bg4r0/UY2M6BWd5tkxuGFRvCkgfHQ==",
++      "license": "BSD-3-Clause"
++    },
++    "node_modules/safe-buffer": {
++      "version": "5.1.2",
++      "resolved": "https://registry.npmjs.org/safe-buffer/-/safe-buffer-5.1.2.tgz",
++      "integrity": "sha512-Gd2UZBJDkXlY7GbJxfsE8/nvKkUEU1G38c1siN6QP6a9PT9MmHB8GnpscSmMJSoF8LOIrt8ud/wPtojys4G6+g==",
++      "license": "MIT"
++    },
++    "node_modules/safer-buffer": {
++      "version": "2.1.2",
++      "resolved": "https://registry.npmjs.org/safer-buffer/-/safer-buffer-2.1.2.tgz",
++      "integrity": "sha512-YZo3K82SD7Riyi0E1EQPojLz7kpepnSQI9IyPbHHg1XXXevb5dJI7tpyN2ADxGcQbHG7vcyRHk0cbwqcQriUtg==",
++      "license": "MIT"
++    },
+     "node_modules/scheduler": {
+       "version": "0.27.0",
+       "resolved": "https://registry.npmjs.org/scheduler/-/scheduler-0.27.0.tgz",
+@@ -3294,6 +3887,12 @@
+         "semver": "bin/semver.js"
+       }
+     },
++    "node_modules/setimmediate": {
++      "version": "1.0.5",
++      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz",
++      "integrity": "sha512-MATJdZp8sLqDl/68LfQmbP8zKPLQNV6BIZoIgrscFDQ+RsvK/BxeDQOgyxKKoh0y/8h3BqVFnCqQ/gd+reiIXA==",
++      "license": "MIT"
++    },
+     "node_modules/shebang-command": {
+       "version": "2.0.0",
+       "resolved": "https://registry.npmjs.org/shebang-command/-/shebang-command-2.0.0.tgz",
+@@ -3336,6 +3935,25 @@
+         "node": ">=0.10.0"
+       }
+     },
++    "node_modules/stackblur-canvas": {
++      "version": "2.7.0",
++      "resolved": "https://registry.npmjs.org/stackblur-canvas/-/stackblur-canvas-2.7.0.tgz",
++      "integrity": "sha512-yf7OENo23AGJhBriGx0QivY5JP6Y1HbrrDI6WLt6C5auYZXlQrheoY8hD4ibekFKz1HOfE48Ww8kMWMnJD/zcQ==",
++      "license": "MIT",
++      "optional": true,
++      "engines": {
++        "node": ">=0.1.14"
++      }
++    },
++    "node_modules/string_decoder": {
++      "version": "1.1.1",
++      "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.1.1.tgz",
++      "integrity": "sha512-n/ShnvDi6FHbbVfviro+WojiFzv+s8MPMHBczVePfUpDJLwoLT0ht1l4YwBCbi8pJAveEEdnkHyPyTP/mzRfwg==",
++      "license": "MIT",
++      "dependencies": {
++        "safe-buffer": "~5.1.0"
++      }
++    },
+     "node_modules/strip-json-comments": {
+       "version": "3.1.1",
+       "resolved": "https://registry.npmjs.org/strip-json-comments/-/strip-json-comments-3.1.1.tgz",
+@@ -3380,6 +3998,25 @@
+         "url": "https://github.com/sponsors/ljharb"
+       }
+     },
++    "node_modules/svg-pathdata": {
++      "version": "6.0.3",
++      "resolved": "https://registry.npmjs.org/svg-pathdata/-/svg-pathdata-6.0.3.tgz",
++      "integrity": "sha512-qsjeeq5YjBZ5eMdFuUa4ZosMLxgr5RZ+F+Y1OrDhuOCEInRMA3x74XdBtggJcj9kOeInz0WE+LgCPDkZFlBYJw==",
++      "license": "MIT",
++      "optional": true,
++      "engines": {
++        "node": ">=12.0.0"
++      }
++    },
++    "node_modules/text-segmentation": {
++      "version": "1.0.3",
++      "resolved": "https://registry.npmjs.org/text-segmentation/-/text-segmentation-1.0.3.tgz",
++      "integrity": "sha512-iOiPUo/BGnZ6+54OsWxZidGCsdU8YbE4PSpdPinp7DeMtUJNJBoJ/ouUSTJjHkh1KntHaltHl/gDs2FC4i5+Nw==",
++      "license": "MIT",
++      "dependencies": {
++        "utrie": "^1.0.2"
++      }
++    },
+     "node_modules/tiny-invariant": {
+       "version": "1.3.3",
+       "resolved": "https://registry.npmjs.org/tiny-invariant/-/tiny-invariant-1.3.3.tgz",
+@@ -3501,6 +4138,21 @@
+         "react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+       }
+     },
++    "node_modules/util-deprecate": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/util-deprecate/-/util-deprecate-1.0.2.tgz",
++      "integrity": "sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==",
++      "license": "MIT"
++    },
++    "node_modules/utrie": {
++      "version": "1.0.2",
++      "resolved": "https://registry.npmjs.org/utrie/-/utrie-1.0.2.tgz",
++      "integrity": "sha512-1MLa5ouZiOmQzUbjbu9VmjLzn1QLXBhwpUa7kdLUQK+KQ5KA9I1vk5U4YHe/X2Ch7PYnJfWuWT+VbuxbGwljhw==",
++      "license": "MIT",
++      "dependencies": {
++        "base64-arraybuffer": "^1.0.2"
++      }
++    },
+     "node_modules/victory-vendor": {
+       "version": "37.3.6",
+       "resolved": "https://registry.npmjs.org/victory-vendor/-/victory-vendor-37.3.6.tgz",
+diff --git a/package.json b/package.json
+index 20a023a..cefc761 100644
+--- a/package.json
++++ b/package.json
+@@ -11,6 +11,11 @@
+   },
+   "dependencies": {
+     "bootstrap": "^5.3.8",
++    "d3": "^7.9.0",
++    "html2canvas": "^1.4.1",
++    "jspdf": "^4.2.1",
++    "jspdf-autotable": "^5.0.7",
++    "jszip": "^3.10.1",
+     "react": "^19.2.4",
+     "react-bootstrap": "^2.10.10",
+     "react-dom": "^19.2.4",
+diff --git a/src/App.jsx b/src/App.jsx
+index 563a7eb..2027964 100644
+--- a/src/App.jsx
++++ b/src/App.jsx
+@@ -12,6 +12,7 @@ import Logs from './gui/components/Logs'
+ import MaintenanceAndRepair from './gui/components/maintenance_and_repair/MaintenanceAndRepair'
+ import Recycling from './gui/components/recycling/Recycling'
+ import Demolition from './gui/components/demolition/Demolition'
++import Outputs from './gui/components/outputs/Outputs'
+ import './App.css'
+ 
+ 
+@@ -27,9 +28,9 @@ function App() {
+   const [userName, setUserName] = useState('')
+ 
+   const [userSettings, setUserSettings] = useState({
+-    appearanceMode: 'Auto',
+-    lightTheme: 'Pink',
+-    darkTheme: 'Pink'
++    appearanceMode: 'Auto(follow os)',
++    lightTheme: 'standard light',
++    darkTheme: 'Dracula'
+   });
+ 
+   const [isDarkMode, setIsDarkMode] = useState(() => {
+@@ -41,11 +42,11 @@ function App() {
+ 
+   useEffect(() => {
+     const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+-    
++
+     const updateTheme = () => {
+-      if (userSettings.appearanceMode === 'Dark') {
++      if (userSettings.appearanceMode === 'dark') {
+         setIsDarkMode(true);
+-      } else if (userSettings.appearanceMode === 'Light') {
++      } else if (userSettings.appearanceMode === 'light') {
+         setIsDarkMode(false);
+       } else {
+         // Auto
+@@ -56,7 +57,7 @@ function App() {
+     updateTheme(); // Call on appearanceMode change
+ 
+     const handleChange = (e) => {
+-      if (userSettings.appearanceMode === 'Auto') {
++      if (userSettings.appearanceMode === 'Auto(follow os)') {
+         setIsDarkMode(e.matches);
+       }
+     };
+@@ -73,32 +74,98 @@ function App() {
+     root.setAttribute('data-bs-theme', isDarkMode ? 'dark' : 'light');
+ 
+     if (isDarkMode) {
+-      if (userSettings.darkTheme === 'Pink') {
+-        root.style.setProperty('--app-bg-main', '#2a1a21');
+-        root.style.setProperty('--app-bg-card', '#1c1015');
+-        root.style.setProperty('--app-primary-accent', '#e84393');
+-      } else if (userSettings.darkTheme === 'Blue') {
+-        root.style.setProperty('--app-bg-main', '#0f172a');
+-        root.style.setProperty('--app-bg-card', '#0b1120');
+-        root.style.setProperty('--app-primary-accent', '#3b82f6');
+-      } else if (userSettings.darkTheme === 'Green') {
+-        root.style.setProperty('--app-bg-main', '#121e12');
+-        root.style.setProperty('--app-bg-card', '#0d160d');
+-        root.style.setProperty('--app-primary-accent', '#9acd32');
++      if (userSettings.darkTheme === 'Dracula') {
++        root.style.setProperty('--app-bg-main', '#282A36');
++        root.style.setProperty('--app-bg-card', '#21222C');
++        root.style.setProperty('--app-bg-alt', '#383A4A');
++        root.style.setProperty('--app-border-mid', '#44475A');
++        root.style.setProperty('--app-primary-accent', '#BD93F9');
++        root.style.setProperty('--app-brand', '#90AF13');
++        root.style.setProperty('--app-surface-pressed', '#565869');
++        root.style.setProperty('--app-text-primary', '#F8F8F2');
++        root.style.setProperty('--app-text-secondary', '#CED4ED');
++        root.style.setProperty('--app-text-disabled', '#94A1D3');
++        root.style.setProperty('--app-success', '#50FA7B');
++        root.style.setProperty('--app-warning', '#FFB86C');
++        root.style.setProperty('--app-danger', '#FF5555');
++        root.style.setProperty('--app-info', '#8BE9FD');
++      } else if (userSettings.darkTheme === 'Neon city standard dark') {
++        root.style.setProperty('--app-bg-main', '#0C0F17');
++        root.style.setProperty('--app-bg-card', '#121622');
++        root.style.setProperty('--app-bg-alt', '#1A2030');
++        root.style.setProperty('--app-border-mid', '#242B3D');
++        root.style.setProperty('--app-primary-accent', '#E93CFF');
++        root.style.setProperty('--app-brand', '#00D4FF');
++        root.style.setProperty('--app-surface-pressed', '#2F3750');
++        root.style.setProperty('--app-text-primary', '#E8ECF8');
++        root.style.setProperty('--app-text-secondary', '#CDD4E5');
++        root.style.setProperty('--app-text-disabled', '#6B738A');
++        root.style.setProperty('--app-success', '#2EE6A6');
++        root.style.setProperty('--app-warning', '#FFB020');
++        root.style.setProperty('--app-danger', '#FF4D6D');
++        root.style.setProperty('--app-info', '#3DA9FC');
++      } else {
++        root.style.setProperty('--app-bg-main', '#0F172A');
++        root.style.setProperty('--app-bg-card', '#111827');
++        root.style.setProperty('--app-bg-alt', '#1F2937');
++        root.style.setProperty('--app-border-mid', '#374151');
++        root.style.setProperty('--app-primary-accent', '#3B82F6');
++        root.style.setProperty('--app-brand', '#2563EB');
++        root.style.setProperty('--app-surface-pressed', '#4B5563');
++        root.style.setProperty('--app-text-primary', '#E5E7EB');
++        root.style.setProperty('--app-text-secondary', '#D1D5DB');
++        root.style.setProperty('--app-text-disabled', '#6B7280');
++        root.style.setProperty('--app-success', '#22C55E');
++        root.style.setProperty('--app-warning', '#F59E0B');
++        root.style.setProperty('--app-danger', '#EF4444');
++        root.style.setProperty('--app-info', '#38BDF8');
+       }
+     } else {
+-      if (userSettings.lightTheme === 'Pink') {
+-        root.style.setProperty('--app-bg-main', '#fff0f5');
+-        root.style.setProperty('--app-bg-card', '#ffe4e1');
+-        root.style.setProperty('--app-primary-accent', '#d63031');
+-      } else if (userSettings.lightTheme === 'Blue') {
+-        root.style.setProperty('--app-bg-main', '#f0f8ff');
+-        root.style.setProperty('--app-bg-card', '#e6f0fa');
+-        root.style.setProperty('--app-primary-accent', '#0984e3');
+-      } else if (userSettings.lightTheme === 'Green') {
+-        root.style.setProperty('--app-bg-main', '#f4fbf0');
+-        root.style.setProperty('--app-bg-card', '#e8f5e9');
+-        root.style.setProperty('--app-primary-accent', '#9acd32');
++      if (userSettings.lightTheme === 'soft pink') {
++        root.style.setProperty('--app-bg-main', '#FDF2F8');
++        root.style.setProperty('--app-bg-card', '#FFFFFF');
++        root.style.setProperty('--app-bg-alt', '#FCE7F3');
++        root.style.setProperty('--app-border-mid', '#FBCFE8');
++        root.style.setProperty('--app-primary-accent', '#D94680');
++        root.style.setProperty('--app-brand', '#EC4899');
++        root.style.setProperty('--app-surface-pressed', '#F9A8D4');
++        root.style.setProperty('--app-text-primary', '#4A044E');
++        root.style.setProperty('--app-text-secondary', '#6B2155');
++        root.style.setProperty('--app-text-disabled', '#A78B9C');
++        root.style.setProperty('--app-success', '#22C55E');
++        root.style.setProperty('--app-warning', '#F97316');
++        root.style.setProperty('--app-danger', '#EF4444');
++        root.style.setProperty('--app-info', '#3B82F6');
++      } else if (userSettings.lightTheme === 'soft light') {
++        root.style.setProperty('--app-bg-main', '#EFF1F5');
++        root.style.setProperty('--app-bg-card', '#FFFFFF');
++        root.style.setProperty('--app-bg-alt', '#E6E9EF');
++        root.style.setProperty('--app-border-mid', '#CCD0DA');
++        root.style.setProperty('--app-primary-accent', '#86A022');
++        root.style.setProperty('--app-brand', '#90AF13');
++        root.style.setProperty('--app-surface-pressed', '#DCE0E8');
++        root.style.setProperty('--app-text-primary', '#4C4F69');
++        root.style.setProperty('--app-text-secondary', '#6C6F85');
++        root.style.setProperty('--app-text-disabled', '#9CA0B0');
++        root.style.setProperty('--app-success', '#22C55E');
++        root.style.setProperty('--app-warning', '#F97316');
++        root.style.setProperty('--app-danger', '#EF4444');
++        root.style.setProperty('--app-info', '#3B82F6');
++      } else {
++        root.style.setProperty('--app-bg-main', '#F8FAFC');
++        root.style.setProperty('--app-bg-card', '#FFFFFF');
++        root.style.setProperty('--app-bg-alt', '#F1F5F9');
++        root.style.setProperty('--app-border-mid', '#E2E8F0');
++        root.style.setProperty('--app-primary-accent', '#2563EB');
++        root.style.setProperty('--app-brand', '#1D4ED8');
++        root.style.setProperty('--app-surface-pressed', '#CBD5E1');
++        root.style.setProperty('--app-text-primary', '#0F172A');
++        root.style.setProperty('--app-text-secondary', '#475569');
++        root.style.setProperty('--app-text-disabled', '#94A3B8');
++        root.style.setProperty('--app-success', '#16A34A');
++        root.style.setProperty('--app-warning', '#F59E0B');
++        root.style.setProperty('--app-danger', '#DC2626');
++        root.style.setProperty('--app-info', '#0284C7');
+       }
+     }
+   }, [isDarkMode, userSettings]);
+@@ -215,9 +282,9 @@ function App() {
+         isLocked={isLocked}
+         setIsLocked={setIsLocked}
+       >
+-        {React.cloneElement(content, { 
+-          checkpoints, 
+-          logs, 
++        {React.cloneElement(content, {
++          checkpoints,
++          logs,
+           onClearLogs: handleClearLogs,
+           isLocked: isLocked,
+           navTrigger: navTrigger
+diff --git a/src/gui/Login/Loginpage.jsx b/src/gui/Login/Loginpage.jsx
+index 97c34c9..84d592a 100644
+--- a/src/gui/Login/Loginpage.jsx
++++ b/src/gui/Login/Loginpage.jsx
+@@ -1,6 +1,6 @@
+ import React, { useState } from 'react';
+ import { Form, Button, Container, Row, Col, Modal } from 'react-bootstrap';
+-import { BsStars } from 'react-icons/bs';
++import appLogo from '../../assets/logo-3psLCCA.svg';
+ 
+ const Loginpage = ({ onLogin, onGuestLogin }) => {
+     const [email, setEmail] = useState('');
+@@ -29,20 +29,32 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
+ 
+     return (
+         <Container fluid className="p-0 m-0" style={{ height: '100vh', overflow: 'hidden' }}>
++            <style>
++                {`
++                @keyframes logo-spin-entrance {
++                    0% { transform: rotate(-360deg) scale(0.5); opacity: 0; }
++                    100% { transform: rotate(0deg) scale(1); opacity: 1; }
++                }
++                `}
++            </style>
+             <Row className="g-0 m-0 w-100 h-100" style={{ backgroundColor: 'var(--app-bg-main)', transition: 'background-color 0.3s ease' }}>
+ 
+                 {/* Left Side: Minimal Background */}
+                 <Col md={6} className="d-flex flex-column p-4">
+ 
+                     {/* Top Logo */}
+-                    <div className="d-flex align-items-center mb-4" style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--app-logo-accent)' }}>
+-                        <BsStars className="me-2" /> 3psLCCA
++                    <div className="d-flex align-items-center mb-4" style={{ fontWeight: 'bold', fontSize: '1.2rem', color: 'var(--app-text-primary)' }}>
++                        <img src={appLogo} alt="3psLCCA Logo" style={{ height: '32px', width: 'auto' }} className="me-2" />
++                        3psLCCA
+                     </div>
+ 
+                     {/* Middle Text */}
+                     <div className="d-flex flex-column justify-content-center align-items-center text-center flex-grow-1" style={{ paddingBottom: '5vh' }}>
+-                        <h1 className="fw-bold mb-2" style={{ fontSize: '2.8rem', letterSpacing: '-0.5px', color: 'var(--app-text-primary)', transition: 'color 0.3s ease' }}>
+-                            Welcome to...
++                        <div className="mb-4" style={{ filter: 'drop-shadow(0px 8px 16px rgba(0,0,0,0.15))', transition: 'transform 0.3s ease', animation: 'logo-spin-entrance 1.2s cubic-bezier(0.2, 0.8, 0.2, 1)' }} onMouseOver={e => e.currentTarget.style.transform = 'scale(1.05)'} onMouseOut={e => e.currentTarget.style.transform = 'scale(1)'}>
++                            <img src={appLogo} alt="3psLCCA Logo" style={{ height: '120px', width: 'auto' }} />
++                        </div>
++                        <h1 className="fw-bold mb-3" style={{ fontSize: '2.8rem', letterSpacing: '-0.5px', color: 'var(--app-text-primary)', transition: 'color 0.3s ease' }}>
++                            Welcome to 3psLCCA
+                         </h1>
+                         <p className="px-3 mb-0" style={{ fontSize: '1.1rem', lineHeight: '1.6', maxWidth: '90%', color: 'var(--app-text-secondary)', transition: 'color 0.3s ease' }}>
+                             Your comprehensive platform for Life Cycle Cost Analysis.<br />
+@@ -106,7 +118,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
+                                 <Button
+                                     type="submit"
+                                     className="w-100 py-2 fw-bold mb-3 border-0"
+-                                    style={{ backgroundColor: '#9ACD32', color: 'var(--app-btn-primary-text)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
++                                    style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', fontSize: '0.9rem', letterSpacing: '0.5px', borderRadius: '4px' }}
+                                 >
+                                     LOGIN
+                                 </Button>
+@@ -158,7 +170,7 @@ const Loginpage = ({ onLogin, onGuestLogin }) => {
+                             </Form.Group>
+                             <div className="d-flex justify-content-end gap-2">
+                                 <Button variant="secondary" onClick={() => setShowGuestPrompt(false)} style={{ backgroundColor: 'transparent', color: 'var(--app-text-secondary)', border: '1px solid var(--app-border-light)' }}>Cancel</Button>
+-                                <Button type="submit" style={{ backgroundColor: '#9ACD32', color: '#000', border: 'none', fontWeight: 'bold' }}>Continue</Button>
++                                <Button type="submit" style={{ backgroundColor: 'var(--app-primary-accent)', color: 'var(--app-btn-primary-text)', border: 'none', fontWeight: 'bold' }}>Continue</Button>
+                             </div>
+                         </Form>
+                     </Modal.Body>
+diff --git a/src/gui/components/CheckpointManagerModal.jsx b/src/gui/components/CheckpointManagerModal.jsx
+index 95c00cb..5374918 100644
+--- a/src/gui/components/CheckpointManagerModal.jsx
++++ b/src/gui/components/CheckpointManagerModal.jsx
+@@ -38,18 +38,19 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
+             centered 
+             size="lg"
+             className="checkpoint-manager-modal"
+-            contentClassName="bg-dark text-light border-0"
++            contentClassName="border-0"
+         >
+             <style>{`
+                 .checkpoint-manager-modal .modal-content {
+-                    background-color: #252525 !important;
++                    background-color: var(--app-bg-card) !important;
+                     border-radius: 8px;
+-                    border: 1px solid #444 !important;
++                    border: 1px solid var(--app-border-mid) !important;
+                     box-shadow: 0 8px 32px rgba(0,0,0,0.5);
++                    color: var(--app-text-primary);
+                 }
+                 .checkpoint-table-container {
+-                    background-color: #1a1a1a;
+-                    border: 1px solid #333;
++                    background-color: var(--app-bg-main);
++                    border: 1px solid var(--app-border-mid);
+                     border-radius: 4px;
+                     max-height: 350px;
+                     overflow-y: auto;
+@@ -57,14 +58,14 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
+                 }
+                 .checkpoint-table {
+                     margin-bottom: 0;
+-                    color: #ccc;
++                    color: var(--app-text-primary);
+                     font-size: 14px;
+                 }
+                 .checkpoint-table th {
+-                    background-color: #2d2d2d;
+-                    color: #888;
++                    background-color: var(--app-bg-alt);
++                    color: var(--app-text-secondary);
+                     font-weight: 500;
+-                    border-bottom: 1px solid #444 !important;
++                    border-bottom: 1px solid var(--app-border-mid) !important;
+                     padding: 12px 15px;
+                     position: sticky;
+                     top: 0;
+@@ -72,27 +73,27 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
+                 }
+                 .checkpoint-table td {
+                     padding: 10px 15px;
+-                    border-bottom: 1px solid #2a2a2a !important;
++                    border-bottom: 1px solid var(--app-border-light) !important;
+                     vertical-align: middle;
+                     cursor: pointer;
+                 }
+                 .checkpoint-table tr:hover td {
+-                    background-color: #333;
++                    background-color: var(--app-bg-alt);
+                 }
+                 .checkpoint-table tr.selected td {
+-                    background-color: #3a3a3a;
+-                    color: #fff;
++                    background-color: color-mix(in srgb, var(--app-primary-accent) 20%, transparent);
++                    color: var(--app-text-primary);
+                 }
+                 .btn-green-plus {
+-                    background-color: #9acd32 !important;
++                    background-color: var(--app-primary-accent) !important;
+                     border: none !important;
+-                    color: #000 !important;
++                    color: var(--app-bg-card) !important;
+                     font-weight: 600;
+                     padding: 10px 20px;
+                     border-radius: 6px;
+                 }
+                 .btn-green-plus:hover {
+-                    background-color: #a8d648 !important;
++                    background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff) !important;
+                 }
+                 .btn-outline-danger-custom {
+                     border: 1px solid #dc3545 !important;
+@@ -104,17 +105,17 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
+                     background-color: rgba(220, 53, 69, 0.1) !important;
+                 }
+                 .btn-outline-secondary-custom {
+-                    border: 1px solid #555 !important;
+-                    color: #aaa !important;
++                    border: 1px solid var(--app-border-mid) !important;
++                    color: var(--app-text-secondary) !important;
+                     background: transparent !important;
+                     padding: 8px 16px;
+                 }
+                 .btn-outline-secondary-custom:hover:not(:disabled) {
+-                    background-color: rgba(255, 255, 255, 0.05) !important;
+-                    color: #fff !important;
++                    background-color: var(--app-bg-alt) !important;
++                    color: var(--app-text-primary) !important;
+                 }
+                 .restore-hint {
+-                    color: #aaa;
++                    color: var(--app-text-secondary);
+                     font-size: 14px;
+                     margin-bottom: 20px;
+                 }
+@@ -123,20 +124,20 @@ const CheckpointManagerModal = ({ show, onHide, checkpoints, onDelete, onRestore
+                     width: 8px;
+                 }
+                 .checkpoint-table-container::-webkit-scrollbar-track {
+-                    background: #1a1a1a;
++                    background: var(--app-bg-main);
+                 }
+                 .checkpoint-table-container::-webkit-scrollbar-thumb {
+-                    background: #444;
++                    background: var(--app-border-mid);
+                     border-radius: 4px;
+                 }
+                 .checkpoint-table-container::-webkit-scrollbar-thumb:hover {
+-                    background: #555;
++                    background: var(--app-border-dark);
+                 }
+             `}</style>
+ 
+             <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
+                 <Modal.Title className="d-flex align-items-center gap-2" style={{ fontSize: '18px' }}>
+-                    <FaClock style={{ color: '#aaa' }} /> Checkpoint Manager
++                    <FaClock style={{ color: 'var(--app-text-secondary)' }} /> Checkpoint Manager
+                 </Modal.Title>
+             </Modal.Header>
+ 
+diff --git a/src/gui/components/Homepage.jsx b/src/gui/components/Homepage.jsx
+index 905cfdb..abee25b 100644
+--- a/src/gui/components/Homepage.jsx
++++ b/src/gui/components/Homepage.jsx
+@@ -89,38 +89,110 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
+     };
+ 
+     if (isDarkMode) {
+-        if (userSettings?.darkTheme === 'Pink') {
+-            theme.bgMain = '#2a1a21';
+-            theme.bgSidebar = '#1c1015';
+-            theme.activeIconColor = '#e84393';
+-            theme.activeIconBg = '#3a1e28';
+-        } else if (userSettings?.darkTheme === 'Blue') {
+-            theme.bgMain = '#0f172a';
+-            theme.bgSidebar = '#0b1120';
+-            theme.activeIconColor = '#3b82f6';
+-            theme.activeIconBg = '#172554';
+-        } else if (userSettings?.darkTheme === 'Green') {
+-            theme.bgMain = '#121e12';
+-            theme.bgSidebar = '#0d160d';
+-            theme.activeIconColor = '#9acd32';
+-            theme.activeIconBg = '#1a2e1a';
++        if (userSettings?.darkTheme === 'Dracula') {
++            theme.bgMain = '#282A36';
++            theme.bgSidebar = '#21222C';
++            theme.activeIconBg = '#383A4A';
++            theme.activeIconColor = '#BD93F9';
++            theme.brand = '#90AF13';
++            theme.surfacePressed = '#565869';
++            theme.textPrimary = '#F8F8F2';
++            theme.textSecondary = '#CED4ED';
++            theme.textDisabled = '#94A1D3';
++            theme.border = '#44475A';
++            theme.cardBg = '#21222C';
++            theme.inputBg = '#383A4A';
++            theme.success = '#50FA7B';
++            theme.warning = '#FFB86C';
++            theme.danger = '#FF5555';
++            theme.info = '#8BE9FD';
++        } else if (userSettings?.darkTheme === 'Neon city standard dark') {
++            theme.bgMain = '#0C0F17';
++            theme.bgSidebar = '#121622';
++            theme.activeIconBg = '#1A2030';
++            theme.activeIconColor = '#E93CFF';
++            theme.brand = '#00D4FF';
++            theme.surfacePressed = '#2F3750';
++            theme.textPrimary = '#E8ECF8';
++            theme.textSecondary = '#CDD4E5';
++            theme.textDisabled = '#6B738A';
++            theme.border = '#242B3D';
++            theme.cardBg = '#121622';
++            theme.inputBg = '#1A2030';
++            theme.success = '#2EE6A6';
++            theme.warning = '#FFB020';
++            theme.danger = '#FF4D6D';
++            theme.info = '#3DA9FC';
++        } else { // standard dark
++            theme.bgMain = '#0F172A';
++            theme.bgSidebar = '#111827';
++            theme.activeIconBg = '#1F2937';
++            theme.activeIconColor = '#3B82F6';
++            theme.brand = '#2563EB';
++            theme.surfacePressed = '#4B5563';
++            theme.textPrimary = '#E5E7EB';
++            theme.textSecondary = '#D1D5DB';
++            theme.textDisabled = '#6B7280';
++            theme.border = '#374151';
++            theme.cardBg = '#111827';
++            theme.inputBg = '#1F2937';
++            theme.success = '#22C55E';
++            theme.warning = '#F59E0B';
++            theme.danger = '#EF4444';
++            theme.info = '#38BDF8';
+         }
+     } else {
+-        if (userSettings?.lightTheme === 'Pink') {
+-            theme.bgMain = '#fff0f5';
+-            theme.bgSidebar = '#ffe4e1';
+-            theme.activeIconColor = '#d63031';
+-            theme.activeIconBg = '#ffdada';
+-        } else if (userSettings?.lightTheme === 'Blue') {
+-            theme.bgMain = '#f0f8ff';
+-            theme.bgSidebar = '#e6f0fa';
+-            theme.activeIconColor = '#0984e3';
+-            theme.activeIconBg = '#d0e8ff';
+-        } else if (userSettings?.lightTheme === 'Green') {
+-            theme.bgMain = '#f4fbf0';
+-            theme.bgSidebar = '#e8f5e9';
+-            theme.activeIconColor = '#9acd32';
+-            theme.activeIconBg = '#d4edda';
++        if (userSettings?.lightTheme === 'soft pink') {
++            theme.bgMain = '#FDF2F8';
++            theme.bgSidebar = '#FFFFFF';
++            theme.activeIconBg = '#FCE7F3';
++            theme.activeIconColor = '#D94680';
++            theme.brand = '#EC4899';
++            theme.surfacePressed = '#F9A8D4';
++            theme.textPrimary = '#4A044E';
++            theme.textSecondary = '#6B2155';
++            theme.textDisabled = '#A78B9C';
++            theme.border = '#FBCFE8';
++            theme.cardBg = '#FFFFFF';
++            theme.inputBg = '#FCE7F3';
++            theme.success = '#22C55E';
++            theme.warning = '#F97316';
++            theme.danger = '#EF4444';
++            theme.info = '#3B82F6';
++        } else if (userSettings?.lightTheme === 'soft light') {
++            theme.bgMain = '#EFF1F5';
++            theme.bgSidebar = '#FFFFFF';
++            theme.activeIconBg = '#E6E9EF';
++            theme.activeIconColor = '#86A022';
++            theme.brand = '#90AF13';
++            theme.surfacePressed = '#DCE0E8';
++            theme.textPrimary = '#4C4F69';
++            theme.textSecondary = '#6C6F85';
++            theme.textDisabled = '#9CA0B0';
++            theme.border = '#CCD0DA';
++            theme.cardBg = '#FFFFFF';
++            theme.inputBg = '#E6E9EF';
++            theme.success = '#22C55E';
++            theme.warning = '#F97316';
++            theme.danger = '#EF4444';
++            theme.info = '#3B82F6';
++        } else { // standard light
++            theme.bgMain = '#F8FAFC';
++            theme.bgSidebar = '#FFFFFF';
++            theme.activeIconBg = '#F1F5F9';
++            theme.activeIconColor = '#2563EB';
++            theme.brand = '#1D4ED8';
++            theme.surfacePressed = '#CBD5E1';
++            theme.textPrimary = '#0F172A';
++            theme.textSecondary = '#475569';
++            theme.textDisabled = '#94A3B8';
++            theme.border = '#E2E8F0';
++            theme.cardBg = '#FFFFFF';
++            theme.inputBg = '#F1F5F9';
++            theme.success = '#16A34A';
++            theme.warning = '#F59E0B';
++            theme.danger = '#DC2626';
++            theme.info = '#0284C7';
+         }
+     }
+ 
+@@ -265,11 +337,11 @@ const Homepage = ({ onProjectOpen, userName = 'ritik!', isDarkMode, userSettings
+             <NewProject show={showModal} handleClose={handleCloseModal} onProjectOpen={onProjectOpen} onProjectCreate={handleProjectCreate} isDarkMode={isDarkMode} theme={theme} />
+ 
+             {/* Settings Modal */}
+-            <SettingsModal 
+-                show={showSettingsModal} 
+-                handleClose={() => setShowSettingsModal(false)} 
+-                isDarkMode={isDarkMode} 
+-                theme={theme} 
++            <SettingsModal
++                show={showSettingsModal}
++                handleClose={() => setShowSettingsModal(false)}
++                isDarkMode={isDarkMode}
++                theme={theme}
+                 initialUserName={userName}
+                 userSettings={userSettings}
+                 onSaveSettings={(settings) => {
+diff --git a/src/gui/components/NewProject.jsx b/src/gui/components/NewProject.jsx
+index 27dfc98..3e6e820 100644
+--- a/src/gui/components/NewProject.jsx
++++ b/src/gui/components/NewProject.jsx
+@@ -134,7 +134,7 @@ const NewProject = ({ show, handleClose, onProjectOpen, onProjectCreate, isDarkM
+     const customSelectStyles = getCustomSelectStyles(isDarkMode, brandColor);
+ 
+     return (
+-        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false} size="sm">
++        <Modal show={show} onHide={closeModal} centered backdrop="static" keyboard={false}>
+             {/* Wrapping Modal content to force styling */}
+             <div style={{ backgroundColor: colors.modalBg, color: colors.text, borderRadius: '6px', overflow: 'hidden', transition: 'all 0.3s' }}>
+                 <Modal.Header closeButton style={{ borderBottom: 'none', paddingBottom: '0' }} className="custom-theme-modal-header pt-3 px-4">
+diff --git a/src/gui/components/ProjectNavbar.jsx b/src/gui/components/ProjectNavbar.jsx
+index 3ab4ac1..7c88dfa 100644
+--- a/src/gui/components/ProjectNavbar.jsx
++++ b/src/gui/components/ProjectNavbar.jsx
+@@ -136,12 +136,14 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
+         }}>
+             <style>{`
+                 .custom-project-nav .nav-link { color: var(--app-text-primary) !important; font-size: 14px; }
+-                .custom-dropdown-item:hover, .custom-dropdown-item:focus { background-color: var(--app-bg-main) !important; color: #9adc32 !important; }
++                .custom-dropdown-item:hover, .custom-dropdown-item:focus { background-color: var(--app-bg-main) !important; color: var(--app-primary-accent) !important; }
+                 .custom-project-nav .dropdown-menu { background-color: var(--app-bg-card); border: 1px solid var(--app-border-mid); }
+                 .custom-project-nav .dropdown-toggle { color: var(--app-text-primary) !important; font-size: 14px; }
+             `}</style>
+             
+-            <Nav className="me-auto align-items-center">
++            <Navbar.Toggle aria-controls="project-navbar-nav" className="border-0 shadow-none" style={{ filter: 'invert(0.5)' }} />
++            <Navbar.Collapse id="project-navbar-nav">
++                <Nav className="me-auto align-items-center flex-row flex-wrap gap-2 gap-lg-0">
+                 <NavItemLink icon={FaHome} onClick={onBackToHome} />
+                 
+                 <CustomDropdown 
+@@ -176,7 +178,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
+                 <NavItemLink href="#logs" onClick={() => setActiveNode('Logs')}>Logs</NavItemLink>
+             </Nav>
+ 
+-            <Nav className="ms-auto align-items-center column-gap-2">
++            <Nav className="ms-auto align-items-center column-gap-2 flex-row flex-wrap mt-2 mt-lg-0">
+                 <div className="d-flex align-items-center me-2" style={{ color: 'var(--app-primary-accent)', fontSize: '12px', opacity: 0.9 }}>
+                     <FaCheckCircle size={12} className="me-1" />
+                     <span>All changes saved</span>
+@@ -249,6 +251,7 @@ const ProjectNavbar = ({ onBackToHome, setActiveNode, onSaveCheckpoint, onDelete
+                     </Button>
+                 </OverlayTrigger>
+             </Nav>
++            </Navbar.Collapse>
+ 
+             <SaveCheckpointModal 
+                 show={showSaveModal} 
+diff --git a/src/gui/components/SaveCheckpointModal.jsx b/src/gui/components/SaveCheckpointModal.jsx
+index 6294cf2..e2f85e0 100644
+--- a/src/gui/components/SaveCheckpointModal.jsx
++++ b/src/gui/components/SaveCheckpointModal.jsx
+@@ -20,60 +20,61 @@ const SaveCheckpointModal = ({ show, onHide, onSave }) => {
+             onHide={onHide} 
+             centered 
+             className="custom-save-modal"
+-            contentClassName="bg-dark text-light border-0"
++            contentClassName="border-0"
+             style={{ fontFamily: '"Segoe UI", system-ui, sans-serif' }}
+         >
+             <style>{`
+                 .custom-save-modal .modal-content {
+-                    background-color: #1e1e1e !important;
++                    background-color: var(--app-bg-card) !important;
+                     border-radius: 12px;
+-                    border: 1px solid #333 !important;
++                    border: 1px solid var(--app-border-mid) !important;
++                    color: var(--app-text-primary) !important;
+                 }
+                 .custom-save-modal .form-control {
+-                    background-color: #2d2d2d;
+-                    border: 1px solid #444;
+-                    color: #eee;
++                    background-color: var(--app-input-bg);
++                    border: 1px solid var(--app-input-border);
++                    color: var(--app-input-text);
+                     font-size: 14px;
+                 }
+                 .custom-save-modal .form-control:focus {
+-                    background-color: #2d2d2d;
+-                    border-color: #9acd32;
+-                    box-shadow: 0 0 0 2px rgba(154, 205, 50, 0.25);
+-                    color: #fff;
++                    background-color: var(--app-input-bg);
++                    border-color: var(--app-primary-accent);
++                    box-shadow: 0 0 0 2px color-mix(in srgb, var(--app-primary-accent) 25%, transparent);
++                    color: var(--app-input-text);
+                 }
+                 .custom-save-modal .form-label {
+-                    color: #bbb;
++                    color: var(--app-text-secondary);
+                     font-size: 14px;
+                     margin-bottom: 8px;
+                 }
+                 .btn-green-save {
+-                    background-color: #9acd32 !important;
+-                    border-color: #9acd32 !important;
+-                    color: #000 !important;
++                    background-color: var(--app-primary-accent) !important;
++                    border-color: var(--app-primary-accent) !important;
++                    color: var(--app-bg-card) !important;
+                     font-weight: 600;
+                     padding: 8px 24px;
+                 }
+                 .btn-green-save:hover {
+-                    background-color: #a8d648 !important;
++                    background-color: color-mix(in srgb, var(--app-primary-accent) 80%, #fff) !important;
+                 }
+                 .btn-cancel-dark {
+-                    background-color: #333 !important;
+-                    border-color: #444 !important;
+-                    color: #ddd !important;
++                    background-color: var(--app-bg-alt) !important;
++                    border-color: var(--app-border-mid) !important;
++                    color: var(--app-text-primary) !important;
+                 }
+                 .btn-cancel-dark:hover {
+-                    background-color: #444 !important;
++                    background-color: var(--app-border-mid) !important;
+                 }
+             `}</style>
+ 
+             <Modal.Header closeButton closeVariant="white" className="border-0 pb-0">
+                 <Modal.Title className="d-flex align-items-center gap-2" style={{ fontSize: '18px' }}>
+-                    <FaSave style={{ color: '#9179c6' }} /> Save Checkpoint
++                    <FaSave style={{ color: 'var(--app-primary-accent)' }} /> Save Checkpoint
+                 </Modal.Title>
+             </Modal.Header>
+ 
+             <Modal.Body className="pt-3">
+-                <p style={{ color: '#aaa', fontSize: '14px', marginBottom: '20px' }}>
++                <p style={{ color: 'var(--app-text-secondary)', fontSize: '14px', marginBottom: '20px' }}>
+                     A checkpoint is a full snapshot of your current project data. 
+                     You can restore it at any time from the Checkpoint Manager.
+                 </p>
+diff --git a/src/gui/components/SettingsModal.jsx b/src/gui/components/SettingsModal.jsx
+index 8f4edec..d013aca 100644
+--- a/src/gui/components/SettingsModal.jsx
++++ b/src/gui/components/SettingsModal.jsx
+@@ -44,9 +44,9 @@ const getCustomSelectStyles = (isDark, brandColor) => ({
+ 
+ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName, userSettings, onSaveSettings }) => {
+     const [displayName, setDisplayName] = useState(initialUserName || '');
+-    const [appearanceMode, setAppearanceMode] = useState(userSettings?.appearanceMode || 'Auto');
+-    const [lightTheme, setLightTheme] = useState(userSettings?.lightTheme || 'Pink');
+-    const [darkTheme, setDarkTheme] = useState(userSettings?.darkTheme || 'Pink');
++    const [appearanceMode, setAppearanceMode] = useState(userSettings?.appearanceMode || 'Auto(follow os)');
++    const [lightTheme, setLightTheme] = useState(userSettings?.lightTheme || 'standard light');
++    const [darkTheme, setDarkTheme] = useState(userSettings?.darkTheme || 'standard dark');
+     const [profileCountry, setProfileCountry] = useState(null);
+     const [agencyName, setAgencyName] = useState('');
+     const [contactName, setContactName] = useState('');
+@@ -58,9 +58,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName,
+         if (show) {
+             setDisplayName(initialUserName || '');
+             // Sync from parent each time modal opens so saved settings are preserved
+-            setAppearanceMode(userSettings?.appearanceMode || 'Auto');
+-            setLightTheme(userSettings?.lightTheme || 'Pink');
+-            setDarkTheme(userSettings?.darkTheme || 'Pink');
++            setAppearanceMode(userSettings?.appearanceMode || 'Auto(follow os)');
++            setLightTheme(userSettings?.lightTheme || 'standard light');
++            setDarkTheme(userSettings?.darkTheme || 'standard dark');
+         }
+     }, [show, initialUserName, userSettings]);
+ 
+@@ -176,7 +176,7 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName,
+ 
+             <Modal.Header>
+                 <Modal.Title>
+-                    <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: '#9acd32', marginRight: '4px' }}></span>
++                    <span style={{ display: 'inline-block', width: '12px', height: '12px', backgroundColor: theme.activeIconColor, marginRight: '4px' }}></span>
+                     Settings
+                 </Modal.Title>
+                 <button type="button" className="btn-close btn-close-white" onClick={handleClose} aria-label="Close"></button>
+@@ -201,11 +201,11 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName,
+                             {/* Appearance Mode */}
+                             <Form.Group className="mb-4">
+                                 <Form.Label>Appearance Mode</Form.Label>
+-                                <div className="form-text mt-0">Switch between light and dark mode. 'Auto' follows your OS setting.</div>
++                                <div className="form-text mt-0">Switch between light and dark mode. 'Auto(follow os)' follows your OS setting.</div>
+                                 <Form.Select value={appearanceMode} onChange={(e) => setAppearanceMode(e.target.value)}>
+-                                    <option value="Light">Light</option>
+-                                    <option value="Dark">Dark</option>
+-                                    <option value="Auto">Auto</option>
++                                    <option value="Auto(follow os)">Auto(follow os)</option>
++                                    <option value="light">light</option>
++                                    <option value="dark">dark</option>
+                                 </Form.Select>
+                             </Form.Group>
+ 
+@@ -214,9 +214,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName,
+                                 <Form.Label>Light Theme</Form.Label>
+                                 <div className="form-text mt-0">Colour scheme used in light mode.</div>
+                                 <Form.Select value={lightTheme} onChange={(e) => setLightTheme(e.target.value)}>
+-                                    <option value="Pink">Pink Theme</option>
+-                                    <option value="Blue">Blue Theme</option>
+-                                    <option value="Green">Green Theme</option>
++                                    <option value="standard light">standard light</option>
++                                    <option value="soft light">soft light</option>
++                                    <option value="soft pink">soft pink</option>
+                                 </Form.Select>
+                             </Form.Group>
+ 
+@@ -225,9 +225,9 @@ const SettingsModal = ({ show, handleClose, isDarkMode, theme, initialUserName,
+                                 <Form.Label>Dark Theme</Form.Label>
+                                 <div className="form-text mt-0">Colour scheme used in dark mode.</div>
+                                 <Form.Select value={darkTheme} onChange={(e) => setDarkTheme(e.target.value)}>
+-                                    <option value="Pink">Pink Theme</option>
+-                                    <option value="Blue">Blue Theme</option>
+-                                    <option value="Green">Green Theme</option>
++                                    <option value="Dracula">Dracula</option>
++                                    <option value="Neon city standard dark">Neon city standard dark</option>
++                                    <option value="standard dark">standard dark</option>
+                                 </Form.Select>
+                             </Form.Group>
+ 
